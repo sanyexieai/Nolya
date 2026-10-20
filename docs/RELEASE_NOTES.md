@@ -1,5 +1,8 @@
 # 0.2 产品化候选 · 2026-10-20
 
+最新浏览器证据：对比度修复提交 `d61576cc4fe8fe2693e821c3cfc5daa65c7e32f8` 的 [托管 CI](https://github.com/sanyexieai/Nolya/actions/runs/39406818397) 通过 25 项 Chromium 检查，包含实际手机文字对比度与固定导航余量；verify（含54项前端测试、综合回归、备份恢复及Docker构建）也已完整通过。截图 artifact `12258181146`。完整生产部署和手工无障碍验收仍单列，不把脚本范围扩展为全面认证。
+
+
 本轮交付包含工程和功能增强，已取得指定 Chromium 场景的托管浏览器通过证据，但不是完整跨浏览器/人工可访问性验收或公网部署。发布门槛见 PRODUCT_READINESS.md，最终验证见 RELEASE_VERIFICATION.md。
 
 - 账户：旧密码改密、所有会话退出、一次性恢复码、账户恢复、删除前密码确认；恢复不自动切换访客空间。
@@ -9,7 +12,7 @@
 - 运维：生产启动失败关闭、健康与就绪探针、SIGTERM、在线备份/校验/安全恢复、部署模板和 CI。
 - 数据库迁移 003 增加恢复码摘要；升级前应备份。不能假定旧版本完全兼容新版本行为。
 
-托管验证：[首轮 CI](https://github.com/sanyexieai/Nolya/actions/runs/39405043533) verify 完整通过，覆盖 Rust 1.90、综合回归、备份恢复和 Docker 构建。首轮浏览器发现 390px 首页横向溢出，修复后 [第二轮 CI](https://github.com/sanyexieai/Nolya/actions/runs/39405738917) browser 通过 23 项检查、页面异常为空、保存 8 张截图（artifact 12257885291）。真实视口为 1440×1000 和 390×844；320/430px 仅有几何回归。前端测试现为 51 项；第二轮 browser 与 verify（含 Docker 构建）均完整通过。
+托管验证：[首轮 CI](https://github.com/sanyexieai/Nolya/actions/runs/39405043533) verify 完整通过，覆盖 Rust 1.90、综合回归、备份恢复和 Docker 构建。首轮浏览器发现 390px 首页横向溢出，修复后 [第二轮 CI](https://github.com/sanyexieai/Nolya/actions/runs/39405738917) browser 通过 23 项检查、页面异常为空、保存 8 张截图（artifact 12257885291）。真实视口为 1440×1000 和 390×844；320/430px 仅有几何回归。前端测试现为 54 项；第二轮 browser 与 verify（含 Docker 构建）均完整通过。
 
 已按用户授权推送 `sanyexieai/Nolya` 的 `codex/nolya-local-mvp` 工作分支；`main` 初始化 README 未改动。未部署、合并或发布正式版本。
 

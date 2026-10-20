@@ -1,5 +1,8 @@
 # Nolya · 诺芽
 
+最新浏览器证据：对比度修复提交 `d61576cc4fe8fe2693e821c3cfc5daa65c7e32f8` 的 [托管 CI](https://github.com/sanyexieai/Nolya/actions/runs/39406818397) 通过 25 项 Chromium 检查，包含实际手机文字对比度与固定导航余量；verify（含54项前端测试、综合回归、备份恢复及Docker构建）也已完整通过。截图 artifact `12258181146`。完整生产部署和手工无障碍验收仍单列，不把脚本范围扩展为全面认证。
+
+
 基于用户提供的 NolyaV1.1 原型包实现的社交认知产品。Rust 后端、React + TypeScript 移动优先 Web 界面、SQLite 持久化数据库。
 
 > 当前为产品化候选 0.2，未部署公网。核心功能、托管工程验证与 Chromium 浏览器脚本已取得通过证据；尚未完成生产部署和完整人工可访问性/跨设备验收。当前门槛见 `docs/PRODUCT_READINESS.md`，精确结果见 `docs/RELEASE_VERIFICATION.md`。
@@ -76,7 +79,7 @@ scripts/       本地启动与校验
 
 - [首轮 CI](https://github.com/sanyexieai/Nolya/actions/runs/39405043533) 的 verify job 完整通过，包含 Rust 1.90、综合回归、备份恢复及 Docker 镜像构建。
 - [修复后 CI](https://github.com/sanyexieai/Nolya/actions/runs/39405738917) 的 browser job 通过 23 项检查，`page_errors: []`，保存 8 张合成数据截图（artifact 12257885291）。实际视口为 1440×1000 和 390×844；320/430px 仅有几何回归，不是浏览器验收。
-- 前端测试已增至 51 项；第二轮 browser 与 verify（含 Docker 构建）均完整通过。
+- 前端测试已增至 54 项；第二轮 browser 与 verify（含 Docker 构建）均完整通过。
 
 ## 生产准备与备份
 

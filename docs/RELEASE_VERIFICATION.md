@@ -8,7 +8,7 @@
 
 - Rust 单元/集成：14 项（库4、主程序1、HTTP集成9）。
 - Clippy 全 targets、warnings denied；Rust 格式检查。
-- 前端 TypeScript、Vite 生产构建、51 项 Node/jsdom 组件与 API 测试、Prettier。
+- 前端 TypeScript、Vite 生产构建、54 项 Node/jsdom 组件与 API 测试、Prettier。
 - 原安全 HTTP：18 组。
 - 访客合并 HTTP：35 项，含并发、回滚、旧预览失效和关系转移。
 - 账户生命周期 HTTP：11 项，含一次性恢复码、摘要存储、导出排除、会话撤销和并发单次消费。
@@ -20,6 +20,10 @@
 
 全部使用隔离临时数据库和合成身份，不操作真实用户数据。组件测试为模拟网络与 jsdom，不证明浏览器布局或真实点击。
 
+## 对比度修复复验
+
+提交 `d61576cc4fe8fe2693e821c3cfc5daa65c7e32f8` 的 [第三轮托管 CI](https://github.com/sanyexieai/Nolya/actions/runs/39406818397) browser 与 verify（含 Docker 构建）均完整通过。browser 通过 25 项检查，页面异常为空，8 张更新截图见 artifact `12258181146`。新增实际计算样式对比度 ≥4.5:1 和固定导航 16px 底部滚动余量检查。功能文字改用高对比度配色，保持浅色装饰与背景；54 项前端测试含颜色和移动几何回归。
+
 ## 修复后复验
 
 本轮发现并修复：已撤销会话的迟到写入、账户切换残留表单、撤销与分页回包竞争、历史第100条之后的日记无法分享、旧身份邀请链接残留、恢复后错误登录入口、不同题库版本的历史比较，以及浏览器存储不可用阻断身份清理。对应 API/组件回归覆盖，不能把定向修复当作完整第三方安全审计。
@@ -27,7 +31,7 @@
 ## 托管浏览器与工程证据
 
 - [首轮 39405043533](https://github.com/sanyexieai/Nolya/actions/runs/39405043533)：verify job 完整通过；browser job 实际发现 390px 首页装饰元素横向溢出，不能把该轮浏览器记作通过。
-- 修复提交 `04021ba9631f666dfc3ad98ec65582cff7fd90cf` 限制移动首页装饰溢出，并增加几何回归；前端共 51 项测试。
+- 修复提交 `04021ba9631f666dfc3ad98ec65582cff7fd90cf` 限制移动首页装饰溢出，并增加几何回归；前端共 54 项测试。
 - [第二轮 39405738917](https://github.com/sanyexieai/Nolya/actions/runs/39405738917)：browser job 通过 23 项检查，`page_errors: []`，产出 8 张截图，artifact ID `12257885291`。真实浏览器视口仅 1440×1000、390×844；320/430px 的几何回归不等同浏览器运行。
 - 第二轮 browser 与 verify job（含 Docker 构建）均完整通过。
 - 测试均针对临时数据库及合成账户。截图、脚本覆盖和未覆盖范围见 BROWSER_ACCEPTANCE.md。
