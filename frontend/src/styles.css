@@ -3377,6 +3377,20 @@ svg {
     margin-top: 15px;
     align-self: center;
   }
+  /* Inset the rotated orbit boxes themselves: desktop-sized rotated bounds
+     extended beyond the phone viewport even when the artwork width fitted. */
+  .hero-art .art-orbit {
+    width: 82%;
+    height: 62%;
+    left: 9%;
+    top: 20%;
+  }
+  .hero-art .orbit-two {
+    width: 72%;
+    height: 68%;
+    left: 14%;
+    top: 15%;
+  }
   .mirror-frame {
     width: 53%;
     height: 79%;

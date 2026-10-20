@@ -220,7 +220,13 @@ const path = require('path');
       await page.getByRole('heading',{level:1}).waitFor();
       await page.waitForTimeout(300);
       const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1);
-      if(overflow) throw new Error('Horizontal overflow '+route);
+      if(overflow) {
+        const bounds = await page.evaluate(() => [...document.querySelectorAll('body *')]
+          .map(el => { const r = el.getBoundingClientRect(); return {tag:el.tagName,classes:el.className,left:r.left,right:r.right,width:r.width}; })
+          .filter(r => r.right > innerWidth + 1 || r.left < -1));
+        await page.screenshot({path:path.join(out,label+'-mobile-overflow.png'),fullPage:true});
+        throw new Error('Horizontal overflow '+route+' '+JSON.stringify(bounds));
+      }
       await page.screenshot({path:path.join(out,label+'-mobile.png'),fullPage:true});
     }
     if(errors.length)throw new Error('Browser errors: '+errors.join(';'));
