@@ -2,7 +2,7 @@
 
 基于用户提供的 NolyaV1.1 原型包实现的社交认知产品。Rust 后端、React + TypeScript 移动优先 Web 界面、SQLite 持久化数据库。
 
-> 当前为产品化候选 0.2，未部署公网。核心实现与自动化验证持续完成中；真实浏览器验收仍受环境阻塞，因此不能称已完整生产验收。当前门槛见 `docs/PRODUCT_READINESS.md`，精确结果见 `docs/RELEASE_VERIFICATION.md`。
+> 当前为产品化候选 0.2，未部署公网。核心功能、托管工程验证与 Chromium 浏览器脚本已取得通过证据；尚未完成生产部署和完整人工可访问性/跨设备验收。当前门槛见 `docs/PRODUCT_READINESS.md`，精确结果见 `docs/RELEASE_VERIFICATION.md`。
 
 ## 产品范围
 
@@ -62,13 +62,21 @@ scripts/       本地启动与校验
 - 不同会话/账户不等于不同真人。开发版去重不能作为生产反作弊证明
 - 原型的人像素材未提供商用许可证明，本工程不直接将其作为正式品牌素材
 - 原型设计、产品文案与商标的权利仍归相应权利人；本工程未擅自授予开源或再分发许可
-- 正式上线前仍需真实浏览器验收、域名、HTTPS、备份调度与恢复演练、监控、边缘防刷、隐私和服务条款审定。邮件/微信是可选扩展，不是假定已接入的功能
+- 正式上线前仍需完整人工可访问性、Safari/跨设备验收、域名、HTTPS、备份调度与恢复演练、监控、边缘防刷、隐私和服务条款审定。邮件/微信是可选扩展，不是假定已接入的功能
 
 ## 配置
 
 参见 `.env.example`。默认仅监听本机地址。生产环境必须启用 HTTPS 和 Secure Cookie，严格配置允许的 Origin，不允许通配凭证跨域。公开邀请链接的域名由 `NOLYA_PUBLIC_ORIGIN` 决定。
 
 服务启动时自动应用幂等数据库迁移。已有数据库迁移和备份策略见架构文档。此仓库不含原始 199 MB 原型 ZIP，也不含其签名下载地址。
+
+## 托管验收进展（2026-10-20）
+
+已按授权推送到 `sanyexieai/Nolya` 的 `codex/nolya-local-mvp` 工作分支，默认分支 `main` 的初始化 README 未改动；未合并、部署或发布正式版本。
+
+- [首轮 CI](https://github.com/sanyexieai/Nolya/actions/runs/39405043533) 的 verify job 完整通过，包含 Rust 1.90、综合回归、备份恢复及 Docker 镜像构建。
+- [修复后 CI](https://github.com/sanyexieai/Nolya/actions/runs/39405738917) 的 browser job 通过 23 项检查，`page_errors: []`，保存 8 张合成数据截图（artifact 12257885291）。实际视口为 1440×1000 和 390×844；320/430px 仅有几何回归，不是浏览器验收。
+- 前端测试已增至 51 项；第二轮 browser 与 verify（含 Docker 构建）均完整通过。
 
 ## 生产准备与备份
 

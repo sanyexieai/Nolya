@@ -2,7 +2,15 @@
 
 本文件保留首版阶段记录，不能将下文历史未实现列表当作当前状态。2026-10-20 产品化候选的最新范围与门槛见 [PRODUCT_READINESS.md](PRODUCT_READINESS.md)，实际验证见 [RELEASE_VERIFICATION.md](RELEASE_VERIFICATION.md)。
 
-# Nolya 交付计划与验收门槛
+## 当前里程碑：托管验收（2026-10-20）
+
+- 已按用户授权推送到 `sanyexieai/Nolya` 工作分支 `codex/nolya-local-mvp`，保留 `main` 初始化 README，不合并、不部署、不发布正式版本。
+- [CI 39405043533](https://github.com/sanyexieai/Nolya/actions/runs/39405043533) verify 完整通过，包括 Rust 1.90、综合回归、备份恢复与 Docker 构建；该轮 browser 发现 390px 首页溢出，随后修复。
+- 修复提交 `04021ba9631f666dfc3ad98ec65582cff7fd90cf` 的 [CI 39405738917](https://github.com/sanyexieai/Nolya/actions/runs/39405738917) browser 通过 23 项检查、`page_errors: []`，8 张截图归档为 artifact `12257885291`。第二轮综合回归已通过、verify 的 Docker 构建在本次记录时仍运行，尚不声明完成。
+- 前端现为 51 项测试。实际 Chromium 视口为 1440×1000、390×844；320/430px 是几何回归，不是浏览器运行证据。
+- 剩余门槛：完整人工视觉/可访问性、Safari、跨设备 HTTPS、目标环境部署与运维/法律审核。后文 BLOCKED、未推送、未实现等描述属于各历史阶段，请以本段和当前验证报告为准。
+
+# Nolya 交付计划与验收门槛（历史阶段）
 
 版本 local-mvp-1 · 2026-10-19
 

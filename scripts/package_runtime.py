@@ -42,12 +42,12 @@ with zipfile.ZipFile(output,'w',zipfile.ZIP_DEFLATED) as archive:
 
 默认仅本机访问。数据写入 data/nolya.sqlite，不要把数据文件发给其他人。关闭终端会停止服务。保留数据目录可在重启后继续使用。
 
-本包未部署公网。真实浏览器验收仍受环境限制，不能视为完整生产验收。详情见 docs/PRODUCT_READINESS.md 和 RELEASE_VERIFICATION.md。生产模式需明确配置 HTTPS/Origin/Secure Cookie，部署需按 OPERATIONS.md 单独验收。
+本包未部署公网。列明范围的托管 Chromium 自动化验收通过，但不等于全面可访问性或生产部署验收。详情见 docs/PRODUCT_READINESS.md 和 RELEASE_VERIFICATION.md。生产模式需明确配置 HTTPS/Origin/Secure Cookie，部署需按 OPERATIONS.md 单独验收。
 
 源码提交：'''+commit+'\n').encode())
     for file in sorted((ROOT/'scripts/ops').glob('*.py')):
         if file.name=='sqlite_backup.py':add('scripts/ops/'+file.name,file.read_bytes())
-    add('BUILD.json',json.dumps({'version':'0.2.0','commit':commit,'platform':'linux-x86_64','acceptance':'candidate; real-browser gate pending'},indent=2).encode())
+    add('BUILD.json',json.dumps({'version':'0.2.0','commit':commit,'platform':'linux-x86_64','acceptance':'release candidate; hosted Chromium scope passed; operator production acceptance pending'},indent=2).encode())
     archive.writestr('nolya-linux-x64/MANIFEST.json',json.dumps(manifest,ensure_ascii=False,indent=2))
 with zipfile.ZipFile(output) as archive:assert archive.testzip() is None
 print(json.dumps({'file':str(output),'bytes':output.stat().st_size,'sha256':hashlib.sha256(output.read_bytes()).hexdigest(),'commit':commit}))

@@ -98,4 +98,6 @@ python3 scripts/ops/sqlite_backup.py retention --directory /var/lib/nolya/backup
 
 已在隔离临时目录验证：运行中 WAL 数据一致备份、checksum/完整性检查、恢复后重新打开及写入、现有文件拒绝覆盖、路径/权限保护、损坏检测、保留 dry-run、保留最新快照。真实编译 API 的隔离数据库备份后恢复并重启通过健康检查及合成 sentinel 持久化检查。
 
-当前执行环境没有 Docker，所以 Dockerfile、Compose、Caddy 的实际构建、TLS 证书申请、卷权限和容器生命周期尚未运行验证；CI 配置尚未在托管 runner 上执行。systemd 样例尚未安装启动；本机静态验证也因 /run/systemd 为只读而不能完成。正式发布必须补齐这些验证，不能把配置文件存在当作已部署证据。
+历史本地执行环境没有 Docker；这不再代表托管验证状态。[CI 39405043533](https://github.com/sanyexieai/Nolya/actions/runs/39405043533) 的 verify job 已在托管 runner 完整通过，包含 Rust 1.90、综合回归、备份恢复和 Docker 镜像构建。[CI 39405738917](https://github.com/sanyexieai/Nolya/actions/runs/39405738917) browser job 已通过 23 项检查并产出 8 张截图；本次记录时该轮综合回归已通过、verify 的 Docker 构建尚在运行。
+
+仍未验证：Compose/Caddy 的实际运行、TLS 证书申请、生产卷权限、容器生命周期、目标环境恢复演练。systemd 样例尚未安装启动，本机静态验证曾因 /run/systemd 只读而受阻。镜像构建和合成数据库恢复通过不等于已部署或达到真实生产 RPO/RTO。正式发布必须补齐这些验证。

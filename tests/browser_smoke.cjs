@@ -227,9 +227,36 @@ const path = require('path');
         await page.screenshot({path:path.join(out,label+'-mobile-overflow.png'),fullPage:true});
         throw new Error('Horizontal overflow '+route+' '+JSON.stringify(bounds));
       }
+      // Read computed styles after mobile overrides: only functional text, never
+      // input values or recovery-code content. Solid card pairs exercise cascade.
+      const contrastSelectors = label === 'space'
+        ? ['.space-card .eyebrow','.space-card h2','.space-card p','.tile-action','.journal-banner p','.managed-link > div:first-child','.link-actions button','.privacy-note','.site-footer','.mobile-nav a']
+        : label === 'home'
+          ? ['.hero-copy > p','.micro-benefits','.step-card p','.home-bottom p','.daily-teaser','.site-footer','.mobile-nav a']
+          : label === 'daily'
+            ? ['.saved-choice small','.saved-choice strong','.crowd-row > div:first-child','.privacy-note','.site-footer'] : [];
+      const contrasts = await page.evaluate(selectors => {
+        const parse = value => { const n=value.match(/[\d.]+/g).map(Number); return [n[0],n[1],n[2],n[3]??1]; };
+        const over = (front,back) => { const a=front[3]+back[3]*(1-front[3]); return [...front.slice(0,3).map((c,i)=>(c*front[3]+back[i]*back[3]*(1-front[3]))/a),a]; };
+        const lum = rgb => rgb.slice(0,3).map(c=>c/255).map(c=>c<=.04045?c/12.92:((c+.055)/1.055)**2.4).reduce((sum,c,i)=>sum+c*[.2126,.7152,.0722][i],0);
+        return selectors.flatMap(selector => [...document.querySelectorAll(selector)].filter(el=>el.getClientRects().length&&!el.disabled).map(el=>{
+          const stack=[]; for(let node=el;node;node=node.parentElement) stack.push(parse(getComputedStyle(node).backgroundColor));
+          const background=stack.reverse().reduce((back,front)=>over(front,back),[255,255,255,1]);
+          const foreground=over(parse(getComputedStyle(el).color),background);
+          const a=lum(foreground),b=lum(background);
+          return {selector,ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05)};
+        }));
+      }, contrastSelectors);
+      for(const sample of contrasts) assert(sample.ratio>=4.5, `Normal text contrast ${route} ${sample.selector}: ${sample.ratio.toFixed(2)}:1`);
+      if(contrastSelectors.length) assert(contrasts.length>0,'Expected functional contrast samples '+route);
+      const navClearance = await page.evaluate(() => {
+        const nav=document.querySelector('.mobile-nav');
+        return parseFloat(getComputedStyle(document.body).paddingBottom)-nav.getBoundingClientRect().height;
+      });
+      assert(navClearance>=16,'Bottom scroll clearance must exceed fixed navigation by16px');
       await page.screenshot({path:path.join(out,label+'-mobile.png'),fullPage:true});
     }
     if(errors.length)throw new Error('Browser errors: '+errors.join(';'));
-    console.log(JSON.stringify({status:'passed',checks:['self_keyboard_radio','self_required_answer','self_back_preserves_selection','self_interruption_resets','self_8_answers','self_refresh_persistence','daily_vote','friend_consent_owner_exclusion','friend_submission_refresh','mirror_one_response','guess_hidden_until_submit','reveal_refresh','revoke_cancel_confirm_hides_reveal','guest_registration_preserves_self','invitation_filters_and_share_url','history_repeat_compare_refresh','journal_choice_date_reset','password_rotates_sessions','recovery_confirm_hide','logout_all_sessions','recovery_and_relogin_preserve_history','6_secondary_routes','4_mobile_no_overflow'],page_errors:errors,screenshots:out}));
+    console.log(JSON.stringify({status:'passed',checks:['self_keyboard_radio','self_required_answer','self_back_preserves_selection','self_interruption_resets','self_8_answers','self_refresh_persistence','daily_vote','friend_consent_owner_exclusion','friend_submission_refresh','mirror_one_response','guess_hidden_until_submit','reveal_refresh','revoke_cancel_confirm_hides_reveal','guest_registration_preserves_self','invitation_filters_and_share_url','history_repeat_compare_refresh','journal_choice_date_reset','password_rotates_sessions','recovery_confirm_hide','logout_all_sessions','recovery_and_relogin_preserve_history','6_secondary_routes','4_mobile_no_overflow','mobile_computed_text_contrast','fixed_nav_scroll_clearance'],page_errors:errors,screenshots:out}));
   } finally { await browser.close(); }
 })().catch(e=>{console.error(e.stack);process.exitCode=1});

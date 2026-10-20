@@ -1,6 +1,6 @@
 # 0.2 产品化候选验证报告
 
-日期：2026-10-20。实际运行工具链为 Rust 1.99.1、Node 24.19.0、Python 3.12，Linux x86_64。CI/容器模板 Rust 1.90，锁定依赖声明最高 MSRV 1.89；模板在托管环境尚未运行，不能把本地结果当作该工具链的实际通过证据。
+日期：2026-10-20。实际运行工具链为 Rust 1.99.1、Node 24.19.0、Python 3.12，Linux x86_64。托管 [CI 39405043533](https://github.com/sanyexieai/Nolya/actions/runs/39405043533) 的 verify job 已完整通过，实际验证 Rust 1.90、综合回归、备份恢复和 Docker 镜像构建；不再只是工具链模板。
 
 ## 自动化验收
 
@@ -8,7 +8,7 @@
 
 - Rust 单元/集成：14 项（库4、主程序1、HTTP集成9）。
 - Clippy 全 targets、warnings denied；Rust 格式检查。
-- 前端 TypeScript、Vite 生产构建、50 项 Node/jsdom 组件与 API 测试、Prettier。
+- 前端 TypeScript、Vite 生产构建、51 项 Node/jsdom 组件与 API 测试、Prettier。
 - 原安全 HTTP：18 组。
 - 访客合并 HTTP：35 项，含并发、回滚、旧预览失效和关系转移。
 - 账户生命周期 HTTP：11 项，含一次性恢复码、摘要存储、导出排除、会话撤销和并发单次消费。
@@ -24,15 +24,22 @@
 
 本轮发现并修复：已撤销会话的迟到写入、账户切换残留表单、撤销与分页回包竞争、历史第100条之后的日记无法分享、旧身份邀请链接残留、恢复后错误登录入口、不同题库版本的历史比较，以及浏览器存储不可用阻断身份清理。对应 API/组件回归覆盖，不能把定向修复当作完整第三方安全审计。
 
-## 尚未运行/受阻
+## 托管浏览器与工程证据
 
-- 真实浏览器：本机服务HTTP200，但 dot 云浏览器连接隔离执行器 localhost 返回 ERR_CONNECTION_REFUSED；原独立 Chromium socket 受沙箱限制。没有绕过、没有截图、没有视觉或点击通过声明。
-- 已提供 `tests/browser_run.sh` 和独立托管 CI browser job，使用锁定 Playwright/Chromium与合成数据库；需要目标 Nolya 仓库和实际 runner 执行才可建立浏览器证据。
-- Docker 不可用；systemd-analyze 因 /run/systemd 只读无法验证。容器、Caddy、TLS、systemd与 CI 都是准备好的待验证模板。
+- [首轮 39405043533](https://github.com/sanyexieai/Nolya/actions/runs/39405043533)：verify job 完整通过；browser job 实际发现 390px 首页装饰元素横向溢出，不能把该轮浏览器记作通过。
+- 修复提交 `04021ba9631f666dfc3ad98ec65582cff7fd90cf` 限制移动首页装饰溢出，并增加几何回归；前端共 51 项测试。
+- [第二轮 39405738917](https://github.com/sanyexieai/Nolya/actions/runs/39405738917)：browser job 通过 23 项检查，`page_errors: []`，产出 8 张截图，artifact ID `12257885291`。真实浏览器视口仅 1440×1000、390×844；320/430px 的几何回归不等同浏览器运行。
+- 第二轮 browser 与 verify job（含 Docker 构建）均完整通过。
+- 测试均针对临时数据库及合成账户。截图、脚本覆盖和未覆盖范围见 BROWSER_ACCEPTANCE.md。
+
+## 历史阻塞与剩余边界
+
+- 早先本地 Chromium socket 受沙箱限制，云浏览器无法访问隔离执行器 localhost；这些是历史尝试，不是当前托管浏览器阻塞。没有绕过限制。
+- 本地没有 Docker、systemd-analyze 因 /run/systemd 只读无法验证；托管 Docker 构建现已通过，但 Compose/Caddy 实际运行、TLS、卷权限、systemd 安装和生产生命周期仍未验证。
 - 未部署公网、未进行真实跨设备邀请或真实用户容量测试；没有邮件/微信身份服务。
 
 ## 结论
 
-完成本轮产品化工程与列明自动化验收，交付级别是“待真实浏览器和目标环境验收的产品化候选”，不是“已完整验收的生产服务”。发布前门槛见 PRODUCT_READINESS.md 和 OPERATIONS.md。
+完成本轮产品化工程与列明自动化验收，交付级别是“已取得托管工程和指定 Chromium 场景证据、待目标环境与完整人工验收的产品化候选”，不是“已完整验收的生产服务”。发布前门槛见 PRODUCT_READINESS.md 和 OPERATIONS.md。
 
 最终执行记录：综合脚本实际完整执行并退出0；随后 release locked build、脚本语法检查、Python编译检查及 git diff --check 通过。独立功能复核对五项修复重新检查，并单独执行6项相关组件回归通过。源文件高风险凭据模式检查无命中（不是保证不存在所有秘密的完整扫描）。分发包的确切提交和逐文件 SHA-256 存在各包 BUILD.json 与 MANIFEST 清单中。
