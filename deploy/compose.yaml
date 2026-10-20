@@ -1,0 +1,52 @@
+# Prepare only. Set NOLYA_DOMAIN to your verified domain before starting.
+services:
+  app:
+    build:
+      context: ..
+    image: nolya:${NOLYA_IMAGE_TAG:-local}
+    restart: unless-stopped
+    init: true
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 128
+    mem_limit: 512m
+    cpus: 1.0
+    stop_grace_period: 30s
+    environment:
+      NOLYA_ENV: production
+      NOLYA_BIND: 0.0.0.0:3000
+      NOLYA_DB_PATH: /app/data/nolya.sqlite
+      NOLYA_STATIC_DIR: /app/static
+      NOLYA_PUBLIC_ORIGIN: https://${NOLYA_DOMAIN:?Set NOLYA_DOMAIN}
+      NOLYA_ALLOWED_ORIGINS: https://${NOLYA_DOMAIN:?Set NOLYA_DOMAIN}
+      NOLYA_COOKIE_SECURE: "true"
+      RUST_LOG: nolya_api=info,tower_http=warn
+    volumes:
+      - nolya_data:/app/data
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=16m
+    expose: ["3000"]
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+  proxy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports: ["80:80", "443:443", "443:443/udp"]
+    environment:
+      NOLYA_DOMAIN: ${NOLYA_DOMAIN:?Set NOLYA_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      app:
+        condition: service_healthy
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+volumes:
+  nolya_data:
+  caddy_data:
+  caddy_config:

@@ -1,0 +1,7 @@
+{
+  "name": "nolya-browser-acceptance",
+  "private": true,
+  "version": "0.2.0",
+  "description": "Isolated browser acceptance only; never points to production data",
+  "devDependencies": { "playwright": "1.56.1" }
+}
