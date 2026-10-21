@@ -7,6 +7,7 @@ import { createRequire } from "node:module";
 import { build } from "esbuild";
 import { JSDOM } from "jsdom";
 import {
+  renderSharePoster,
   invitationShareKind,
   checkedShareUrl,
   isLocalShareUrl,
@@ -55,6 +56,7 @@ let dir: string;
 let harness: typeof import("./share-harness.tsx");
 const dom = new JSDOM("<div id='root'></div>", { url: "https://nolya.test/" });
 const saved = new Map<string, PropertyDescriptor | undefined>();
+const canvasRects: number[][] = [];
 before(async () => {
   for (const [key, value] of Object.entries({
     window: dom.window,
@@ -74,7 +76,9 @@ before(async () => {
     createLinearGradient: () => ({ addColorStop() {} }),
     fillRect() {},
     beginPath() {},
-    roundRect() {},
+    roundRect(...args: number[]) {
+      canvasRects.push(args);
+    },
     arc() {},
     fill() {},
     fillText() {},
@@ -221,4 +225,20 @@ test("directed reopened panel visibly warns private delivery and keeps special c
     /只发给刚才邀请我的那位朋友/,
   );
   await harness.act(async () => root.unmount());
+});
+
+test("tall poster cards are centered in available space without moving QR", async () => {
+  canvasRects.length = 0;
+  await renderSharePoster(
+    "friend",
+    "https://nolya.test/friend/public",
+    "A short caption",
+    "douyin",
+  );
+  const cards = canvasRects.filter((rect) => rect[2] === 408);
+  assert.equal(cards.length, 2);
+  assert.equal(cards[0][1], cards[1][1]);
+  assert.equal(cards[0][3], 440);
+  assert.ok(cards[0][1] > 600);
+  assert.ok(cards[0][1] + cards[0][3] < 1920 - 445 - 45);
 });

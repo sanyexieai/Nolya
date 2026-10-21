@@ -18,6 +18,7 @@ const path = require('path');
   try {
     await page.goto(base);
     await page.getByRole('heading', {level:1}).waitFor();
+    assert(await page.locator('.hero-copy h1').evaluate(el=>Number(getComputedStyle(el).fontWeight)>=700),'Home CJK headline must retain bold hierarchy');
     await page.screenshot({path:path.join(out,'home-desktop.png'),fullPage:true});
     await page.getByRole('link', {name:/开始我的第一次镜像/}).click();
     // Missing answer cannot advance. Previous-step edits survive back navigation.
@@ -283,6 +284,6 @@ const path = require('path');
       }
     }
     if(errors.length)throw new Error('Browser errors: '+errors.join(';'));
-    console.log(JSON.stringify({status:'passed',checks:['self_keyboard_radio','self_required_answer','self_back_preserves_selection','self_interruption_resets','self_8_answers','self_refresh_persistence','daily_vote','friend_consent_owner_exclusion','friend_submission_refresh','mirror_one_response','guess_hidden_until_submit','reveal_refresh','revoke_cancel_confirm_hides_reveal','guest_registration_preserves_self','invitation_filters_and_share_url','history_repeat_compare_refresh','journal_choice_date_reset','password_rotates_sessions','recovery_confirm_hide','logout_all_sessions','recovery_and_relogin_preserve_history','6_secondary_routes','4_mobile_no_overflow','mobile_computed_text_contrast','fixed_nav_scroll_clearance','responsive_design_320_430_768_1440','design_assets_loaded','result_share_explicit_preview_app_link','share_four_platform_png_downloads','share_real_qr_decode','share_caption_edit','share_native_mock_cancel_success_error','share_mobile_no_overflow'],page_errors:errors,screenshots:out}));
+    console.log(JSON.stringify({status:'passed',checks:['home_bold_cjk_typography','self_keyboard_radio','self_required_answer','self_back_preserves_selection','self_interruption_resets','self_8_answers','self_refresh_persistence','daily_vote','friend_consent_owner_exclusion','friend_submission_refresh','mirror_one_response','guess_hidden_until_submit','reveal_refresh','revoke_cancel_confirm_hides_reveal','guest_registration_preserves_self','invitation_filters_and_share_url','history_repeat_compare_refresh','journal_choice_date_reset','password_rotates_sessions','recovery_confirm_hide','logout_all_sessions','recovery_and_relogin_preserve_history','6_secondary_routes','4_mobile_no_overflow','mobile_computed_text_contrast','fixed_nav_scroll_clearance','responsive_design_320_430_768_1440','design_assets_loaded','result_share_explicit_preview_app_link','share_four_platform_png_downloads','share_real_qr_decode','share_caption_edit','share_native_mock_cancel_success_error','share_mobile_no_overflow'],page_errors:errors,screenshots:out}));
   } finally { await browser.close(); }
 })().catch(e=>{console.error(e.stack);process.exitCode=1});

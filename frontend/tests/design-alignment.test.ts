@@ -64,7 +64,22 @@ test("Home uses latest v2 composite art region without obsolete portrait substit
   const hero = ui.slice(ui.indexOf("export function HeroArt"));
   assert.ok(!hero.includes("ambassador-cafe.jpg"));
   assert.ok(!hero.includes("portrait-insert"));
-  assert.match(css, /aspect-ratio: 986 \/ 675/);
-  assert.match(css, /left: -60\.851927%/);
+  assert.match(css, /aspect-ratio: 956 \/ 675/);
+  assert.match(css, /left: -65\.899582%/);
   assert.match(css, /top: -11\.111111%/);
+});
+
+test("Home artwork excludes original microbenefit text and live paragraph stays clear", () => {
+  assert.ok(css.includes("x630..1586,y75..750"));
+  assert.match(css, /max-width: 29em/);
+  // Reference microbenefits end before x630; all three photo cards start after x635.
+  const cropStart = 630;
+  assert.ok(cropStart > 628 && cropStart < 635);
+});
+
+test("Chinese hero preserves heavy sans typography with regular-only font fallbacks", () => {
+  assert.ok(css.includes('"Noto Sans CJK SC"'));
+  const headline = css.slice(css.lastIndexOf(".home-hero .hero-copy h1 {"));
+  assert.match(headline, /font-weight: 800/);
+  assert.match(headline, /font-synthesis: weight/);
 });

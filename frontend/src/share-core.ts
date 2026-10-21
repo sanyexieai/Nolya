@@ -190,8 +190,10 @@ export async function renderSharePoster(
   );
   // Two perspective cards echo the source design's layered, pastel mirror motif.
   // Never draw account identity, answer choices or individual friend data.
-  const motifTop = captionStart + displayLines.length * 46 + 36;
-  const motifHeight = Math.min(440, qrTop - motifTop - 45);
+  const motifStart = captionStart + displayLines.length * 46 + 36;
+  const motifSpace = qrTop - motifStart - 45;
+  const motifHeight = Math.min(440, motifSpace);
+  const motifTop = motifStart + Math.max(0, (motifSpace - motifHeight) / 2);
   if (motifHeight >= 150) {
     const cardWidth = 408;
     ["自己眼中的我", "朋友眼中的我"].forEach((label, index) => {

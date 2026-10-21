@@ -2,6 +2,7 @@
   font-family:
     "PingFang SC",
     "Noto Sans SC",
+    "Noto Sans CJK SC",
     -apple-system,
     BlinkMacSystemFont,
     "Segoe UI",
@@ -10,7 +11,7 @@
     sans-serif;
   color: #171531;
   background: #fbfaf7;
-  font-synthesis: none;
+  font-synthesis: weight;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   --purple: #6041bf;
@@ -5371,7 +5372,7 @@ body {
 }
 
 /* Latest Page01 v2: use its actual composite artwork, never substitute Page03.
-   CSS viewport selects x600..1586,y75..750 from1586x992 reference.
+   CSS viewport selects x630..1586,y75..750 from1586x992 reference.
    No screenshot navigation, main copy, CTA or bottom cards enter this viewport. */
 .home-hero {
   position: relative;
@@ -5409,7 +5410,7 @@ body {
   width: 66.5%;
   height: auto;
   min-height: 0;
-  aspect-ratio: 986 / 675;
+  aspect-ratio: 956 / 675;
   max-width: none;
   margin: 0;
 }
@@ -5423,9 +5424,9 @@ body {
   position: absolute;
   display: block;
   max-width: none;
-  width: 160.851927%;
+  width: 165.899582%;
   height: 146.962963%;
-  left: -60.851927%;
+  left: -65.899582%;
   top: -11.111111%;
 }
 .home .steps-section {
@@ -5485,4 +5486,22 @@ body {
   .home .steps-section {
     margin-top: 0;
   }
+}
+
+/* Keep live description clear of the original lower-left photo card. */
+@media (min-width: 801px) {
+  .home-hero .hero-copy > p {
+    max-width: 29em;
+    width: 100%;
+  }
+}
+
+/* CJK needs a real bold face (or weight synthesis on regular-only fallback).
+   No external font request: native PingFang/YaHei and bundled OS Noto families. */
+.home-hero .hero-copy h1 {
+  font-family:
+    "PingFang SC", "Noto Sans SC", "Noto Sans CJK SC", "Microsoft YaHei",
+    sans-serif;
+  font-weight: 800;
+  font-synthesis: weight;
 }

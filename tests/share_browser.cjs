@@ -41,7 +41,16 @@ module.exports=async function checkSocialShare(page,url,out){
  const payload=await page.evaluate(()=>window.__shareProbe.calls[1]);assert.equal(payload.files[0].type,'image/png');assert(payload.files[0].size>10000);assert.equal(payload.url,undefined);
  await page.evaluate(()=>window.__shareProbe.mode='error');await panel.getByRole('button',{name:'系统分享链接',exact:true}).click();
  await panel.getByText('系统分享未完成。你可以复制链接或保存海报后自行分享。',{exact:true}).waitFor();
+ await page.evaluate(()=>document.activeElement instanceof HTMLElement&&document.activeElement.blur());
  await page.screenshot({path:path.join(out,'share-desktop.png'),fullPage:true});
- for(const width of [320,390]){await page.setViewportSize({width,height:844});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`Share overflow${width}`);await page.screenshot({path:path.join(out,`share-mobile-${width}.png`),fullPage:true});}
+ for(const width of [320,390]){
+  await page.setViewportSize({width,height:844});
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`Share overflow${width}`);
+  await page.evaluate(()=>document.activeElement instanceof HTMLElement&&document.activeElement.blur());
+  await panel.evaluate(el=>el.scrollIntoView({block:'start'}));
+  await page.screenshot({path:path.join(out,`share-mobile-${width}.png`),fullPage:false});
+  await panel.getByRole('link',{name:'保存分享海报'}).scrollIntoViewIfNeeded();
+  await page.screenshot({path:path.join(out,`share-mobile-${width}-actions.png`),fullPage:false});
+ }
  await page.setViewportSize({width:1440,height:1000});
 };
