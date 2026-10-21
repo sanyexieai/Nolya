@@ -1,5 +1,6 @@
 :root {
   font-family:
+    "PingFang SC",
     "Noto Sans SC",
     -apple-system,
     BlinkMacSystemFont,
@@ -7,22 +8,25 @@
     "PingFang SC",
     "Microsoft YaHei",
     sans-serif;
-  color: #25233f;
-  background: #fcfaf7;
+  color: #171531;
+  background: #fbfaf7;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   --purple: #6041bf;
   --purple-dark: #5133a8;
-  --lavender: #f0eafd;
+  --brand-primary: #6b57ff;
+  --brand-deep: #4e3df2;
+  --lavender: #eae4ff;
+  --peach: #ffb88a;
   --pink: #ec8f9c;
-  --ink: #25233f;
+  --ink: #171531;
   --muted: #62566d;
   --text-purple: #64427f;
   --text-rose: #814457;
   --text-earth: #735236;
   --text-success: #3f654b;
-  --line: #eae5f2;
+  --line: #e8e4f2;
   --shadow: 0 16px 55px #4b2b7420;
 }
 * {
@@ -117,7 +121,7 @@ svg {
   justify-content: space-between;
 }
 .wordmark {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: Inter, "PingFang SC", system-ui, sans-serif;
   font-weight: 700;
   font-size: 42px;
   line-height: 1;
@@ -162,7 +166,7 @@ svg {
   display: flex;
   align-items: center;
   gap: 24px;
-  font-size: 12px;
+  font-size: 13px;
 }
 .locale-label {
   color: var(--text-purple);
@@ -199,7 +203,7 @@ svg {
   align-items: center;
   gap: 25px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
 }
 .site-footer p {
   margin: 0;
@@ -212,7 +216,7 @@ svg {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.03em;
   font-weight: 600;
   color: var(--text-purple);
@@ -268,7 +272,7 @@ svg {
   align-items: center;
   gap: 8px;
   color: var(--text-purple);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
 }
 .text-link:hover {
@@ -282,7 +286,7 @@ svg {
   gap: 7px;
   align-items: center;
   padding: 8px 0;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-purple);
 }
 .icon-button {
@@ -297,7 +301,7 @@ svg {
   color: var(--text-purple);
 }
 .privacy-note {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
   display: flex;
   align-items: flex-start;
@@ -311,7 +315,7 @@ svg {
   line-height: 1.1;
 }
 .eyebrow {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.14em;
   color: var(--muted);
@@ -320,7 +324,7 @@ svg {
   color: var(--muted);
 }
 .small {
-  font-size: 11px;
+  font-size: 13px;
 }
 .card {
   background: #ffffffd9;
@@ -375,7 +379,7 @@ svg {
   justify-content: center;
 }
 .loading-state p {
-  font-size: 12px;
+  font-size: 13px;
   margin: 15px 0 0;
 }
 .spin {
@@ -392,7 +396,7 @@ svg {
   border: 1px solid #f3dcd4;
   border-radius: 12px;
   padding: 14px 17px;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.75;
   margin: 18px 0;
   display: flex;
@@ -459,7 +463,7 @@ svg {
   background: none;
   border: 0;
   font-family: monospace;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-purple);
   border-radius: 12px;
 }
@@ -471,7 +475,7 @@ svg {
 }
 .subtle-link-row {
   text-align: center;
-  font-size: 12px;
+  font-size: 13px;
   margin-top: 26px;
   color: var(--text-purple);
 }
@@ -501,7 +505,7 @@ svg {
   margin: 25px 0;
 }
 .privacy-box p {
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.9;
   margin: 0;
 }
@@ -512,7 +516,7 @@ svg {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.8;
   color: var(--muted);
   cursor: pointer;
@@ -538,10 +542,10 @@ svg {
   margin: 0;
 }
 .section-label > span {
-  font-size: 10px;
+  font-size: 13px;
   color: var(--muted);
 }
-/* A soft, original mirror illustration. No prototype portrait assets are used. */
+/* Legacy decorative geometry; Home uses the supplied editorial portrait collage below. */
 .home {
   background:
     radial-gradient(ellipse at 100% 12%, #f0e9fb90, transparent 42%),
@@ -561,7 +565,7 @@ svg {
   z-index: 2;
 }
 .hero-copy > .badge {
-  font-size: 10px;
+  font-size: 13px;
   padding: 8px 12px;
 }
 .hero-copy h1 {
@@ -591,7 +595,7 @@ svg {
   z-index: -1;
 }
 .hero-copy > p {
-  font-size: 12px;
+  font-size: 13px;
   line-height: 2.1;
   color: var(--muted);
   margin-bottom: 27px;
@@ -604,15 +608,15 @@ svg {
 .hero-actions > .button {
   padding: 15px 23px;
   border-radius: 11px;
-  font-size: 12px;
+  font-size: 13px;
 }
 .hero-actions > .text-link {
-  font-size: 11px;
+  font-size: 13px;
 }
 .micro-benefits {
   display: flex;
   gap: 20px;
-  font-size: 10px;
+  font-size: 13px;
   color: var(--muted);
   margin-top: 23px;
 }
@@ -837,7 +841,7 @@ svg {
   left: 0;
   right: 0;
   text-align: center;
-  font-size: 7px;
+  font-size: 13px;
   letter-spacing: 2px;
   color: #fff9ffba;
   z-index: 4;
@@ -847,7 +851,7 @@ svg {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 500;
   letter-spacing: 3px;
   color: #8e79a1;
@@ -867,12 +871,12 @@ svg {
 }
 .floating-note small {
   display: block;
-  font-size: 9px;
+  font-size: 13px;
   color: #a895b7;
   margin-bottom: 5px;
 }
 .floating-note strong {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 500;
   color: #756184;
 }
@@ -903,7 +907,7 @@ svg {
   position: absolute;
   bottom: 1%;
   left: 13%;
-  font-size: 9px;
+  font-size: 13px;
   color: #aa93b3;
   display: flex;
   align-items: center;
@@ -940,7 +944,7 @@ svg {
   position: absolute;
   right: 16px;
   top: 13px;
-  font-size: 9px;
+  font-size: 13px;
   color: var(--text-purple);
   letter-spacing: 1px;
 }
@@ -973,7 +977,7 @@ svg {
   letter-spacing: -0.02em;
 }
 .step-card p {
-  font-size: 10px;
+  font-size: 13px;
   color: var(--muted);
   line-height: 1.9;
   margin: 0;
@@ -987,7 +991,7 @@ svg {
   gap: 40px;
 }
 .home-bottom > .eyebrow {
-  font-size: 9px;
+  font-size: 13px;
 }
 .home-bottom h2 {
   font-size: 24px;
@@ -995,7 +999,7 @@ svg {
   letter-spacing: -0.03em;
 }
 .home-bottom p {
-  font-size: 11px;
+  font-size: 13px;
   margin: 0;
   color: var(--muted);
 }
@@ -1024,13 +1028,13 @@ svg {
 }
 .daily-teaser div span {
   display: block;
-  font-size: 8px;
+  font-size: 13px;
   letter-spacing: 2px;
   color: var(--text-earth);
   margin-bottom: 8px;
 }
 .daily-teaser strong {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
 }
 .daily-teaser > svg {
@@ -1049,7 +1053,7 @@ svg {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-purple);
   margin-bottom: 32px;
 }
@@ -1121,7 +1125,7 @@ svg {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 11px;
+  font-size: 13px;
   margin-bottom: 18px;
   color: var(--text-purple);
 }
@@ -1137,7 +1141,7 @@ svg {
   font-weight: 500;
 }
 .question-meta small {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-purple);
   font-weight: 400;
 }
@@ -1156,7 +1160,7 @@ svg {
   background: #a284d4;
 }
 .question-card > .eyebrow {
-  font-size: 9px;
+  font-size: 13px;
   letter-spacing: 0.08em;
   display: block;
   margin-bottom: 16px;
@@ -1171,7 +1175,7 @@ svg {
 }
 .question-hint {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
   margin: 0 0 16px;
   line-height: 1.7;
 }
@@ -1243,7 +1247,7 @@ svg {
   color: var(--text-purple);
 }
 .question-card .privacy-note {
-  font-size: 10px;
+  font-size: 13px;
 }
 .question-card .privacy-note > span {
   background: #f3ebfd;
@@ -1280,7 +1284,7 @@ svg {
 }
 .self-result-art .eyebrow {
   letter-spacing: 0.19em;
-  font-size: 8px;
+  font-size: 13px;
   color: var(--text-purple);
   margin: 14px 0;
 }
@@ -1292,7 +1296,7 @@ svg {
   margin-bottom: 16px;
 }
 .self-result-art p {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
 }
 .result-signature {
@@ -1356,7 +1360,7 @@ svg {
 }
 .observation > span {
   color: #c5acd9;
-  font-size: 10px;
+  font-size: 13px;
   margin-top: 3px;
 }
 .observation p {
@@ -1369,7 +1373,7 @@ svg {
   margin-top: 23px;
 }
 .feedback > p {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
   margin-bottom: 12px;
 }
@@ -1386,7 +1390,7 @@ svg {
   border-radius: 20px;
   padding: 7px 11px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 13px;
 }
 .feedback button.selected {
   background: #f1e9fa;
@@ -1396,7 +1400,7 @@ svg {
 .feedback small {
   display: block;
   color: var(--text-purple);
-  font-size: 10px;
+  font-size: 13px;
   margin-top: 10px;
 }
 .next-step-banner {
@@ -1417,7 +1421,7 @@ svg {
   margin: 0 0 8px;
 }
 .next-step-banner p {
-  font-size: 11px;
+  font-size: 13px;
   margin: 0;
   color: var(--muted);
 }
@@ -1486,7 +1490,7 @@ svg {
   justify-content: center;
   margin: 25px 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 13px;
 }
 .invite-facts span {
   display: flex;
@@ -1494,7 +1498,7 @@ svg {
   gap: 5px;
 }
 .invite-card .consent-summary {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
   max-width: 430px;
   margin: 26px auto 22px;
@@ -1530,7 +1534,7 @@ svg {
   text-align: center;
 }
 .friend-landing > p {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
   text-align: center;
 }
@@ -1587,7 +1591,7 @@ svg {
   font-weight: 500;
 }
 .mirror-status p {
-  font-size: 11px;
+  font-size: 13px;
   margin: 8px 0 0;
   color: var(--text-purple);
 }
@@ -1618,7 +1622,7 @@ svg {
   font-size: 23px;
 }
 .waiting-mirror p {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-purple);
 }
 .waiting-orbit {
@@ -1645,7 +1649,7 @@ svg {
 .mirror-legend {
   display: flex;
   gap: 25px;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
   margin: 0 0 16px;
 }
@@ -1680,14 +1684,14 @@ svg {
   justify-content: space-between;
   gap: 8px;
   margin-bottom: 23px;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
 }
 .relation-tag {
   border-radius: 20px;
   background: #eee7f7;
   padding: 5px 8px;
-  font-size: 8px;
+  font-size: 13px;
   color: var(--text-purple);
 }
 .relation-tag.gap {
@@ -1704,7 +1708,7 @@ svg {
 }
 .comparison-own small,
 .comparison-friend small {
-  font-size: 9px;
+  font-size: 13px;
   color: var(--text-purple);
 }
 .comparison-own h3,
@@ -1731,7 +1735,7 @@ svg {
   margin-top: 13px;
 }
 .count-pills > span {
-  font-size: 9px;
+  font-size: 13px;
   background: #fffafb;
   color: var(--text-rose);
   padding: 5px 9px;
@@ -1739,7 +1743,7 @@ svg {
 }
 .comparison-card > .small {
   margin: 17px 0 0;
-  font-size: 9px;
+  font-size: 13px;
   color: var(--muted);
 }
 .mirror-insights {
@@ -1771,7 +1775,7 @@ svg {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-earth);
 }
 .daily-date {
@@ -1780,7 +1784,7 @@ svg {
   gap: 8px;
 }
 .topic-tag {
-  font-size: 10px;
+  font-size: 13px;
   background: #f8ede5;
   border-radius: 30px;
   padding: 6px 12px;
@@ -1848,7 +1852,7 @@ svg {
 }
 .daily-question > .privacy-note {
   justify-content: center;
-  font-size: 10px;
+  font-size: 13px;
 }
 .daily-question > .text-link {
   justify-content: center;
@@ -1870,7 +1874,7 @@ svg {
   margin: 13px 0;
 }
 .gentle-card p {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-earth);
 }
 .large-spark {
@@ -1883,7 +1887,7 @@ svg {
 }
 .accumulation-card > .eyebrow {
   display: block;
-  font-size: 9px;
+  font-size: 13px;
   letter-spacing: 0.08em;
   margin-top: 15px;
 }
@@ -1899,7 +1903,7 @@ svg {
   margin-right: 5px;
 }
 .accumulation-card p {
-  font-size: 11px;
+  font-size: 13px;
   line-height: 2;
   color: var(--text-purple);
 }
@@ -1917,7 +1921,7 @@ svg {
   color: var(--text-purple);
   background: #fcf9ff;
   border-radius: 50%;
-  font-size: 9px;
+  font-size: 13px;
 }
 .day-dots > span.done {
   background: var(--text-purple);
@@ -1945,7 +1949,7 @@ svg {
 .saved-choice small {
   display: block;
   color: var(--text-earth);
-  font-size: 9px;
+  font-size: 13px;
   margin-bottom: 7px;
 }
 .saved-choice strong {
@@ -1962,7 +1966,7 @@ svg {
   margin-top: 20px;
 }
 .crowd-card > .muted {
-  font-size: 9px;
+  font-size: 13px;
   line-height: 1.9;
   color: var(--muted);
 }
@@ -1971,7 +1975,7 @@ svg {
   padding: 15px 0 20px;
 }
 .crowd-waiting p {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
   line-height: 2;
   margin-top: 20px;
@@ -1991,7 +1995,7 @@ svg {
   display: flex;
   justify-content: space-between;
   gap: 20px;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
   margin-bottom: 10px;
 }
@@ -2033,12 +2037,12 @@ svg {
   display: flex;
   flex-direction: column;
   min-width: 74px;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
   line-height: 2;
 }
 .journal-date > span:nth-child(2) {
-  font-size: 9px;
+  font-size: 13px;
   color: var(--muted);
 }
 .journal-entry-body h3 {
@@ -2051,7 +2055,7 @@ svg {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-purple);
 }
 .journal-entry-body > p > span {
@@ -2062,10 +2066,10 @@ svg {
   display: grid;
   place-items: center;
   color: var(--text-purple);
-  font-size: 10px;
+  font-size: 13px;
 }
 .journal-entry-body .text-link {
-  font-size: 10px;
+  font-size: 13px;
   color: var(--text-purple);
 }
 .journal-list > .button {
@@ -2087,7 +2091,7 @@ svg {
   line-height: 1.8;
 }
 .solo-card > p {
-  font-size: 12px;
+  font-size: 13px;
   line-height: 2;
   color: var(--muted);
 }
@@ -2101,10 +2105,10 @@ svg {
   margin-right: 10px;
 }
 .solo-count span {
-  font-size: 12px;
+  font-size: 13px;
 }
 .solo-card > small {
-  font-size: 10px;
+  font-size: 13px;
   color: var(--muted);
 }
 .solo-insight {
@@ -2114,17 +2118,17 @@ svg {
   margin-top: 20px;
   border-radius: 13px;
   color: var(--text-purple);
-  font-size: 12px;
+  font-size: 13px;
 }
 .solo-insight > p {
   margin: 8px 0 0;
 }
 .solo-insight > small {
-  font-size: 9px;
+  font-size: 13px;
 }
 .solo-card > .privacy-note {
   justify-content: center;
-  font-size: 9px;
+  font-size: 13px;
 }
 /* Guess, reveal and account */
 .guess-picker h2 {
@@ -2170,18 +2174,18 @@ svg {
 }
 .source-option small {
   color: var(--muted);
-  font-size: 9px;
+  font-size: 13px;
   display: block;
   margin-bottom: 7px;
 }
 .source-option strong {
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.9;
   font-weight: 500;
   display: block;
 }
 .source-option p {
-  font-size: 10px;
+  font-size: 13px;
   color: var(--muted);
   line-height: 1.8;
   margin: 8px 0 0;
@@ -2198,7 +2202,7 @@ svg {
 .guess-question > .small {
   margin: 21px 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
 }
 .guess-question > .button {
   width: 100%;
@@ -2242,7 +2246,7 @@ svg {
   align-items: flex-start;
 }
 .reveal-comparison small {
-  font-size: 10px;
+  font-size: 13px;
   color: var(--text-purple);
   display: block;
   margin-bottom: 17px;
@@ -2282,7 +2286,7 @@ svg {
   background: #f9f5fc;
   padding: 16px;
   border-radius: 12px;
-  font-size: 10px;
+  font-size: 13px;
   line-height: 1.9;
   color: var(--muted);
   margin-top: 25px;
@@ -2305,14 +2309,14 @@ svg {
   line-height: 1.8;
 }
 .reverse-card p {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
 }
 .reverse-card .options {
   margin: 23px 0;
 }
 .reverse-card > .small {
-  font-size: 10px;
+  font-size: 13px;
   text-align: left;
 }
 .account-card {
@@ -2324,7 +2328,7 @@ svg {
 .danger-zone label {
   display: block;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 13px;
   margin: 22px 0 9px;
 }
 .account-card label:first-child {
@@ -2332,15 +2336,15 @@ svg {
 }
 .account-card label > small {
   color: var(--muted);
-  font-size: 9px;
+  font-size: 13px;
   margin-left: 7px;
 }
 .account-card input {
-  font-size: 12px;
+  font-size: 13px;
   padding: 14px;
 }
 .account-card .notice {
-  font-size: 10px;
+  font-size: 13px;
 }
 .account-card form > .button {
   width: 100%;
@@ -2360,7 +2364,7 @@ svg {
   background: none;
   padding: 11px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
   border-radius: 8px;
 }
 .auth-tabs button.active {
@@ -2372,7 +2376,7 @@ svg {
   display: flex;
   justify-content: center;
   gap: 20px;
-  font-size: 9px;
+  font-size: 13px;
   color: var(--muted);
   margin-top: 23px;
 }
@@ -2387,7 +2391,7 @@ svg {
   gap: 20px;
   padding: 18px 0;
   border-bottom: 1px solid #ede4f3;
-  font-size: 11px;
+  font-size: 13px;
 }
 .account-detail > span {
   color: var(--muted);
@@ -2402,7 +2406,7 @@ svg {
   margin-top: 20px;
 }
 .settings-actions > .button {
-  font-size: 11px;
+  font-size: 13px;
   padding: 12px 18px;
 }
 .danger-zone {
@@ -2417,7 +2421,7 @@ svg {
   color: var(--text-rose);
 }
 .danger-zone p {
-  font-size: 10px;
+  font-size: 13px;
   color: var(--text-rose);
 }
 .danger-text {
@@ -2449,14 +2453,14 @@ svg {
   font-weight: 500;
 }
 .guest-banner p {
-  font-size: 10px;
+  font-size: 13px;
   margin: 7px 0 0;
   line-height: 1.9;
   color: var(--text-purple);
   max-width: 620px;
 }
 .guest-banner > .button {
-  font-size: 11px;
+  font-size: 13px;
   white-space: nowrap;
 }
 .space-cards {
@@ -2489,7 +2493,7 @@ svg {
   transform: rotate(-5deg);
 }
 .space-card .eyebrow {
-  font-size: 8px;
+  font-size: 13px;
   letter-spacing: 0.12em;
   color: var(--text-purple);
 }
@@ -2499,7 +2503,7 @@ svg {
   color: var(--text-purple);
 }
 .space-card p {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-purple);
   margin: 0 0 21px;
   line-height: 1.9;
@@ -2509,7 +2513,7 @@ svg {
   align-items: center;
   justify-content: space-between;
   margin-top: auto;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-purple);
 }
 .friends-tile {
@@ -2568,7 +2572,7 @@ svg {
   color: var(--text-purple);
 }
 .journal-banner p {
-  font-size: 11px;
+  font-size: 13px;
   margin: 0;
   color: var(--muted);
 }
@@ -2581,10 +2585,10 @@ svg {
   font-size: 16px;
 }
 .space-links-grid .section-label .text-link {
-  font-size: 10px;
+  font-size: 13px;
 }
 .space-empty {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
   padding: 18px 0;
   margin: 0;
@@ -2597,11 +2601,11 @@ svg {
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-purple);
 }
 .managed-link > div:first-child .small {
-  font-size: 9px;
+  font-size: 13px;
   white-space: nowrap;
 }
 .link-actions {
@@ -2613,7 +2617,7 @@ svg {
   background: none;
   border: 0;
   color: var(--text-purple);
-  font-size: 10px;
+  font-size: 13px;
   padding: 0;
 }
 .link-actions button:last-child {
@@ -2623,7 +2627,7 @@ svg {
   margin-top: 15px;
 }
 .managed-link > .button {
-  font-size: 10px;
+  font-size: 13px;
   padding: 9px 13px;
   min-height: 39px;
 }
@@ -2634,17 +2638,17 @@ svg {
   margin-top: 15px;
 }
 .revoke-confirm p {
-  font-size: 10px;
+  font-size: 13px;
   color: var(--text-rose);
 }
 .revoke-confirm > .button {
   padding: 10px 15px;
   min-height: 40px;
-  font-size: 10px;
+  font-size: 13px;
 }
 .revoke-confirm .text-button {
   margin-left: 18px;
-  font-size: 10px;
+  font-size: 13px;
 }
 .dialog-backdrop {
   position: fixed;
@@ -2690,19 +2694,19 @@ svg {
     font-size: 14px;
   }
   .step-card p {
-    font-size: 12px;
+    font-size: 13px;
   }
   .step-card h3 {
     font-size: 17px;
   }
   .micro-benefits {
-    font-size: 11px;
+    font-size: 13px;
   }
   .hero-actions > .button {
     font-size: 14px;
   }
   .hero-actions > .text-link {
-    font-size: 12px;
+    font-size: 13px;
   }
 }
 @media (max-width: 1100px) {
@@ -2724,34 +2728,34 @@ svg {
     font-size: 36px;
   }
   .hero-copy > p {
-    font-size: 11px;
+    font-size: 13px;
   }
   .hero-actions {
     gap: 13px;
   }
   .hero-actions > .button {
     padding: 14px 15px;
-    font-size: 11px;
+    font-size: 13px;
   }
   .hero-actions > .text-link {
-    font-size: 10px;
+    font-size: 13px;
   }
   .floating-note {
     padding: 12px;
     gap: 8px;
   }
   .floating-note strong {
-    font-size: 9px;
+    font-size: 13px;
   }
   .floating-note small {
-    font-size: 8px;
+    font-size: 13px;
   }
   .note-symbol {
     width: 31px;
     height: 34px;
   }
   .art-note {
-    font-size: 11px;
+    font-size: 13px;
     top: 8%;
     right: -1%;
   }
@@ -2776,7 +2780,7 @@ svg {
     font-size: 13px;
   }
   .step-card p {
-    font-size: 9px;
+    font-size: 13px;
   }
   .flow-page {
     gap: 45px;
@@ -2792,7 +2796,7 @@ svg {
     padding: 15px;
   }
   .comparison-heading {
-    font-size: 11px;
+    font-size: 13px;
     flex-direction: column;
     align-items: flex-start;
     gap: 9px;
@@ -2825,7 +2829,7 @@ svg {
   .desktop-nav {
     gap: 25px;
     margin-left: 25px;
-    font-size: 12px;
+    font-size: 13px;
   }
   .desktop-nav a {
     padding: 27px 0;
@@ -2855,11 +2859,11 @@ svg {
     font-size: 29px;
   }
   .hero-copy > .badge {
-    font-size: 8px;
+    font-size: 13px;
     padding: 7px 9px;
   }
   .hero-copy > p {
-    font-size: 10px;
+    font-size: 13px;
     line-height: 2;
     margin-bottom: 20px;
   }
@@ -2870,14 +2874,14 @@ svg {
   .hero-actions > .button {
     min-height: 43px;
     padding: 12px 16px;
-    font-size: 10px;
+    font-size: 13px;
   }
   .hero-actions > .text-link {
-    font-size: 9px;
+    font-size: 13px;
   }
   .micro-benefits {
     gap: 10px;
-    font-size: 8px;
+    font-size: 13px;
     margin-top: 18px;
   }
   .hero-art {
@@ -2890,7 +2894,7 @@ svg {
     top: 12%;
   }
   .mirror-foot {
-    font-size: 8px;
+    font-size: 13px;
     letter-spacing: 2px;
   }
   .note-one {
@@ -2914,13 +2918,13 @@ svg {
     width: 17px;
   }
   .floating-note strong {
-    font-size: 8px;
+    font-size: 13px;
   }
   .floating-note small {
-    font-size: 7px;
+    font-size: 13px;
   }
   .art-note {
-    font-size: 9px;
+    font-size: 13px;
     top: 3%;
     right: 0;
   }
@@ -2936,7 +2940,7 @@ svg {
     height: 220px;
   }
   .tiny-note {
-    font-size: 7px;
+    font-size: 13px;
     bottom: 4%;
   }
   .steps-section {
@@ -2950,10 +2954,10 @@ svg {
     gap: 15px;
   }
   .step-card h3 {
-    font-size: 12px;
+    font-size: 13px;
   }
   .step-card p {
-    font-size: 9px;
+    font-size: 13px;
   }
   .step-icon {
     height: 38px;
@@ -2971,10 +2975,10 @@ svg {
     font-size: 21px;
   }
   .home-bottom p {
-    font-size: 10px;
+    font-size: 13px;
   }
   .home-bottom .eyebrow {
-    font-size: 8px;
+    font-size: 13px;
   }
   .daily-teaser {
     min-width: 285px;
@@ -2982,20 +2986,20 @@ svg {
     gap: 12px;
   }
   .daily-teaser strong {
-    font-size: 10px;
+    font-size: 13px;
   }
   .teaser-icon {
     width: 36px;
     height: 36px;
   }
   .daily-teaser div span {
-    font-size: 7px;
+    font-size: 13px;
   }
   .page-heading h1 {
     font-size: 28px;
   }
   .page-heading p {
-    font-size: 12px;
+    font-size: 13px;
   }
   .flow-page {
     grid-template-columns: 0.7fr 1.3fr;
@@ -3005,7 +3009,7 @@ svg {
     font-size: 29px;
   }
   .flow-intro .page-heading p {
-    font-size: 11px;
+    font-size: 13px;
   }
   .self-side-art {
     height: 155px;
@@ -3036,7 +3040,7 @@ svg {
   .option {
     padding: 14px;
     gap: 12px;
-    font-size: 11px;
+    font-size: 13px;
     min-height: 76px;
   }
   .option-letter {
@@ -3045,7 +3049,7 @@ svg {
     font-size: 13px;
   }
   .question-actions > .button {
-    font-size: 11px;
+    font-size: 13px;
     min-width: 145px;
     padding: 14px;
   }
@@ -3066,10 +3070,10 @@ svg {
     font-size: 19px;
   }
   .observation p {
-    font-size: 11px;
+    font-size: 13px;
   }
   .feedback button {
-    font-size: 9px;
+    font-size: 13px;
     padding: 7px 8px;
   }
   .next-step-banner {
@@ -3080,10 +3084,10 @@ svg {
     font-size: 17px;
   }
   .next-step-banner p {
-    font-size: 10px;
+    font-size: 13px;
   }
   .next-step-banner > .button {
-    font-size: 10px;
+    font-size: 13px;
     padding: 13px 17px;
   }
   .next-step-banner > .round-icon {
@@ -3106,13 +3110,13 @@ svg {
     width: 14px;
   }
   .mirror-status strong {
-    font-size: 12px;
+    font-size: 13px;
   }
   .mirror-status p {
-    font-size: 10px;
+    font-size: 13px;
   }
   .mirror-status .button {
-    font-size: 10px;
+    font-size: 13px;
     padding: 11px;
     min-height: 43px;
   }
@@ -3124,7 +3128,7 @@ svg {
   }
   .comparison-own h3,
   .comparison-friend h3 {
-    font-size: 12px;
+    font-size: 13px;
   }
   .comparison-own,
   .comparison-friend {
@@ -3134,7 +3138,7 @@ svg {
     gap: 4px;
   }
   .count-pills > span {
-    font-size: 8px;
+    font-size: 13px;
     padding: 4px 6px;
   }
   .daily-grid {
@@ -3156,7 +3160,7 @@ svg {
     font-size: 18px;
   }
   .daily-aside .badge {
-    font-size: 9px;
+    font-size: 13px;
   }
   .day-dots {
     gap: 5px;
@@ -3174,13 +3178,13 @@ svg {
   }
   .journal-date {
     min-width: 65px;
-    font-size: 10px;
+    font-size: 13px;
   }
   .journal-entry-body h3 {
     font-size: 14px;
   }
   .journal-entry-body > p {
-    font-size: 11px;
+    font-size: 13px;
   }
   .solo-card {
     padding: 25px;
@@ -3189,7 +3193,7 @@ svg {
     font-size: 20px;
   }
   .solo-card > .badge {
-    font-size: 9px;
+    font-size: 13px;
   }
   .space-cards {
     gap: 15px;
@@ -3202,10 +3206,10 @@ svg {
     font-size: 18px;
   }
   .space-card p {
-    font-size: 10px;
+    font-size: 13px;
   }
   .space-card .eyebrow {
-    font-size: 7px;
+    font-size: 13px;
   }
   .tile-icon {
     width: 45px;
@@ -3213,7 +3217,7 @@ svg {
     margin-bottom: 20px;
   }
   .tile-action {
-    font-size: 9px;
+    font-size: 13px;
   }
   .guest-banner {
     padding: 19px;
@@ -3223,10 +3227,10 @@ svg {
     width: 22px;
   }
   .guest-banner p {
-    font-size: 9px;
+    font-size: 13px;
   }
   .guest-banner > .button {
-    font-size: 10px;
+    font-size: 13px;
     padding: 12px;
   }
   .space-links-grid .card {
@@ -3238,7 +3242,7 @@ svg {
   }
   .site-footer {
     width: calc(100% - 42px);
-    font-size: 9px;
+    font-size: 13px;
     gap: 20px;
   }
 }
@@ -3261,7 +3265,7 @@ svg {
   }
   .header-right .account-link > span:last-child {
     display: block;
-    font-size: 9px;
+    font-size: 13px;
     color: var(--text-purple);
   }
   .avatar {
@@ -3291,7 +3295,7 @@ svg {
     flex-direction: column;
     align-items: center;
     gap: 4px;
-    font-size: 9px;
+    font-size: 13px;
     color: var(--muted);
     padding: 0 15px;
     position: relative;
@@ -3330,7 +3334,7 @@ svg {
     padding-left: 7px;
   }
   .hero-copy > .badge {
-    font-size: 9px;
+    font-size: 13px;
     padding: 8px 11px;
   }
   .hero-copy h1 {
@@ -3344,7 +3348,7 @@ svg {
     bottom: -5px;
   }
   .hero-copy > p {
-    font-size: 11px;
+    font-size: 13px;
     line-height: 1.95;
     margin-bottom: 23px;
   }
@@ -3356,7 +3360,7 @@ svg {
     flex-wrap: nowrap;
   }
   .hero-actions > .button {
-    font-size: 11px;
+    font-size: 13px;
     min-height: 47px;
     padding: 13px 17px;
     gap: 9px;
@@ -3365,11 +3369,11 @@ svg {
     width: 17px;
   }
   .hero-actions > .text-link {
-    font-size: 10px;
+    font-size: 13px;
     gap: 4px;
   }
   .micro-benefits {
-    font-size: 9px;
+    font-size: 13px;
     gap: 18px;
     margin-top: 20px;
   }
@@ -3406,7 +3410,7 @@ svg {
   }
   .mirror-foot {
     padding-top: 13px;
-    font-size: 9px;
+    font-size: 13px;
   }
   .art-circle.circle-peach {
     width: 225px;
@@ -3441,10 +3445,10 @@ svg {
     transform: rotate(6deg);
   }
   .floating-note strong {
-    font-size: 9px;
+    font-size: 13px;
   }
   .floating-note small {
-    font-size: 8px;
+    font-size: 13px;
   }
   .note-two .note-symbol {
     width: 29px;
@@ -3453,7 +3457,7 @@ svg {
   .art-note {
     right: 1%;
     top: 4%;
-    font-size: 10px;
+    font-size: 13px;
     line-height: 1.9;
   }
   .art-note svg {
@@ -3470,12 +3474,12 @@ svg {
     font-size: 27px;
   }
   .tiny-note {
-    font-size: 8px;
+    font-size: 13px;
     left: 10%;
     bottom: 4%;
   }
   .mirror-caption {
-    font-size: 5px;
+    font-size: 13px;
     letter-spacing: 1.4px;
     bottom: 13px;
   }
@@ -3499,7 +3503,7 @@ svg {
     margin-bottom: 6px;
   }
   .step-card p {
-    font-size: 10px;
+    font-size: 13px;
     line-height: 1.7;
   }
   .step-card br {
@@ -3514,7 +3518,7 @@ svg {
     width: 28px;
   }
   .step-number {
-    font-size: 9px;
+    font-size: 13px;
     right: 16px;
     top: 18px;
   }
@@ -3533,10 +3537,10 @@ svg {
     margin: 10px 0 8px;
   }
   .home-bottom p {
-    font-size: 11px;
+    font-size: 13px;
   }
   .home-bottom .eyebrow {
-    font-size: 8px;
+    font-size: 13px;
   }
   .daily-teaser {
     width: 100%;
@@ -3546,10 +3550,10 @@ svg {
     border-radius: 16px;
   }
   .daily-teaser strong {
-    font-size: 12px;
+    font-size: 13px;
   }
   .daily-teaser div span {
-    font-size: 8px;
+    font-size: 13px;
   }
   .teaser-icon {
     width: 42px;
@@ -3566,10 +3570,10 @@ svg {
     font-size: 29px;
   }
   .site-footer p {
-    font-size: 9px;
+    font-size: 13px;
   }
   .site-footer > span {
-    font-size: 8px;
+    font-size: 13px;
     margin-left: 0;
     width: 100%;
     padding-left: 85px;
@@ -3586,11 +3590,11 @@ svg {
     margin: 17px 0 11px;
   }
   .page-heading p {
-    font-size: 11px;
+    font-size: 13px;
     line-height: 1.95;
   }
   .page-heading > .button {
-    font-size: 9px;
+    font-size: 13px;
     padding: 10px;
     min-height: 40px;
     white-space: nowrap;
@@ -3604,7 +3608,7 @@ svg {
     flex-shrink: 0;
   }
   .badge {
-    font-size: 9px;
+    font-size: 13px;
     padding: 7px 10px;
     gap: 5px;
   }
@@ -3622,24 +3626,24 @@ svg {
     font-size: 27px;
   }
   .narrow-page > .page-heading p {
-    font-size: 11px;
+    font-size: 13px;
   }
   .card {
     padding: 24px;
     border-radius: 19px;
   }
   .button {
-    font-size: 12px;
+    font-size: 13px;
     padding: 14px 20px;
     min-height: 49px;
     border-radius: 11px;
     gap: 9px;
   }
   .text-link {
-    font-size: 11px;
+    font-size: 13px;
   }
   .privacy-note {
-    font-size: 10px;
+    font-size: 13px;
     line-height: 1.9;
     margin-top: 19px;
   }
@@ -3651,7 +3655,7 @@ svg {
     font-size: 22px;
   }
   .empty-state p {
-    font-size: 12px;
+    font-size: 13px;
   }
   .empty-icon {
     width: 80px;
@@ -3660,11 +3664,11 @@ svg {
   }
   .notice {
     padding: 13px 15px;
-    font-size: 10px;
+    font-size: 13px;
     gap: 11px;
   }
   .copy-field input {
-    font-size: 10px;
+    font-size: 13px;
     padding: 13px;
   }
   .copy-field button {
@@ -3681,7 +3685,7 @@ svg {
   }
   .back-link {
     margin-bottom: 24px;
-    font-size: 10px;
+    font-size: 13px;
   }
   .flow-intro .page-heading {
     margin-bottom: 16px;
@@ -3695,7 +3699,7 @@ svg {
     display: none;
   }
   .flow-intro .page-heading p {
-    font-size: 11px;
+    font-size: 13px;
     max-width: none;
     line-height: 1.9;
   }
@@ -3713,14 +3717,14 @@ svg {
     border-radius: 20px;
   }
   .question-meta {
-    font-size: 10px;
+    font-size: 13px;
     margin-bottom: 16px;
   }
   .question-meta > strong {
     font-size: 15px;
   }
   .question-meta small {
-    font-size: 10px;
+    font-size: 13px;
   }
   .progress-track {
     gap: 5px;
@@ -3730,7 +3734,7 @@ svg {
     height: 4px;
   }
   .question-card > .eyebrow {
-    font-size: 9px;
+    font-size: 13px;
     margin-bottom: 15px;
   }
   .question-card h2 {
@@ -3740,7 +3744,7 @@ svg {
     margin-bottom: 19px;
   }
   .question-hint {
-    font-size: 10px;
+    font-size: 13px;
     margin-bottom: 16px;
   }
   .options {
@@ -3750,7 +3754,7 @@ svg {
     min-height: 82px;
     padding: 17px 15px;
     gap: 13px;
-    font-size: 12px;
+    font-size: 13px;
     border-radius: 13px;
     line-height: 1.8;
   }
@@ -3769,17 +3773,17 @@ svg {
   .question-actions > .button {
     min-width: 160px;
     min-height: 49px;
-    font-size: 12px;
+    font-size: 13px;
   }
   .question-actions > .text-button {
-    font-size: 11px;
+    font-size: 13px;
   }
   .question-card .privacy-note {
-    font-size: 9px;
+    font-size: 13px;
     margin-top: 21px;
   }
   .question-card .privacy-note > span {
-    font-size: 12px;
+    font-size: 13px;
   }
   .result-page,
   .mirror-page,
@@ -3804,11 +3808,11 @@ svg {
     transform: scale(0.92);
   }
   .self-result-art .eyebrow {
-    font-size: 8px;
+    font-size: 13px;
     margin-top: 12px;
   }
   .self-result-art p {
-    font-size: 11px;
+    font-size: 13px;
   }
   .evidence-card {
     padding: 25px;
@@ -3826,10 +3830,10 @@ svg {
     padding: 17px 0;
   }
   .feedback > p {
-    font-size: 11px;
+    font-size: 13px;
   }
   .feedback button {
-    font-size: 10px;
+    font-size: 13px;
     padding: 8px 12px;
   }
   .next-step-banner {
@@ -3850,17 +3854,17 @@ svg {
     margin-bottom: 7px;
   }
   .next-step-banner p {
-    font-size: 10px;
+    font-size: 13px;
     line-height: 1.9;
   }
   .next-step-banner > .button {
     margin-left: 59px;
-    font-size: 11px;
+    font-size: 13px;
     min-height: 44px;
     padding: 12px 17px;
   }
   .result-bottom .text-link {
-    font-size: 10px;
+    font-size: 13px;
   }
   .invite-card {
     padding: 25px 23px;
@@ -3884,19 +3888,19 @@ svg {
     line-height: 1.8;
   }
   .invite-card > p {
-    font-size: 12px;
+    font-size: 13px;
     line-height: 2;
   }
   .invite-facts {
     gap: 11px;
-    font-size: 9px;
+    font-size: 13px;
     margin: 24px 0;
   }
   .invite-facts svg {
     width: 13px;
   }
   .invite-card .consent-summary {
-    font-size: 10px;
+    font-size: 13px;
   }
   .invite-card > .button {
     width: 100%;
@@ -3905,10 +3909,10 @@ svg {
     margin-top: 22px;
   }
   .share-section > .text-link {
-    font-size: 11px;
+    font-size: 13px;
   }
   .subtle-link-row {
-    font-size: 10px;
+    font-size: 13px;
     line-height: 1.8;
   }
   .friend-landing {
@@ -3918,7 +3922,7 @@ svg {
     font-size: 21px;
   }
   .friend-landing > p {
-    font-size: 11px;
+    font-size: 13px;
   }
   .privacy-box {
     padding: 16px;
@@ -3929,11 +3933,11 @@ svg {
     width: 20px;
   }
   .privacy-box p {
-    font-size: 10px;
+    font-size: 13px;
     line-height: 1.9;
   }
   .checkbox-row {
-    font-size: 10px;
+    font-size: 13px;
     gap: 10px;
   }
   .success-card {
@@ -3943,7 +3947,7 @@ svg {
     font-size: 23px;
   }
   .success-card p {
-    font-size: 12px;
+    font-size: 13px;
   }
   .success-icon {
     height: 77px;
@@ -3965,16 +3969,16 @@ svg {
     width: 13px;
   }
   .mirror-status strong {
-    font-size: 11px;
+    font-size: 13px;
   }
   .mirror-status p {
-    font-size: 9px;
+    font-size: 13px;
     line-height: 1.8;
     margin-top: 6px;
   }
   .mirror-status > .button {
     margin-left: auto;
-    font-size: 10px;
+    font-size: 13px;
     padding: 11px 15px;
     min-height: 41px;
   }
@@ -3985,7 +3989,7 @@ svg {
     font-size: 23px;
   }
   .waiting-mirror p {
-    font-size: 11px;
+    font-size: 13px;
   }
   .waiting-orbit {
     width: 110px;
@@ -3993,7 +3997,7 @@ svg {
     margin-bottom: 24px;
   }
   .mirror-legend {
-    font-size: 10px;
+    font-size: 13px;
     gap: 22px;
     margin-top: 29px;
   }
@@ -4015,7 +4019,7 @@ svg {
     margin-bottom: 8px;
   }
   .relation-tag {
-    font-size: 8px;
+    font-size: 13px;
     padding: 5px 9px;
   }
   .comparison-own,
@@ -4026,7 +4030,7 @@ svg {
   }
   .comparison-own small,
   .comparison-friend small {
-    font-size: 9px;
+    font-size: 13px;
   }
   .comparison-own h3,
   .comparison-friend h3 {
@@ -4039,13 +4043,13 @@ svg {
     margin-top: 15px;
   }
   .count-pills > span {
-    font-size: 8px;
+    font-size: 13px;
     padding: 4px 7px;
   }
   .comparison-card > .small {
     grid-column: 1/-1;
     margin: 14px 0 0;
-    font-size: 9px;
+    font-size: 13px;
   }
   .mirror-insights {
     padding: 23px;
@@ -4061,10 +4065,10 @@ svg {
     padding: 24px 22px;
   }
   .daily-meta {
-    font-size: 10px;
+    font-size: 13px;
   }
   .topic-tag {
-    font-size: 9px;
+    font-size: 13px;
   }
   .daily-decoration {
     height: 91px;
@@ -4075,7 +4079,7 @@ svg {
     margin-bottom: 23px;
   }
   .daily-question > .question-hint {
-    font-size: 10px;
+    font-size: 13px;
   }
   .daily-question > .button {
     margin-top: 23px;
@@ -4096,7 +4100,7 @@ svg {
     font-size: 20px;
   }
   .gentle-card p {
-    font-size: 11px;
+    font-size: 13px;
   }
   .accumulation-card h3 {
     font-size: 20px;
@@ -4105,7 +4109,7 @@ svg {
     font-size: 32px;
   }
   .accumulation-card p {
-    font-size: 11px;
+    font-size: 13px;
   }
   .day-dots {
     gap: 10px;
@@ -4114,7 +4118,7 @@ svg {
   .day-dots > span {
     width: 29px;
     height: 29px;
-    font-size: 10px;
+    font-size: 13px;
   }
   .saved-choice {
     padding: 19px;
@@ -4125,23 +4129,23 @@ svg {
     font-size: 14px;
   }
   .saved-choice small {
-    font-size: 9px;
+    font-size: 13px;
   }
   .crowd-card h3 {
     font-size: 22px;
   }
   .crowd-row > div:first-child {
-    font-size: 11px;
+    font-size: 13px;
   }
   .crowd-waiting p {
-    font-size: 12px;
+    font-size: 13px;
   }
   .journal-page .page-heading {
     display: block;
   }
   .journal-page .page-heading > .button {
     margin-top: 20px;
-    font-size: 11px;
+    font-size: 13px;
     min-height: 43px;
     padding: 11px 16px;
   }
@@ -4164,7 +4168,7 @@ svg {
     font-size: 22px;
   }
   .solo-card > p {
-    font-size: 11px;
+    font-size: 13px;
   }
   .solo-count {
     margin: 20px 0;
@@ -4173,33 +4177,33 @@ svg {
     font-size: 31px;
   }
   .solo-count span {
-    font-size: 11px;
+    font-size: 13px;
   }
   .solo-card > .privacy-note {
-    font-size: 9px;
+    font-size: 13px;
   }
   .journal-entry {
     gap: 18px;
     padding: 22px 0;
   }
   .journal-date {
-    font-size: 10px;
+    font-size: 13px;
     min-width: 65px;
   }
   .journal-date > span:nth-child(2) {
-    font-size: 9px;
+    font-size: 13px;
   }
   .journal-entry-body h3 {
     font-size: 14px;
   }
   .journal-entry-body > p {
-    font-size: 11px;
+    font-size: 13px;
   }
   .journal-list .section-label h2 {
     font-size: 18px;
   }
   .journal-list .section-label > span {
-    font-size: 9px;
+    font-size: 13px;
   }
   .guess-picker {
     padding: 24px 20px;
@@ -4216,13 +4220,13 @@ svg {
     gap: 11px;
   }
   .source-option strong {
-    font-size: 12px;
+    font-size: 13px;
   }
   .source-option p {
-    font-size: 10px;
+    font-size: 13px;
   }
   .source-option small {
-    font-size: 8px;
+    font-size: 13px;
   }
   .guess-question h2 {
     font-size: 23px;
@@ -4230,7 +4234,7 @@ svg {
     margin-bottom: 26px;
   }
   .guess-question > .small {
-    font-size: 10px;
+    font-size: 13px;
     line-height: 1.9;
   }
   .reveal-card {
@@ -4252,21 +4256,21 @@ svg {
     padding: 17px 14px;
   }
   .reveal-comparison small {
-    font-size: 9px;
+    font-size: 13px;
     line-height: 1.8;
     margin-bottom: 16px;
   }
   .reveal-comparison strong {
-    font-size: 12px;
+    font-size: 13px;
     line-height: 1.95;
   }
   .reveal-comparison span {
-    font-size: 12px;
+    font-size: 13px;
     width: 30px;
     height: 30px;
   }
   .relationship-note {
-    font-size: 9px;
+    font-size: 13px;
     margin-top: 21px;
     padding: 14px;
   }
@@ -4277,10 +4281,10 @@ svg {
     font-size: 21px;
   }
   .reverse-card p {
-    font-size: 11px;
+    font-size: 13px;
   }
   .reverse-card > .small {
-    font-size: 10px;
+    font-size: 13px;
   }
   .account-card {
     padding: 25px 22px;
@@ -4289,26 +4293,26 @@ svg {
     margin-bottom: 26px;
   }
   .auth-tabs button {
-    font-size: 11px;
+    font-size: 13px;
   }
   .account-card label {
-    font-size: 11px;
+    font-size: 13px;
   }
   .account-card input {
-    font-size: 11px;
+    font-size: 13px;
   }
   .account-card .notice {
-    font-size: 10px;
+    font-size: 13px;
   }
   .auth-benefits {
     gap: 13px;
-    font-size: 8px;
+    font-size: 13px;
   }
   .auth-benefits svg {
     width: 13px;
   }
   .account-detail {
-    font-size: 11px;
+    font-size: 13px;
   }
   .danger-zone {
     padding: 24px 22px;
@@ -4317,7 +4321,7 @@ svg {
     gap: 8px;
   }
   .settings-actions > .button {
-    font-size: 10px;
+    font-size: 13px;
     padding: 12px 14px;
     gap: 7px;
   }
@@ -4335,15 +4339,15 @@ svg {
     flex-basis: calc(100% - 35px);
   }
   .guest-banner strong {
-    font-size: 12px;
+    font-size: 13px;
   }
   .guest-banner p {
-    font-size: 9px;
+    font-size: 13px;
     line-height: 1.95;
   }
   .guest-banner > .button {
     margin-left: 33px;
-    font-size: 10px;
+    font-size: 13px;
     min-height: 40px;
     padding: 10px 13px;
   }
@@ -4367,19 +4371,19 @@ svg {
     margin: 0;
   }
   .space-card .eyebrow {
-    font-size: 8px;
+    font-size: 13px;
   }
   .space-card h2 {
     font-size: 23px;
     margin: 10px 0 9px;
   }
   .space-card p {
-    font-size: 11px;
+    font-size: 13px;
     margin: 0 0 20px;
     line-height: 1.8;
   }
   .tile-action {
-    font-size: 11px;
+    font-size: 13px;
   }
   .journal-banner {
     padding: 23px 20px;
@@ -4395,7 +4399,7 @@ svg {
     font-size: 21px;
   }
   .journal-banner p {
-    font-size: 10px;
+    font-size: 13px;
   }
   .space-links-grid {
     grid-template-columns: 1fr;
@@ -4414,19 +4418,19 @@ svg {
     font-size: 17px;
   }
   .space-links-grid .section-label .text-link {
-    font-size: 10px;
+    font-size: 13px;
   }
   .space-empty {
-    font-size: 11px;
+    font-size: 13px;
     padding: 12px 0;
   }
   .managed-link > div:first-child {
     flex-direction: row;
-    font-size: 11px;
+    font-size: 13px;
     gap: 10px;
   }
   .managed-link > div:first-child .small {
-    font-size: 9px;
+    font-size: 13px;
   }
   .dialog {
     padding: 29px 24px;
@@ -4449,14 +4453,14 @@ svg {
     gap: 12px;
   }
   .hero-actions > .button {
-    font-size: 10px;
+    font-size: 13px;
     padding: 13px 14px;
   }
   .hero-actions > .text-link {
-    font-size: 9px;
+    font-size: 13px;
   }
   .micro-benefits {
-    font-size: 8px;
+    font-size: 13px;
     gap: 14px;
   }
   .hero-art {
@@ -4464,16 +4468,16 @@ svg {
     height: 330px;
   }
   .art-note {
-    font-size: 9px;
+    font-size: 13px;
   }
   .floating-note {
     padding: 10px;
   }
   .floating-note strong {
-    font-size: 8px;
+    font-size: 13px;
   }
   .floating-note small {
-    font-size: 7px;
+    font-size: 13px;
   }
   .question-card {
     padding: 22px 19px;
@@ -4482,13 +4486,13 @@ svg {
     font-size: 20px;
   }
   .option {
-    font-size: 11px;
+    font-size: 13px;
     padding: 15px 12px;
     gap: 11px;
   }
   .question-actions > .button {
     min-width: 147px;
-    font-size: 11px;
+    font-size: 13px;
   }
   .day-dots {
     gap: 7px;
@@ -4505,7 +4509,7 @@ svg {
     font-size: 13px;
   }
   .step-card p {
-    font-size: 9px;
+    font-size: 13px;
   }
   .space-card {
     padding-left: 90px;
@@ -4519,7 +4523,7 @@ svg {
     height: 49px;
   }
   .invite-facts {
-    font-size: 8px;
+    font-size: 13px;
     gap: 9px;
   }
   .comparison-card {
@@ -4534,10 +4538,10 @@ svg {
     font-size: 16px;
   }
   .next-step-banner p {
-    font-size: 9px;
+    font-size: 13px;
   }
   .auth-benefits {
-    font-size: 7px;
+    font-size: 13px;
     gap: 10px;
   }
 }
@@ -4562,12 +4566,12 @@ svg {
 }
 .guest-data-controls > p,
 .guest-delete-section > p {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
   line-height: 1.9;
 }
 .guest-data-controls > .button {
-  font-size: 11px;
+  font-size: 13px;
   min-height: 42px;
   padding: 11px 16px;
 }
@@ -4581,19 +4585,19 @@ svg {
   flex-wrap: wrap;
 }
 .guest-data-controls .settings-actions > .button {
-  font-size: 10px;
+  font-size: 13px;
 }
 .guest-data-controls label {
-  font-size: 11px;
+  font-size: 13px;
   display: block;
   margin-bottom: 13px;
   color: var(--text-rose);
 }
 .guest-data-controls input {
-  font-size: 12px;
+  font-size: 13px;
 }
 .guest-data-controls .text-button {
-  font-size: 11px;
+  font-size: 13px;
 }
 .merge-preview h2 {
   font-size: 21px;
@@ -4606,7 +4610,7 @@ svg {
 .merge-preview > p,
 .merge-effects,
 .merge-conflicts {
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.8;
 }
 .merge-username {
@@ -4626,7 +4630,7 @@ svg {
   padding: 11px 12px;
   background: #f7f2fa;
   border-radius: 10px;
-  font-size: 12px;
+  font-size: 13px;
 }
 .merge-summary dd {
   margin: 0;
@@ -4796,4 +4800,572 @@ select:focus-visible,
 summary:focus-visible {
   outline: 3px solid var(--purple-dark);
   outline-offset: 4px;
+}
+
+/* Frozen Design System v1.0 + Home v2.0. Darker functional text is intentional. */
+body {
+  font-size: 16px;
+}
+.container {
+  width: min(1360px, calc(100% - 96px));
+}
+.wordmark {
+  font-weight: 800;
+  letter-spacing: -0.065em;
+  color: var(--ink);
+}
+.button {
+  font-size: 16px;
+  border-radius: 22px;
+  min-height: 52px;
+  background: var(--brand-primary);
+}
+.button:hover:not(:disabled) {
+  background: var(--brand-deep);
+}
+.card {
+  border-radius: 28px;
+}
+.page-heading h1 {
+  font-size: clamp(30px, 3.2vw, 44px);
+  line-height: 1.3;
+}
+.page-heading p {
+  font-size: 16px;
+  line-height: 1.8;
+}
+.home-hero {
+  grid-template-columns: minmax(0, 1.18fr) minmax(0, 1fr);
+  gap: 36px;
+  padding-top: 48px;
+  padding-bottom: 48px;
+  min-height: 680px;
+}
+.hero-copy {
+  min-width: 0;
+}
+.hero-copy > .badge {
+  font-size: 14px;
+  padding: 10px 14px;
+}
+.hero-copy h1 {
+  font-size: clamp(38px, 4.5vw, 64px);
+  line-height: 1.28;
+  letter-spacing: -0.06em;
+  margin: 28px 0;
+}
+.hero-copy h1 em {
+  color: var(--brand-primary);
+}
+.hero-copy > p {
+  font-size: 18px;
+  line-height: 1.85;
+  max-width: 35em;
+  margin-bottom: 28px;
+}
+.hero-actions {
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.hero-actions > .button {
+  font-size: 16px;
+  border-radius: 999px;
+  padding: 16px 24px;
+}
+.micro-benefits {
+  font-size: 13px;
+  gap: 10px 18px;
+  flex-wrap: wrap;
+  line-height: 1.6;
+}
+.micro-benefits span {
+  min-width: 0;
+}
+.portrait-collage {
+  position: relative;
+  min-width: 0;
+  min-height: 560px;
+  isolation: isolate;
+}
+.portrait-wash {
+  position: absolute;
+  inset: 8% 1% 5%;
+  border-radius: 48% 48% 40% 40%;
+  background: linear-gradient(135deg, #ffe8d9, #eae4ff);
+  transform: rotate(5deg);
+  z-index: -1;
+}
+.ambassador-main {
+  position: absolute;
+  inset: 3% 7% 8%;
+  width: 86%;
+  height: 89%;
+  object-fit: cover;
+  object-position: center 35%;
+  border-radius: 46% 46% 30px 30px;
+}
+.portrait-insert {
+  position: absolute;
+  width: 31%;
+  margin: 0;
+  padding: 7px 7px 0;
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 12px 32px #17153120;
+}
+.portrait-insert img {
+  display: block;
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.portrait-insert figcaption {
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  padding: 11px 2px;
+  color: var(--ink);
+}
+.insert-self {
+  top: 7%;
+  left: 4%;
+  transform: rotate(-9deg);
+}
+.insert-friends {
+  right: 4%;
+  bottom: 18%;
+  transform: rotate(8deg);
+}
+.insert-friends img {
+  object-position: center 15%;
+}
+.portrait-caption {
+  position: absolute;
+  left: 17%;
+  bottom: 10%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  color: var(--text-purple);
+  border-radius: 999px;
+  padding: 13px 18px;
+  box-shadow: var(--shadow);
+  font-size: 15px;
+  font-weight: 600;
+}
+.portrait-disclosure {
+  position: absolute;
+  bottom: 1%;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+.steps-section {
+  border-radius: 30px;
+  padding: 16px;
+  gap: 16px;
+}
+.step-card {
+  border-radius: 24px;
+  padding: 32px 24px;
+  gap: 18px;
+  min-height: 176px;
+  align-items: flex-start;
+}
+.step-card:nth-child(3) {
+  background: linear-gradient(135deg, #eae4ff, #f7f6fb);
+}
+.step-card h3 {
+  font-size: 21px;
+  line-height: 1.45;
+  font-weight: 700;
+}
+.step-card p {
+  font-size: 15px;
+  line-height: 1.8;
+}
+.step-number {
+  font-size: 13px;
+}
+.home-bottom h2 {
+  font-size: 28px;
+}
+.home-bottom p {
+  font-size: 16px;
+  line-height: 1.8;
+}
+.invite-editorial {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 40px;
+}
+.invite-copy {
+  min-width: 0;
+}
+.invite-photo {
+  display: block;
+  width: 100%;
+}
+.invite-photo img {
+  display: block;
+  width: 100%;
+  max-height: 520px;
+  object-fit: cover;
+  border-radius: 32px;
+}
+.invite-benefits,
+.invite-contexts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 0;
+  list-style: none;
+  font-size: 15px;
+  line-height: 1.8;
+}
+.invite-benefits li,
+.invite-contexts span {
+  border-radius: 16px;
+  padding: 10px 14px;
+  background: #f5f1ff;
+}
+.invite-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  padding: 0;
+  list-style: none;
+}
+.invite-steps > * {
+  padding: 24px;
+  border-radius: 24px;
+  background: #fff4ed;
+  font-size: 16px;
+  line-height: 1.7;
+}
+@media (max-width: 1100px) {
+  .container {
+    width: calc(100% - 56px);
+  }
+  .home-hero {
+    gap: 24px;
+  }
+  .hero-copy h1 {
+    font-size: clamp(34px, 4.5vw, 48px);
+  }
+  .hero-copy > p {
+    font-size: 16px;
+  }
+  .portrait-collage {
+    min-height: 500px;
+  }
+  .step-card {
+    padding: 30px 18px 22px;
+    gap: 12px;
+    flex-direction: column;
+  }
+  .step-card h3 {
+    font-size: 19px;
+  }
+}
+@media (max-width: 800px) {
+  .home-hero {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding-top: 28px;
+  }
+  .hero-copy h1 {
+    font-size: clamp(36px, 6.2vw, 52px);
+  }
+  .hero-copy > p {
+    max-width: 38em;
+  }
+  .portrait-collage {
+    width: min(520px, 100%);
+    margin: auto;
+    min-height: 520px;
+  }
+  .steps-section {
+    grid-template-columns: 1fr;
+  }
+  .step-card {
+    flex-direction: row;
+  }
+  .invite-editorial {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .invite-photo {
+    order: -1;
+  }
+  .invite-photo img {
+    max-height: 380px;
+  }
+  .invite-steps {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 620px) {
+  .container {
+    width: calc(100% - 40px);
+  }
+  .home-hero {
+    padding-top: 24px;
+    padding-bottom: 28px;
+  }
+  .hero-copy > .badge {
+    font-size: 13px;
+  }
+  .hero-copy h1 {
+    font-size: clamp(30px, 8.2vw, 44px);
+    line-height: 1.36;
+    margin: 24px 0;
+  }
+  .hero-copy > p {
+    font-size: 16px;
+    line-height: 1.85;
+  }
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .hero-actions > .button {
+    width: 100%;
+    font-size: 16px;
+    padding: 15px 18px;
+  }
+  .micro-benefits {
+    justify-content: flex-start;
+    font-size: 13px;
+    gap: 8px 12px;
+  }
+  .portrait-collage {
+    min-height: 440px;
+    height: 440px;
+    margin: 0 auto;
+  }
+  .portrait-insert {
+    width: 31%;
+    padding: 5px 5px 0;
+  }
+  .portrait-insert img {
+    height: 100px;
+  }
+  .portrait-insert figcaption {
+    font-size: 13px;
+    padding: 8px 0;
+  }
+  .portrait-caption {
+    left: 12%;
+    font-size: 14px;
+    padding: 12px 14px;
+  }
+  .steps-section {
+    padding: 10px;
+    gap: 10px;
+    border-radius: 28px;
+  }
+  .step-card {
+    min-height: 0;
+    padding: 28px 18px 22px;
+    gap: 14px;
+  }
+  .step-card h3 {
+    font-size: 19px;
+  }
+  .step-card p {
+    font-size: 15px;
+  }
+  .home-bottom h2 {
+    font-size: 26px;
+  }
+  .page-heading p {
+    font-size: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .button:hover:not(:disabled) {
+    transform: none;
+  }
+}
+/* Page09 v1.1: real answered source, read-only A/B, original outdoor portrait. */
+.guess-launch-page {
+  padding-top: 40px;
+  padding-bottom: 36px;
+}
+.guess-launch-editorial {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: center;
+}
+.guess-launch-copy {
+  min-width: 0;
+}
+.guess-launch-copy .page-heading {
+  text-align: left;
+}
+.guess-launch-copy .page-heading h1 {
+  font-size: clamp(32px, 3.6vw, 52px);
+  line-height: 1.3;
+}
+.guess-launch-copy .guess-picker {
+  padding: 28px;
+}
+.guess-readonly-question h2 {
+  font-size: 23px;
+  line-height: 1.5;
+  margin: 18px 0;
+}
+.guess-option-previews {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.guess-option-previews > div {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border: 1px solid #d8d0ef;
+  border-radius: 18px;
+  padding: 18px;
+  background: #f7f6fb;
+  font-size: 15px;
+  line-height: 1.7;
+}
+.guess-option-previews strong {
+  color: var(--purple);
+  flex-shrink: 0;
+}
+.guess-source-picker {
+  margin: 20px 0;
+}
+.guess-source-picker summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding: 12px 0;
+  color: var(--text-purple);
+  font-size: 15px;
+}
+.guess-source-picker .source-list {
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 5px;
+}
+.guess-launch-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 20px;
+}
+.guess-solo-link {
+  display: inline-flex;
+  margin: 20px 0;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.guess-launch-portrait {
+  position: relative;
+  margin: 0;
+  padding: 16px;
+  border-radius: 34px;
+  background: #fff;
+  box-shadow: 0 20px 60px #17153115;
+  transform: rotate(2deg);
+}
+.guess-launch-portrait img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 24px;
+}
+.guess-launch-portrait figcaption {
+  position: absolute;
+  bottom: 8%;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-radius: 20px;
+  padding: 20px;
+  background: #fff4ed;
+  font-size: 19px;
+  font-weight: 700;
+  transform: rotate(-5deg);
+}
+.guess-launch-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 32px;
+}
+.guess-launch-steps article {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: #fff;
+}
+.guess-launch-steps article > span {
+  background: var(--lavender);
+  color: var(--purple);
+  padding: 12px;
+  border-radius: 16px;
+  font-size: 24px;
+  font-weight: 800;
+}
+.guess-launch-steps h3 {
+  font-size: 18px;
+  line-height: 1.5;
+  margin: 0 0 8px;
+}
+.guess-launch-steps p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin: 0;
+}
+@media (max-width: 800px) {
+  .guess-launch-editorial {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .guess-launch-portrait {
+    order: -1;
+    max-width: 380px;
+    width: 92%;
+    margin: 0 auto;
+  }
+  .guess-launch-portrait img {
+    max-height: 400px;
+    object-fit: cover;
+    object-position: center 28%;
+  }
+  .guess-launch-steps {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 480px) {
+  .guess-launch-page {
+    padding-top: 24px;
+  }
+  .guess-launch-copy .guess-picker {
+    padding: 20px;
+  }
+  .guess-option-previews {
+    grid-template-columns: 1fr;
+  }
+  .guess-launch-actions {
+    flex-direction: column;
+  }
+  .guess-launch-actions .button {
+    width: 100%;
+  }
 }

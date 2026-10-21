@@ -120,6 +120,7 @@ export interface SelfResult {
   target_dimensions: string[];
 }
 export interface ShareLink {
+  source_type?: "self" | "pulse" | "reverse";
   id: string;
   token: string;
   url: string;
@@ -225,6 +226,7 @@ export interface Reveal {
   can_reverse: boolean;
 }
 export interface GuessContext {
+  is_directed: boolean;
   id: string;
   owner_display_name: string;
   question: Question;

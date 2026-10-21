@@ -1,3 +1,4 @@
+import { ResultShare } from "./Share";
 import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Check, Heart, Sparkles } from "lucide-react";
@@ -273,6 +274,7 @@ export function SelfResultPage() {
               <ArrowRight size={18} />
             </ActionLink>
           </div>
+          <ResultShare kind="self" summary={result.summary} />
           <div className="result-bottom">
             <Link className="text-link" to="/today">
               今天再留一个小选择 <ArrowRight size={16} />

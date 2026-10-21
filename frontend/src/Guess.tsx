@@ -1,3 +1,5 @@
+import { invitationShareKind } from "./share-core";
+import { SocialShare } from "./Share";
 import { useRef, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import {
@@ -23,7 +25,6 @@ import {
   ActionLink,
   Badge,
   Button,
-  CopyLink,
   Empty,
   Loading,
   Notice,
@@ -36,7 +37,6 @@ interface SourceAnswer {
   id: string;
   type: "self" | "pulse";
   question: Question;
-  choice: Choice;
 }
 export function GuessNewPage() {
   const { user, loading } = useSession();
@@ -73,7 +73,6 @@ export function GuessNewPage() {
           id: e.answer_id,
           type: "pulse" as const,
           question: e.question,
-          choice: e.choice,
         })),
         ...(self?.answers.flatMap((a) => {
           const q = questions.questions.find((q) => q.id === a.question_id);
@@ -83,7 +82,6 @@ export function GuessNewPage() {
                   id: a.id,
                   type: "self" as const,
                   question: q,
-                  choice: a.choice,
                 },
               ]
             : [];
@@ -120,7 +118,6 @@ export function GuessNewPage() {
           id: e.answer_id,
           type: "pulse" as const,
           question: e.question,
-          choice: e.choice,
         }));
       resource.setData({
         answers: [...resource.data.answers, ...answers],
@@ -132,7 +129,16 @@ export function GuessNewPage() {
       setLoadingMore(false);
     }
   }
-  const selected = resource.data?.answers.find((a) => a.id === selectedId);
+  const selected =
+    resource.data?.answers.find((a) => a.id === selectedId) ??
+    resource.data?.answers[0];
+  function changeQuestion() {
+    const answers = resource.data?.answers || [];
+    if (!answers.length) return;
+    const index = answers.findIndex((answer) => answer.id === selected?.id);
+    setSelectedId(answers[(index + 1) % answers.length].id);
+    key.current = newKey();
+  }
   async function create() {
     if (!selected) return;
     setBusy(true);
@@ -152,81 +158,160 @@ export function GuessNewPage() {
     }
   }
   return (
-    <div className="container narrow-page">
-      <PageHeading
-        eyebrow="GUESS ME · 猜猜我的选择"
-        title="你觉得，TA 猜得中吗？"
-        description="挑一个你已经做过的真实选择，让朋友试着猜猜。"
-      />
-      {loading || resource.loading ? (
-        <Loading />
-      ) : resource.error ? (
-        <Notice onRetry={resource.reload}>{resource.error}</Notice>
-      ) : !resource.data?.answers.length ? (
-        <Empty
-          title="先留下一个真实答案"
-          action={
-            <ActionLink to="/today">
-              去做今天的小选择
-              <ArrowRight size={17} />
-            </ActionLink>
-          }
-        >
-          猜测的答案来自你真实的选择，而不是临时为朋友设置的谜底。
-        </Empty>
-      ) : link ? (
-        <section className="card success-card">
-          <span className="success-icon">
-            <Sparkles size={31} />
-          </span>
-          <Badge>谜底已经收好</Badge>
-          <h2>让朋友凭直觉猜一猜</h2>
-          <p>{selected?.question.prompt}</p>
-          <CopyLink value={shareUrl(link, "guess")} label="复制猜测邀请链接" />
-          <PrivacyNote>朋友提交猜测后，才会看到你选的答案。</PrivacyNote>
-          <Link className="text-link" to="/space">
-            回到我的空间 <ArrowRight size={16} />
-          </Link>
-        </section>
-      ) : (
-        <section className="card guess-picker">
-          <h2>选一个想分享的问题</h2>
-          <div
-            className="source-list"
-            role="radiogroup"
-            aria-label="选择要分享的真实答案"
-          >
-            {resource.data.answers.map((answer) => (
-              <SourceOption
-                key={answer.id}
-                answer={answer}
-                disabled={busy}
-                selected={selectedId === answer.id}
-                onSelect={() => {
-                  setSelectedId(answer.id);
-                  key.current = newKey();
-                }}
-              />
-            ))}
-          </div>
-          {resource.data.next_cursor && (
-            <Button secondary busy={loadingMore} disabled={busy} onClick={more}>
-              加载更早的每日选择
-            </Button>
+    <div className="container guess-launch-page">
+      <div className="guess-launch-editorial">
+        <div className="guess-launch-copy">
+          <PageHeading
+            eyebrow="GUESS ME · 猜猜我的选择"
+            title="最了解你的人，猜得中你的选择吗？"
+            description="从你答过的题里挑一道，发给熟悉你的人猜。你的答案先藏好，等 TA 选完再揭晓。"
+          />
+          {loading || resource.loading ? (
+            <Loading />
+          ) : resource.error ? (
+            <Notice onRetry={resource.reload}>{resource.error}</Notice>
+          ) : !resource.data?.answers.length ? (
+            <Empty
+              title="先留下一个真实答案"
+              action={
+                <ActionLink to="/today">
+                  去做今天的小选择
+                  <ArrowRight size={17} />
+                </ActionLink>
+              }
+            >
+              猜测的答案来自你真实的选择，而不是临时为朋友设置的谜底。
+            </Empty>
+          ) : link ? (
+            <section className="card success-card">
+              <span className="success-icon">
+                <Sparkles size={31} />
+              </span>
+              <Badge>谜底已经收好</Badge>
+              <h2>让朋友凭直觉猜一猜</h2>
+              <p>{selected?.question.prompt}</p>
+              <SocialShare value={shareUrl(link, "guess")} kind="guess" />
+              <PrivacyNote>朋友提交猜测后，才会看到你选的答案。</PrivacyNote>
+              <Link className="text-link" to="/space">
+                回到我的空间 <ArrowRight size={16} />
+              </Link>
+            </section>
+          ) : (
+            <section className="card guess-picker">
+              {selected && (
+                <section
+                  className="guess-readonly-question"
+                  aria-label="这次让朋友猜的题"
+                >
+                  <span className="eyebrow">这次让朋友猜的题</span>
+                  <h2>{selected.question.prompt}</h2>
+                  <div className="guess-option-previews">
+                    <div>
+                      <strong>A</strong>
+                      <span>{selected.question.choice_a}</span>
+                    </div>
+                    <div>
+                      <strong>B</strong>
+                      <span>{selected.question.choice_b}</span>
+                    </div>
+                  </div>
+                  <PrivacyNote>
+                    你的选择已保存。朋友提交预测后，才会看到真实答案。
+                  </PrivacyNote>
+                </section>
+              )}
+              <details className="guess-source-picker">
+                <summary>从已答过的题里选择</summary>
+                <div
+                  className="source-list"
+                  role="radiogroup"
+                  aria-label="选择要分享的真实答案"
+                >
+                  {resource.data.answers.map((answer) => (
+                    <SourceOption
+                      key={answer.id}
+                      answer={answer}
+                      disabled={busy}
+                      selected={selected?.id === answer.id}
+                      onSelect={() => {
+                        setSelectedId(answer.id);
+                        key.current = newKey();
+                      }}
+                    />
+                  ))}
+                </div>
+                {resource.data.next_cursor && (
+                  <Button
+                    secondary
+                    busy={loadingMore}
+                    disabled={busy}
+                    onClick={more}
+                  >
+                    加载更早的每日选择
+                  </Button>
+                )}
+                {moreError && <Notice>{moreError}</Notice>}
+              </details>
+              <div className="privacy-box">
+                <Lightbulb size={22} />
+                <p>
+                  创建邀请表示你愿意向参与猜测的人揭晓这个答案。分享前，再确认它是你愿意让朋友知道的选择。
+                </p>
+              </div>
+              <div className="guess-launch-actions">
+                <Button disabled={!selected} busy={busy} onClick={create}>
+                  发给朋友猜猜 <ArrowRight size={18} />
+                </Button>
+                <Button
+                  secondary
+                  disabled={busy || resource.data.answers.length < 2}
+                  onClick={changeQuestion}
+                >
+                  换一道题
+                </Button>
+              </div>
+              {error && <Notice>{error}</Notice>}
+            </section>
           )}
-          {moreError && <Notice>{moreError}</Notice>}
-          <div className="privacy-box">
-            <Lightbulb size={22} />
-            <p>
-              创建邀请表示你愿意向参与猜测的人揭晓这个答案。分享前，再确认它是你愿意让朋友知道的选择。
-            </p>
+          <Link className="guess-solo-link text-link" to="/today">
+            暂时不邀请？也可以先回到今天。 <ArrowRight size={16} />
+          </Link>
+        </div>
+        <figure className="guess-launch-portrait">
+          <img
+            src="/design/guess-outdoor.png"
+            width="1122"
+            height="1402"
+            alt="春日河畔的品牌示意人物，非真实用户结果"
+          />
+          <figcaption>
+            这次先不告诉你。 <Sparkles size={20} aria-hidden="true" />
+          </figcaption>
+        </figure>
+      </div>
+      <section className="guess-launch-steps" aria-label="猜测如何进行">
+        <article>
+          <span>01</span>
+          <div>
+            <h3>你的选择，先保密</h3>
+            <p>只用你真正答过的题</p>
           </div>
-          <Button disabled={!selected} busy={busy} onClick={create}>
-            收好谜底，生成邀请 <ArrowRight size={18} />
-          </Button>
-          {error && <Notice>{error}</Notice>}
-        </section>
-      )}
+        </article>
+        <article>
+          <span>02</span>
+          <div>
+            <h3>朋友先猜，再提交</h3>
+            <p>猜之前，看不到你的答案</p>
+          </div>
+        </article>
+        <article>
+          <span>03</span>
+          <div>
+            <h3>猜完揭晓，看看多懂你</h3>
+            <p>一题就能开启一次有趣的对话</p>
+          </div>
+        </article>
+      </section>
     </div>
   );
 }
@@ -253,12 +338,6 @@ function SourceOption({
       <div>
         <small>{answer.type === "pulse" ? "每日选择" : "自我镜像"}</small>
         <strong>{answer.question.prompt}</strong>
-        <p>
-          我的选择：
-          {answer.choice === "A"
-            ? answer.question.choice_a
-            : answer.question.choice_b}
-        </p>
       </div>
     </button>
   );
@@ -344,13 +423,17 @@ export function GuessPage() {
           <PageHeading
             eyebrow="这是你的猜测邀请"
             title="你的答案，已经好好收起来了。"
-            description="把链接发给朋友吧。你不能猜自己的答案。"
+            description={
+              context.is_directed
+                ? "这是一条定向反向邀请，请只私发给原邀请人。"
+                : "把链接发给朋友吧。你不能猜自己的答案。"
+            }
           />
           <section className="card">
             <h2>{context.question.prompt}</h2>
-            <CopyLink
-              value={`${window.location.origin}/guess/${token}`}
-              label="复制猜测邀请链接"
+            <SocialShare
+              value={`${window.location.origin}/guess/${encodeURIComponent(token)}`}
+              kind={invitationShareKind("guess", context)}
             />
             <PrivacyNote>朋友提交猜测后才会看到你的答案。</PrivacyNote>
           </section>
@@ -416,9 +499,9 @@ export function GuessPage() {
                 <>
                   <Badge>现在，换 TA 来猜</Badge>
                   <h2>你的反向邀请准备好了</h2>
-                  <CopyLink
+                  <SocialShare
                     value={shareUrl(reverseLink, "guess")}
-                    label="复制反向猜测链接"
+                    kind="reverse"
                   />
                   <p className="small muted">
                     发给刚才邀请你的那位朋友。只面向原邀请人。

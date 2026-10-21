@@ -49,3 +49,7 @@ python3 tests/merge_api.py
 `tests/release_audit_api.py` 是已发现会话撤销问题的定向回归，不能当作全面独立安全审计。浏览器仍须单独运行；当前环境阻塞详见 `docs/BROWSER_ACCEPTANCE.md`。
 
 托管 CI 配置了独立 browser job：安装锁定 Playwright/Chromium，运行一次性合成数据库验收，并保留7天截图。该 job 在本次本地工作中尚未运行，不代表真实浏览器已经通过。
+
+## 社交分享回归
+
+share_browser.cjs由浏览器主流程调用，验证四平台PNG下载尺寸/签名、独立jsQR解码、文案编辑及320/390px布局。系统分享和剪贴板使用API替身验证载荷及取消/失败语义，不表示真实平台发送。额外验证320/430/768/1440px主路由和原图加载。合成截图与海报保存在浏览器artifact。

@@ -86,3 +86,7 @@ scripts/       本地启动与校验
 `docs/OPERATIONS.md` 提供 Linux/systemd、容器/Caddy 配置、健康探针、SQLite 在线备份和安全恢复流程；`deploy/` 为未实际部署的模板。生产模式设置 `NOLYA_ENV=production`，必须显式配置精确 HTTPS Origin 和 Secure Cookie；无效配置在创建数据库前拒绝启动。
 
 `./scripts/verify.sh` 执行构建、单元/组件、HTTP 安全及业务、配置失败关闭、真实重启与备份恢复验证；真实浏览器另行执行 `tests/browser_run.sh`，不能用前者通过代替后者。
+
+## 0.3 设计与社交分享候选
+
+按用户原始设计包对齐样式，提供微信好友、朋友圈、抖音、小红书的真实海报和文案工作流，以及支持时的系统分享。平台入口不代表官方SDK直发，不会自动发布。详见 [设计来源](docs/DESIGN_ALIGNMENT.md)、[分享能力](docs/SOCIAL_SHARING.md) 和 [验收记录](docs/RELEASE_VERIFICATION.md)。

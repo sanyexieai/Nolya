@@ -1096,10 +1096,34 @@ test("guess picker resolves an older selected journal answer and paginates addit
   );
   await harness.act(async () => harness.go("/guess/new?answer=oldest"));
   assert.match(text(), /问题 oldest/);
-  assert.equal(button("收好谜底，生成邀请").disabled, false);
+  assert.doesNotMatch(text(), /我的选择：/);
+  const previews = dom.window.document.querySelectorAll(
+    ".guess-option-previews > div",
+  );
+  assert.equal(previews.length, 2);
+  assert.equal(
+    dom.window.document.querySelectorAll(
+      ".guess-option-previews button, .guess-option-previews [aria-checked], .guess-option-previews .selected",
+    ).length,
+    0,
+  );
+  assert.ok(
+    dom.window.document.querySelector('img[src="/design/guess-outdoor.png"]'),
+  );
+  await click("换一道题");
+  assert.match(
+    dom.window.document.querySelector(".guess-readonly-question")!.textContent!,
+    /问题 recent/,
+  );
+  await click("换一道题");
+  assert.match(
+    dom.window.document.querySelector(".guess-readonly-question")!.textContent!,
+    /问题 oldest/,
+  );
+  assert.equal(button("发给朋友猜猜").disabled, false);
   await click("加载更早的每日选择");
   assert.match(text(), /问题 nextpage/);
-  await click("收好谜底，生成邀请");
+  await click("发给朋友猜猜");
   assert.deepEqual(requests("/guesses")[0].body, {
     source_type: "pulse",
     answer_id: "oldest",
@@ -1135,7 +1159,7 @@ test("changing identity discards the previous account's generated invitation", a
     }),
   );
   await harness.act(async () => harness.go("/invite"));
-  await click("生成朋友邀请链接");
+  await click("邀请朋友选一选");
   assert.ok(
     dom.window.document.querySelector('input[value*="account-a-token"]'),
   );
@@ -1144,5 +1168,5 @@ test("changing identity discards the previous account's generated invitation", a
     dom.window.document.querySelector('input[value*="account-a-token"]'),
     null,
   );
-  assert.ok(button("生成朋友邀请链接"));
+  assert.ok(button("邀请朋友选一选"));
 });

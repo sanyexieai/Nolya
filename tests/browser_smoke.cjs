@@ -42,6 +42,15 @@ const path = require('path');
     await page.waitForURL('**/self/result');
     await page.locator('.self-result-art').waitFor();
     await page.screenshot({path:path.join(out,'self-result-desktop.png'),fullPage:true});
+    assert.equal(await page.getByRole('region',{name:'分享发现',exact:true}).count(),0);
+    await page.getByRole('button',{name:'分享这次发现',exact:true}).click();
+    const resultShare=page.getByRole('region',{name:'分享发现',exact:true});
+    await resultShare.locator('img.share-poster').waitFor();
+    assert.equal(await resultShare.getByRole('textbox',{name:'分享链接',exact:true}).inputValue(),base+'/');
+    assert((await resultShare.innerText()).includes('不包含你的个人结果'));
+    await page.screenshot({path:path.join(out,'self-result-share-preview.png'),fullPage:true});
+    await page.getByRole('button',{name:'收起分享预览',exact:true}).click();
+    assert.equal(await page.getByRole('region',{name:'分享发现',exact:true}).count(),0);
     await page.reload();
     await page.locator('.self-result-art').waitFor();
     await page.goto(base+'/today');
@@ -52,9 +61,10 @@ const path = require('path');
     await page.screenshot({path:path.join(out,'daily-desktop.png'),fullPage:true});
     // Invite creation, owner exclusion, independent friend consent and persistence.
     await page.goto(base+'/invite');
-    await page.getByRole('button',{name:/生成朋友邀请链接/}).click();
+    await page.getByRole('button',{name:/生成朋友邀请链接|邀请朋友选一选/}).click();
     const friendUrl = await page.getByRole('textbox',{name:'分享链接'}).inputValue();
     assert.equal(new URL(friendUrl).origin, target.origin);
+    await require('./share_browser.cjs')(page,friendUrl,out);
     await page.goto(friendUrl);
     await page.getByText('这是你自己的邀请', {exact:true}).waitFor();
     const peer = await browser.newContext({viewport:{width:390,height:844}});
@@ -76,8 +86,9 @@ const path = require('path');
     await page.getByText('1 / 3 个独立视角已送达',{exact:true}).waitFor();
     // Guess answers are not rendered until the other identity submits a guess.
     await page.goto(base+'/guess/new');
+    await page.getByText('从已答过的题里选择',{exact:true}).click();
     await page.getByRole('radio').first().click();
-    await page.getByRole('button',{name:/收好谜底，生成邀请/}).click();
+    await page.getByRole('button',{name:/发给朋友猜猜/}).click();
     const guessUrl = await page.getByRole('textbox',{name:'分享链接'}).inputValue();
     await friend.goto(guessUrl);
     await friend.getByRole('radio').first().waitFor();
@@ -256,7 +267,17 @@ const path = require('path');
       assert(navClearance>=16,'Bottom scroll clearance must exceed fixed navigation by16px');
       await page.screenshot({path:path.join(out,label+'-mobile.png'),fullPage:true});
     }
+    for(const width of [320,430,768,1440]) {
+      await page.setViewportSize({width,height:width<768?844:1000});
+      for(const route of ['/','/invite','/space','/self/result','/guess/new']) {
+        await page.goto(base+route);
+        await page.getByRole('heading',{level:1}).waitFor();
+        await page.waitForFunction(()=>[...document.images].every(image=>image.loading==='lazy'||image.complete));
+        assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`Design width overflow ${width} ${route}`);
+        assert.equal(await page.locator('img').evaluateAll(images=>images.filter(image=>image.complete&&image.naturalWidth===0).length),0);
+      }
+    }
     if(errors.length)throw new Error('Browser errors: '+errors.join(';'));
-    console.log(JSON.stringify({status:'passed',checks:['self_keyboard_radio','self_required_answer','self_back_preserves_selection','self_interruption_resets','self_8_answers','self_refresh_persistence','daily_vote','friend_consent_owner_exclusion','friend_submission_refresh','mirror_one_response','guess_hidden_until_submit','reveal_refresh','revoke_cancel_confirm_hides_reveal','guest_registration_preserves_self','invitation_filters_and_share_url','history_repeat_compare_refresh','journal_choice_date_reset','password_rotates_sessions','recovery_confirm_hide','logout_all_sessions','recovery_and_relogin_preserve_history','6_secondary_routes','4_mobile_no_overflow','mobile_computed_text_contrast','fixed_nav_scroll_clearance'],page_errors:errors,screenshots:out}));
+    console.log(JSON.stringify({status:'passed',checks:['self_keyboard_radio','self_required_answer','self_back_preserves_selection','self_interruption_resets','self_8_answers','self_refresh_persistence','daily_vote','friend_consent_owner_exclusion','friend_submission_refresh','mirror_one_response','guess_hidden_until_submit','reveal_refresh','revoke_cancel_confirm_hides_reveal','guest_registration_preserves_self','invitation_filters_and_share_url','history_repeat_compare_refresh','journal_choice_date_reset','password_rotates_sessions','recovery_confirm_hide','logout_all_sessions','recovery_and_relogin_preserve_history','6_secondary_routes','4_mobile_no_overflow','mobile_computed_text_contrast','fixed_nav_scroll_clearance','responsive_design_320_430_768_1440','design_assets_loaded','result_share_explicit_preview_app_link','share_four_platform_png_downloads','share_real_qr_decode','share_caption_edit','share_native_mock_cancel_success_error','share_mobile_no_overflow'],page_errors:errors,screenshots:out}));
   } finally { await browser.close(); }
 })().catch(e=>{console.error(e.stack);process.exitCode=1});

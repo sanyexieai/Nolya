@@ -5,13 +5,10 @@ import {
   ArrowUpRight,
   ArrowRight,
   Check,
-  ChevronRight,
   CircleUserRound,
   Compass,
   Copy,
-  Heart,
   LoaderCircle,
-  Moon,
   Sparkles,
   Sun,
   X,
@@ -448,60 +445,41 @@ export function useResource<T>(
     reload: () => setVersion((v) => v + 1),
   };
 }
+/** Supplied design-reference photography, illustrative rather than user testimony. */
 export function HeroArt({ compact = false }: { compact?: boolean }) {
   return (
-    <div
-      className={`hero-art ${compact ? "compact" : ""}`}
-      aria-label="多种颜色的镜像，象征不同角度的自己"
-      role="img"
-    >
-      <div className="art-orbit orbit-one" />
-      <div className="art-orbit orbit-two" />
-      <div className="art-circle circle-peach" />
-      <div className="art-circle circle-purple" />
-      <div className="art-spark spark-one">✧</div>
-      <div className="art-spark spark-two">✧</div>
-      <div className="art-note">
-        不同的视角
-        <br />
-        遇见更多面的你 <Heart size={17} />
-      </div>
-      <div className="mirror-frame">
-        <div className="mirror-surface">
-          <div className="reflection-halo" />
-          <div className="reflection reflection-back" />
-          <div className="reflection reflection-front">
-            <div className="reflection-head" />
-            <div className="reflection-body" />
-          </div>
-          <div className="mirror-line" />
-          <span className="mirror-caption">YOU, IN A DIFFERENT LIGHT</span>
-        </div>
-        <div className="mirror-foot">
-          每一面，都是你 <Sparkles size={15} />
-        </div>
-      </div>
-      <div className="floating-note note-one">
-        <span className="note-symbol">
-          <Sun size={22} />
-        </span>
-        <div>
-          <small>自己眼中的我</small>
-          <strong>先听听自己的想法</strong>
-        </div>
-      </div>
-      <div className="floating-note note-two">
-        <span className="note-symbol peach">
-          <Heart size={22} />
-        </span>
-        <div>
-          <small>朋友眼中的我</small>
-          <strong>也许还有另一面</strong>
-        </div>
-      </div>
-      <div className="tiny-note">
-        <Moon size={16} /> 从一个选择开始 <ChevronRight size={14} />
-      </div>
+    <div className={`hero-art portrait-collage ${compact ? "compact" : ""}`}>
+      <div className="portrait-wash" aria-hidden="true" />
+      <img
+        className="ambassador-main"
+        src="/design/ambassador-cafe.jpg"
+        width="1122"
+        height="1402"
+        alt="设计示意人物在日光咖啡馆，呈现自然、轻松的一面"
+        fetchPriority="high"
+      />
+      <figure className="portrait-insert insert-self">
+        <img
+          src="/design/ambassador-outdoor.jpg"
+          alt=""
+          width="1122"
+          height="1402"
+        />
+        <figcaption>自己眼中的我</figcaption>
+      </figure>
+      <figure className="portrait-insert insert-friends">
+        <img
+          src="/design/ambassador-cafe.jpg"
+          alt=""
+          width="1122"
+          height="1402"
+        />
+        <figcaption>朋友眼中的我</figcaption>
+      </figure>
+      <span className="portrait-caption">
+        每一面，都是你 <Sparkles size={16} aria-hidden="true" />
+      </span>
+      <small className="portrait-disclosure">品牌示意人物，非用户评价</small>
     </div>
   );
 }

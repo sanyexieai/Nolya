@@ -1,3 +1,4 @@
+import { ResultShare, SocialShare } from "./Share";
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
@@ -25,7 +26,6 @@ import {
   ActionLink,
   Badge,
   Button,
-  CopyLink,
   Empty,
   Loading,
   Notice,
@@ -68,8 +68,8 @@ export function InvitePage() {
     <div className="container narrow-page">
       <PageHeading
         eyebrow="换个角度，看见自己"
-        title="你眼中的我，是什么样？"
-        description="邀请 3 位熟悉你的朋友，每人回答 3 道生活题。"
+        title="认识你的人，会觉得你怎么选？"
+        description="邀请一位熟悉你的人，回答 3 道关于你的生活情境题。看看 TA 觉得你通常会怎么做。"
       />
       {loading || resource.loading ? (
         <Loading />
@@ -90,38 +90,39 @@ export function InvitePage() {
       ) : (
         <>
           <section className="card invite-card">
-            <div className="invite-art">
-              <div className="invite-bubble">我</div>
-              <div className="invite-bubble">你</div>
-              <div className="invite-bubble">
-                <Heart size={26} />
+            <div className="invite-editorial">
+              <div className="invite-copy">
+                <h2>邀请一个熟悉你的人，看看 TA 眼中的你。</h2>
+                <p>
+                  不是请朋友给你打分。只是想知道，在另一个人眼里，你会怎么选。
+                </p>
+                <ul className="invite-benefits">
+                  <li>只需回答 3 道情境题</li>
+                  <li>大约 30 秒，无需注册</li>
+                  <li>第一位朋友答完，就有新视角</li>
+                </ul>
+                <div className="invite-contexts">
+                  <span>朋友</span>
+                  <span>伴侣</span>
+                  <span>同事</span>
+                  <span>家人</span>
+                </div>
               </div>
-              <Sparkles className="invite-spark" size={28} />
-            </div>
-            <h2>{link ? "邀请准备好了" : "留一点空间，给意外的发现"}</h2>
-            <p>
-              不是请朋友给你打分。
-              <br />
-              只是想知道，在另一个人眼里，你会怎么选。
-            </p>
-            <div className="invite-facts">
-              <span>
-                <Check size={15} />
-                每人约 30 秒
-              </span>
-              <span>
-                <Check size={15} />
-                无需注册
-              </span>
-              <span>
-                <Check size={15} />
-                没有好坏之分
-              </span>
+              <picture className="invite-photo">
+                <source
+                  media="(max-width: 700px)"
+                  srcSet="/design/invite-mobile.png"
+                />
+                <img
+                  src="/design/invite-desktop.png"
+                  alt="三位朋友在咖啡馆轻松交流，每个人都带来不一样的视角"
+                />
+              </picture>
             </div>
             {link ? (
               <div className="share-section">
-                <Badge>把同一个链接发给 3 位朋友</Badge>
-                <CopyLink value={shareUrl(link, "friend")} />
+                <Badge>第一位朋友答完，就能看到新视角</Badge>
+                <SocialShare value={shareUrl(link, "friend")} kind="friend" />
                 <Link to="/mirror" className="text-link">
                   去看看镜像进度 <ArrowRight size={16} />
                 </Link>
@@ -133,12 +134,17 @@ export function InvitePage() {
                 </p>
                 <Button onClick={create} busy={busy}>
                   <Link2 size={18} />
-                  生成朋友邀请链接
+                  邀请朋友选一选
                 </Button>
               </>
             )}
             {error && <Notice>{error}</Notice>}
           </section>
+          <div className="invite-steps">
+            <span>01 分享邀请</span>
+            <span>02 朋友回答 3 道题</span>
+            <span>03 看见新的视角</span>
+          </div>
           <PrivacyNote>
             只向你展示汇总视角。邀请链接可能被转发，请只发给你信任的人。
           </PrivacyNote>
@@ -541,6 +547,15 @@ export function MirrorPage() {
             {mirror.identity_notice ||
               "目前按独立浏览器或账户区分参与者，无法证明是三个不同的真实人物。"}
           </Notice>
+          {mirror.state === "full" && (
+            <ResultShare
+              kind="mirror"
+              summary={
+                mirror.insights[0] ||
+                "同一个我，在朋友眼里也有新的视角。不是对错，只是多认识自己一点。"
+              }
+            />
+          )}
           <div className="next-step-banner">
             <span className="round-icon">
               <Sparkles size={23} />

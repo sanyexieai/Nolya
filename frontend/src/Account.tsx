@@ -1,3 +1,5 @@
+import { invitationShareKind } from "./share-core";
+import { SocialShare } from "./Share";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
@@ -29,7 +31,6 @@ import { SecuritySettings } from "./Security";
 import {
   ActionLink,
   Button,
-  CopyLink,
   Empty,
   Loading,
   Notice,
@@ -1175,7 +1176,12 @@ function ManageLink({
               撤回
             </button>
           </div>
-          {open && <CopyLink value={shareUrl(link, kind)} />}{" "}
+          {open && !busy && (
+            <SocialShare
+              value={shareUrl(link, kind)}
+              kind={invitationShareKind(kind, link)}
+            />
+          )}{" "}
           {confirm && (
             <div className="revoke-confirm">
               <p>撤回后，朋友不能再用这个链接参与。已收到的选择会保留。</p>

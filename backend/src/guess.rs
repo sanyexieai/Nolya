@@ -225,7 +225,7 @@ pub async fn get(
         .map(|c| reveal(&db, &round, user, c))
         .transpose()?;
     Ok(Json(
-        json!({"id":token,"owner_display_name":round.name,"question":round.question,"status":if round.revoked{"revoked"}else if round.expires<=Utc::now().timestamp(){"expired"}else{"active"},"is_owner":user==round.owner,"already_guessed":choice.is_some(),"reveal":result}),
+        json!({"id":token,"owner_display_name":round.name,"question":round.question,"status":if round.revoked{"revoked"}else if round.expires<=Utc::now().timestamp(){"expired"}else{"active"},"is_owner":user==round.owner,"is_directed":round.target.is_some(),"already_guessed":choice.is_some(),"reveal":result}),
     ))
 }
 pub async fn answer(

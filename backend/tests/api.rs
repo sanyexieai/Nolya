@@ -216,6 +216,27 @@ async fn guess_secrecy_replay_and_revocation() {
     assert_eq!(s, StatusCode::OK, "{reveal}");
     assert_eq!(reveal["actual_choice"], "A");
     assert_eq!(reveal["correct"], false);
+    assert_eq!(context["is_directed"], false);
+    let (s, reverse, _) = request(
+        &app,
+        Some(&peer),
+        "POST",
+        &format!("{route}/reverse"),
+        Some(json!({"choice":"B"})),
+        Some("test-reverse-0001"),
+    )
+    .await;
+    assert_eq!(s, StatusCode::OK, "{reverse}");
+    let reverse_route = format!("/guesses/{}", reverse["token"].as_str().unwrap());
+    let (_, own_reverse, _) = request(&app, Some(&peer), "GET", &reverse_route, None, None).await;
+    assert_eq!(own_reverse["is_directed"], true);
+    assert_eq!(own_reverse["is_owner"], true);
+    assert!(own_reverse.get("target_user_id").is_none());
+    let (_, managed, _) = request(&app, Some(&peer), "GET", "/guesses", None, None).await;
+    assert_eq!(managed["rounds"][0]["source_type"], "reverse");
+    let (s, _, _) = request(&app, Some(&outsider), "GET", &reverse_route, None, None).await;
+    assert_eq!(s, StatusCode::NOT_FOUND);
+
     let (_, secret, _) = request(&app, Some(&outsider), "GET", &route, None, None).await;
     assert!(secret["reveal"].is_null());
     let (s, _, _) = request(

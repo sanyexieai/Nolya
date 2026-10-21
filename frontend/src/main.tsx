@@ -1,3 +1,4 @@
+import "./share.css";
 import React, { useRef } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";

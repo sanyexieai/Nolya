@@ -7,7 +7,8 @@ import {
   Sparkles,
   Sprout,
 } from "lucide-react";
-import { ActionLink, Badge, HeroArt, SmallArrowLink } from "./ui";
+import { ActionLink, Badge, HeroArt } from "./ui";
+import copy from "./home.zh-CN.json";
 import { useSession } from "./session";
 export default function Home() {
   const { user } = useSession();
@@ -15,86 +16,56 @@ export default function Home() {
     <div className="home">
       <section className="home-hero container">
         <div className="hero-copy">
-          <Badge>一个更真实的你，正等着被发现</Badge>
+          <Badge>{copy.hero.eyebrow}</Badge>
           <h1>
-            你以为你了解自己，
-            <br />
-            其实你还没见过
-            <br />
-            <em>朋友眼中的你。</em>
+            {copy.hero.headline.split("\n").map((line, index) =>
+              index === 2 ? (
+                <em key={line}>{line}</em>
+              ) : (
+                <span key={line}>
+                  {line}
+                  <br />
+                </span>
+              ),
+            )}
           </h1>
-          <p>
-            从 8 个轻松的生活选择开始。
-            <br />
-            再借朋友的眼睛，看看那个熟悉、意外，
-            <br className="desktop-break" />
-            又值得被发现的自己。
-          </p>
+          <p>{copy.hero.subheadline}</p>
           <div className="hero-actions">
             <ActionLink to="/self">
-              开始我的第一次镜像 <ArrowUpRight size={20} />
+              {copy.hero.primaryCTA}
+              <ArrowUpRight size={20} />
             </ActionLink>
-            <SmallArrowLink to="/mirror">看看我的镜像</SmallArrowLink>
+            <ActionLink to="/mirror" secondary>
+              {copy.hero.secondaryCTA}
+            </ActionLink>
           </div>
           <div className="micro-benefits">
-            <span>
-              <Check size={14} />约 1 分钟
-            </span>
-            <span>
-              <Check size={14} />
-              无需注册
-            </span>
-            <span>
-              <Check size={14} />
-              没有标准答案
-            </span>
+            {copy.microBenefits.map((benefit) => (
+              <span key={benefit}>
+                <Check size={14} />
+                {benefit}
+              </span>
+            ))}
           </div>
         </div>
         <HeroArt />
       </section>
       <section className="steps-section container" aria-label="如何开始">
-        <div className="step-card">
-          <span className="step-number">01</span>
-          <span className="step-icon violet">
-            <Fingerprint size={30} />
-          </span>
-          <div>
-            <h3>先看见自己</h3>
-            <p>
-              8 个真实生活选择，
-              <br />
-              拼出你的第一张镜像卡。
-            </p>
-          </div>
-        </div>
-        <div className="step-card">
-          <span className="step-number">02</span>
-          <span className="step-icon rose">
-            <HeartHandshake size={30} />
-          </span>
-          <div>
-            <h3>再听听朋友怎么想</h3>
-            <p>
-              每人 3 个小问题，
-              <br />
-              发现彼此看见的不同侧面。
-            </p>
-          </div>
-        </div>
-        <div className="step-card">
-          <span className="step-number">03</span>
-          <span className="step-icon sage">
-            <Sprout size={30} />
-          </span>
-          <div>
-            <h3>把变化留下来</h3>
-            <p>
-              每天一个小选择，
-              <br />
-              慢慢遇见更完整的自己。
-            </p>
-          </div>
-        </div>
+        {copy.steps.map((step, index) => {
+          const Icon = [Fingerprint, HeartHandshake, Sprout][index];
+          return (
+            <div className="step-card" key={step.index}>
+              <span className="step-number">{step.index}</span>
+              <span className={`step-icon ${index === 1 ? "rose" : "violet"}`}>
+                <Icon size={30} />
+              </span>
+              <div>
+                <h3>{step.title}</h3>
+                <p>{step.body}</p>
+              </div>
+            </div>
+          );
+        })}
       </section>
       <section className="home-bottom container">
         <div>
