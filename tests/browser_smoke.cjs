@@ -86,6 +86,11 @@ const path = require('path');
     await page.getByText('1 / 3 个独立视角已送达',{exact:true}).waitFor();
     // Guess answers are not rendered until the other identity submits a guess.
     await page.goto(base+'/guess/new');
+    await page.getByRole('region',{name:'这次让朋友猜的题'}).waitFor();
+    await page.screenshot({path:path.join(out,'guess-launch-desktop.png'),fullPage:true});
+    await page.setViewportSize({width:390,height:844});
+    await page.screenshot({path:path.join(out,'guess-launch-mobile.png'),fullPage:true});
+    await page.setViewportSize({width:1440,height:1000});
     await page.getByText('从已答过的题里选择',{exact:true}).click();
     await page.getByRole('radio').first().click();
     await page.getByRole('button',{name:/发给朋友猜猜/}).click();

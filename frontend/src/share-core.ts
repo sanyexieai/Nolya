@@ -175,7 +175,10 @@ export async function renderSharePoster(
   );
   const qrSize = 280;
   const qrTop = height - 445;
-  const maxLines = Math.max(1, Math.floor((qrTop - 55 - captionStart) / 46));
+  const maxLines = Math.max(
+    1,
+    Math.min(3, Math.floor((qrTop - 55 - captionStart) / 46)),
+  );
   const displayLines = captionLines.slice(0, maxLines);
   if (captionLines.length > maxLines)
     displayLines[maxLines - 1] =
@@ -185,6 +188,47 @@ export async function renderSharePoster(
   displayLines.forEach((line, i) =>
     ctx.fillText(line, 100, captionStart + i * 46),
   );
+  // Two perspective cards echo the source design's layered, pastel mirror motif.
+  // Never draw account identity, answer choices or individual friend data.
+  const motifTop = captionStart + displayLines.length * 46 + 36;
+  const motifHeight = Math.min(440, qrTop - motifTop - 45);
+  if (motifHeight >= 150) {
+    const cardWidth = 408;
+    ["自己眼中的我", "朋友眼中的我"].forEach((label, index) => {
+      const x = index === 0 ? 100 : 572;
+      ctx.fillStyle = index === 0 ? "#F0EBFF" : "#FFE8D9";
+      ctx.beginPath();
+      ctx.roundRect(x, motifTop, cardWidth, motifHeight, 32);
+      ctx.fill();
+      ctx.fillStyle = index === 0 ? "#6B57FF" : "#B65C43";
+      const radius = Math.min(76, motifHeight * 0.23);
+      const centerY = motifTop + motifHeight * 0.4;
+      ctx.beginPath();
+      ctx.arc(
+        x + cardWidth / 2 - radius * 0.45,
+        centerY,
+        radius,
+        0,
+        Math.PI * 2,
+      );
+      ctx.fill();
+      ctx.fillStyle = index === 0 ? "#C6B8FF" : "#F6BD9F";
+      ctx.beginPath();
+      ctx.arc(
+        x + cardWidth / 2 + radius * 0.45,
+        centerY,
+        radius,
+        0,
+        Math.PI * 2,
+      );
+      ctx.fill();
+      ctx.fillStyle = "#39264F";
+      ctx.font = "600 28px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(label, x + cardWidth / 2, motifTop + motifHeight - 30);
+    });
+    ctx.textAlign = "left";
+  }
   const qr = document.createElement("canvas");
   await QRCode.toCanvas(qr, value, {
     width: qrSize,

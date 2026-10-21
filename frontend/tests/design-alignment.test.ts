@@ -22,10 +22,11 @@ test("home copy comes from supplied v2 locale, with real supplied illustrative i
   assert.ok(home.includes("copy.hero.headline"));
   assert.ok(home.includes("copy.steps.map"));
   const hero = ui.slice(ui.indexOf("export function HeroArt"));
-  assert.ok(hero.includes("ambassador-cafe.jpg"));
+  assert.ok(hero.includes("home-v2-reference.png"));
   assert.ok(hero.includes("非用户评价"));
   assert.ok(!hero.includes("reflection-head"));
   for (const file of [
+    "home-v2-reference.png",
     "ambassador-cafe.jpg",
     "ambassador-outdoor.jpg",
     "invite-desktop.png",
@@ -57,4 +58,13 @@ test("Page09 never renders saved choice and uses original read-only portrait com
   assert.ok(
     existsSync(new URL("../public/design/guess-outdoor.png", import.meta.url)),
   );
+});
+
+test("Home uses latest v2 composite art region without obsolete portrait substitution", () => {
+  const hero = ui.slice(ui.indexOf("export function HeroArt"));
+  assert.ok(!hero.includes("ambassador-cafe.jpg"));
+  assert.ok(!hero.includes("portrait-insert"));
+  assert.match(css, /aspect-ratio: 986 \/ 675/);
+  assert.match(css, /left: -60\.851927%/);
+  assert.match(css, /top: -11\.111111%/);
 });

@@ -204,14 +204,25 @@ export function SharePanel({
         ))}
       </div>
       <p className="share-guide" data-testid="share-guide">
-        {resultShare
-          ? `应用链接不包含你的个人结果。先核对海报内容；${format.guide}`
-          : format.guide}
+        {platform === "wechat"
+          ? "复制专属链接 → 打开微信 → 粘贴给朋友"
+          : platform === "moments"
+            ? "保存海报 → 打开朋友圈 → 选图配文"
+            : platform === "douyin"
+              ? "保存海报 → 打开抖音 → 图片创作"
+              : platform === "xiaohongshu"
+                ? "保存海报 → 打开小红书 → 选图配文"
+                : "选择系统分享，或保存后自行发送"}
       </p>
+      {resultShare && (
+        <p className="share-disclosure">
+          分享发现请保存海报；应用链接不包含你的个人结果。
+        </p>
+      )}
       {local && (
         <Notice kind="info">
-          当前邀请使用本机或局域网地址，其他设备可能无法打开。公网分享前需部署可访问的
-          HTTPS 地址；二维码也使用此地址。
+          当前是本机或局域网链接，其他设备可能无法打开。公网邀请需使用可访问的
+          HTTPS 地址。
         </Notice>
       )}
       {kind === "reverse" && (
@@ -243,6 +254,44 @@ export function SharePanel({
                 ? "9:16"
                 : "3:4"}
           </small>
+          <div className="share-export-actions">
+            {ready ? (
+              <a
+                className="button share-download"
+                href={ready}
+                download={`nolya-${platform}-invitation.png`}
+                onClick={() =>
+                  setNotice(
+                    "已发起保存海报。若浏览器没有下载，可长按预览图片保存；之后请到目标应用自行发送。 ",
+                  )
+                }
+              >
+                <Download size={18} />
+                保存分享海报
+              </a>
+            ) : (
+              <Button disabled>
+                <Download size={18} />
+                保存分享海报
+              </Button>
+            )}
+            <Button secondary onClick={() => copy(value, "链接")}>
+              {copied === "链接" ? <Check size={17} /> : <Copy size={17} />}
+              {resultShare ? "复制应用链接" : "复制邀请链接"}
+            </Button>
+            {supportsShare && (
+              <Button secondary busy={busy} onClick={() => systemShare(false)}>
+                <Share2 size={17} />
+                系统分享链接
+              </Button>
+            )}
+            {supportsFiles && (
+              <Button secondary busy={busy} onClick={() => systemShare(true)}>
+                <Share2 size={17} />
+                系统分享海报
+              </Button>
+            )}
+          </div>
         </div>
         <div className="share-editor">
           <label>
@@ -251,12 +300,12 @@ export function SharePanel({
               aria-label="分享文案"
               value={caption}
               maxLength={160}
-              rows={5}
+              rows={3}
               onChange={(e) => setCaption(e.target.value)}
             />
           </label>
           <p className="share-disclosure">
-            海报只包含品牌、分享说明、你确认或编辑的文案和二维码，不自动包含真实答案或朋友的个人回答。长文案可能在海报中省略，请核对预览；复制文案保留全文。
+            只分享你确认的文案与二维码，不自动带入个人回答。
           </p>
           <label>
             {resultShare ? "应用链接（不包含个人结果）" : "邀请链接"}
@@ -268,10 +317,6 @@ export function SharePanel({
             />
           </label>
           <div className="share-copy-actions">
-            <Button secondary onClick={() => copy(value, "链接")}>
-              {copied === "链接" ? <Check size={17} /> : <Copy size={17} />}
-              {resultShare ? "复制应用链接" : "复制邀请链接"}
-            </Button>
             <Button
               secondary
               onClick={() => copy(copyPayload(caption, value), "文案和链接")}
@@ -308,49 +353,25 @@ export function SharePanel({
           </button>
         </Notice>
       )}
-      <div className="share-export-actions">
-        {ready ? (
-          <a
-            className="button share-download"
-            href={ready}
-            download={`nolya-${platform}-invitation.png`}
-            onClick={() =>
-              setNotice(
-                "已发起保存海报。若浏览器没有下载，可长按预览图片保存；之后请到目标应用自行发送。 ",
-              )
-            }
-          >
-            <Download size={18} />
-            保存分享海报
-          </a>
-        ) : (
-          <Button disabled>
-            <Download size={18} />
-            保存分享海报
-          </Button>
-        )}
-        {supportsShare && (
-          <Button secondary busy={busy} onClick={() => systemShare(false)}>
-            <Share2 size={17} />
-            系统分享链接
-          </Button>
-        )}
-        {supportsFiles && (
-          <Button secondary busy={busy} onClick={() => systemShare(true)}>
-            <Share2 size={17} />
-            系统分享海报
-          </Button>
-        )}
-      </div>
       {!supportsShare && (
         <p className="share-support-note">
           此浏览器没有系统分享面板，可使用上方复制和保存功能。
         </p>
       )}
       {notice && <Notice kind="info">{notice}</Notice>}
-      <p className="share-footnote">
-        生成与保存只在当前浏览器进行。平台入口提供对应操作方法，不代表已接入平台直发或保证发布成功；公开分享前请确认可见范围。
-      </p>
+      <details className="share-details">
+        <summary>平台说明与分享隐私</summary>
+        <p>{format.guide}</p>
+        {resultShare && (
+          <p>应用链接不包含你的个人结果，只能通过海报查看你确认的概括。</p>
+        )}
+        <p className="share-disclosure">
+          海报只包含品牌、分享说明、你确认或编辑的文案和二维码，不自动包含真实答案或朋友的个人回答。长文案可能在海报中省略，请核对预览；复制文案保留全文。
+        </p>
+        <p>
+          生成与保存只在当前浏览器进行。平台入口提供操作指引，并非平台直发；发布前请确认可见范围。海报二维码与下方链接一致。
+        </p>
+      </details>
     </section>
   );
 }

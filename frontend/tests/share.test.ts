@@ -75,6 +75,7 @@ before(async () => {
     fillRect() {},
     beginPath() {},
     roundRect() {},
+    arc() {},
     fill() {},
     fillText() {},
     measureText: (x: string) => ({ width: Array.from(x).length * 32 }),
@@ -166,6 +167,16 @@ test("share panel exports PNG, handles cancel honestly, resets stale links and c
       ?.getAttribute("href")
       ?.startsWith("data:image/png"),
   );
+  assert.equal(
+    document.querySelector(".share-details")?.hasAttribute("open"),
+    false,
+  );
+  assert.ok(
+    (document.querySelector(".share-guide")?.textContent || "").length < 40,
+  );
+  const primary = document.querySelector(".share-export-actions")!;
+  assert.match(primary.textContent!, /保存分享海报/);
+  assert.match(primary.textContent!, /复制邀请链接/);
   await click("系统分享海报");
   assert.equal(calls.length, 1);
   assert.match(document.body.textContent!, /已取消系统分享/);

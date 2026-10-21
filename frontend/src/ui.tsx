@@ -445,41 +445,19 @@ export function useResource<T>(
     reload: () => setVersion((v) => v + 1),
   };
 }
-/** Supplied design-reference photography, illustrative rather than user testimony. */
+/** Latest Page01 v2 artwork region; navigation, copy and controls remain live DOM. */
 export function HeroArt({ compact = false }: { compact?: boolean }) {
   return (
-    <div className={`hero-art portrait-collage ${compact ? "compact" : ""}`}>
-      <div className="portrait-wash" aria-hidden="true" />
-      <img
-        className="ambassador-main"
-        src="/design/ambassador-cafe.jpg"
-        width="1122"
-        height="1402"
-        alt="设计示意人物在日光咖啡馆，呈现自然、轻松的一面"
-        fetchPriority="high"
-      />
-      <figure className="portrait-insert insert-self">
+    <div className={`hero-art home-v2-scene ${compact ? "compact" : ""}`}>
+      <div className="home-v2-artwork">
         <img
-          src="/design/ambassador-outdoor.jpg"
-          alt=""
-          width="1122"
-          height="1402"
+          src="/design/home-v2-reference.png"
+          width="1586"
+          height="992"
+          alt="品牌示意人物在春日日光中，身旁三张照片展示不同的生活侧面；非用户评价"
+          fetchPriority="high"
         />
-        <figcaption>自己眼中的我</figcaption>
-      </figure>
-      <figure className="portrait-insert insert-friends">
-        <img
-          src="/design/ambassador-cafe.jpg"
-          alt=""
-          width="1122"
-          height="1402"
-        />
-        <figcaption>朋友眼中的我</figcaption>
-      </figure>
-      <span className="portrait-caption">
-        每一面，都是你 <Sparkles size={16} aria-hidden="true" />
-      </span>
-      <small className="portrait-disclosure">品牌示意人物，非用户评价</small>
+      </div>
     </div>
   );
 }

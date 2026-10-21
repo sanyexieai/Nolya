@@ -14,14 +14,14 @@ The source of truth is the user-supplied `NolyaV1.1` design archive, not a newly
 - Restored Iris Purple `#6B57FF`, deep purple `#4E3DF2`, lavender `#EAE4FF`, peach `#FFB88A`, ink `#171531`, warm canvas, and line color `#E8E4F2` as explicit tokens.
 - Retained darker functional-text variants for WCAG contrast on tinted cards. Decorative brand purple and white-on-purple primary buttons use the original brand. This is an accessibility accommodation rather than an alternate palette.
 - Restored bold sans-serif wordmark, PingFang-first Chinese font stack, larger headings and body copy, 22px buttons, 28px cards, and 20px mobile gutters. Removed fixed font sizes below 13px across existing product flows, not only Home.
-- Replaced the abstract CSS cartoon Home hero with supplied portrait photography, two surrounding polaroid-like viewpoints, a warm lavender/peach background, and an explicit illustrative/non-testimonial label.
+- Replaced the abstract CSS cartoon Home hero with the actual latest Page01 v2 composite artwork region, including the new ambassador, blended spring background, and all three original floating photo cards. An accessible label identifies the artwork as illustrative, not a testimonial. The initial Page03 cafe substitution was rejected and removed.
 - Home uses the supplied Chinese v2 locale for headline, supporting copy, actions, benefits, and three steps. No screenshot is embedded as the entire functional interface. Navigation and daily-choice functionality remain live.
 - Added Page04 editorial layout styles: desktop text-left/photo-right, mobile scene-first, benefit/context chips, and stacked mobile journey steps. Page04 uses its actual supplied friend-scene images rather than the old abstract bubbles.
 - Retained keyboard focus, reduced-motion support, existing navigation safe areas, and high-contrast semantic text.
 
 ## Asset inventory and rights boundary
 
-All five images are unchanged copies of user-supplied design-reference assets; no third-party photo search or external image host is introduced.
+All six images are unchanged copies of user-supplied design-reference assets; no third-party photo search or external image host is introduced.
 
 | Public asset | Original package-relative source |
 | --- | --- |
@@ -35,7 +35,9 @@ The filenames' word “approved” refers to the supplied design package, not in
 
 ## Deliberate bounds
 
-This is responsive design alignment, not a claim of pixel-identical reproduction of every prototype page. The newest Home v2 package contains composite mockups but no standalone ambassador photograph, so Home uses the matching supplied Page03 standalone portraits rather than destructively extracting a person from a screenshot. Home uses two surrounding viewpoint cards instead of the mockup's three, and scales the Chinese headline to avoid clipping long lines at narrow widths. Other product routes inherit typography, tokens, card/button sizing, and readable labels; their functional content and analytics thresholds are preserved. Full 3-friend aggregation is not reduced merely to match aspirational marketing copy. Browser QA must cover changed type sizes across all routes, not just Home.
+This is responsive design alignment, not a claim of pixel-identical reproduction of every prototype page. The newest Home v2 package contains only four composite mockups, two locale JSONs and the spec, not a standalone photo/three card asset set. Home therefore references the unchanged supplied Chinese desktop PNG and selects only its artwork region with CSS (x600–1586, y75–750 of1586×992). The navigation, main headline, paragraph, CTA buttons, benefits and step strip are live DOM and are not screenshot controls. The large original backdrop and all three original polaroids are retained; no older character or new imagery substitutes for them. Mobile uses the same artwork region first, followed by live Chinese copy and actions; this is a responsive translation, not a pixel-identical mobile composite. Other product routes inherit typography, tokens, card/button sizing, and readable labels; their functional content and analytics thresholds are preserved. Full 3-friend aggregation is not reduced merely to match aspirational marketing copy. Browser QA must cover changed type sizes across all routes, not just Home.
+
+`design/home-v2-reference.png` is an unchanged copy of `Nolya_Page01_Home_New_Ambassador_v2_0/Nolya_Page01_Home_Desktop_zh-CN_v2_0.png`. The separate Page03 cafe/outdoor files remain available as supplied assets but are not used in the Home hero. The same unverified commercial-rights boundary applies.
 
 ## Verification
 

@@ -15,7 +15,8 @@ module.exports=async function checkSocialShare(page,url,out){
  for(const [name,width,height,file] of [['微信好友',1080,1440,'wechat'],['朋友圈',1080,1080,'moments'],['抖音',1080,1920,'douyin'],['小红书',1080,1440,'xiaohongshu']]){
   await panel.getByRole('button',{name,exact:true}).click();await inspect(width,height);
   assert.equal(await panel.getByRole('button',{name,exact:true}).getAttribute('aria-pressed'),'true');
-  assert((await panel.getByTestId('share-guide').innerText()).length>30);
+  assert((await panel.getByTestId('share-guide').innerText()).length>10);
+  assert.equal(await panel.locator('.share-details').getAttribute('open'),null,'Detailed caveats should be collapsed initially');
   const event=page.waitForEvent('download');await panel.getByRole('link',{name:'保存分享海报'}).click();
   const download=await event;const target=path.join(out,`share-${file}.png`);await download.saveAs(target);
   const png=fs.readFileSync(target);assert.equal(png.subarray(0,8).toString('hex'),'89504e470d0a1a0a');assert.equal(png.readUInt32BE(16),width);assert.equal(png.readUInt32BE(20),height);
