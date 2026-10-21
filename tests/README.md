@@ -37,7 +37,7 @@ python3 tests/merge_api.py
 
 两者均自行创建临时数据库与只监听 loopback 的服务，同一调用内启动和清理，不接受既有数据库或外部服务地址。`merge_api.py` 的每个用例使用独立服务和合成账户，避免测试绕过真实认证限流；`--case` 可按名称筛选，`--port` 可指定未占用端口。运行完成会清理全部测试凭据和数据库。
 
-`./scripts/verify.sh` 包含 Rust 格式/测试/Clippy、前端构建与测试、两个隔离 HTTP 回归套件。它不包含上方必须实际重启服务的完整主流程或真实浏览器验收，不能把该脚本通过等同于 UI 验收。
+`./scripts/verify.sh` 包含 Rust 格式/测试/Clippy、前端构建与测试、隔离 HTTP 回归、真实重启及备份恢复。真实浏览器验收单独运行，不能把该脚本通过等同于 UI 验收。
 
 前端 `npm test` 包含 API helper 测试与 jsdom/React 的账户组件测试。组件测试验证确认、取消、身份切换、迟到响应、失败/失效与请求去重；它使用模拟网络和 DOM，不证明 Chromium 点击、布局、视觉、移动视口或可访问性通过。
 
@@ -48,8 +48,14 @@ python3 tests/merge_api.py
 
 `tests/release_audit_api.py` 是已发现会话撤销问题的定向回归，不能当作全面独立安全审计。浏览器仍须单独运行；当前环境阻塞详见 `docs/BROWSER_ACCEPTANCE.md`。
 
-托管 CI 配置了独立 browser job：安装锁定 Playwright/Chromium，运行一次性合成数据库验收，并保留7天截图。该 job 在本次本地工作中尚未运行，不代表真实浏览器已经通过。
+托管 CI 配置了独立 browser job：安装锁定 Playwright/Chromium，运行一次性合成数据库验收，并保留7天截图。已运行的具体 commit、CI 和截图证据见 `docs/RELEASE_VERIFICATION.md`；前一提交的通过不能外推到后一提交。
 
 ## 社交分享回归
 
 share_browser.cjs由浏览器主流程调用，验证四平台PNG下载尺寸/签名、独立jsQR解码、文案编辑及320/390px布局。系统分享和剪贴板使用API替身验证载荷及取消/失败语义，不表示真实平台发送。额外验证320/430/768/1440px主路由和原图加载。合成截图与海报保存在浏览器artifact。
+
+### 中文字体与正常视口截图
+
+浏览器 CI 安装 Ubuntu 官方 fonts-noto-cjk，并通过 fontconfig 确认 Noto Sans CJK 可用；标题另检查实际计算字重至少 700。应用没有远程字体依赖，使用 PingFang、Microsoft YaHei 及 Noto 系统回退，并允许粗体合成，避免仅 Regular 回退字体导致中文标题偏细。
+
+首页和 Page09 保留桌面/手机截图。分享手机截图先清除键盘测试焦点，分别记录预览和主要操作的正常视口，不为了截图移除无障碍跳转链接或固定导航。PNG 海报仍独立验证尺寸与二维码。最终图必须对应交付 commit 或同 tree 的 PR 测试 merge；旧截图不证明后续视觉改动。
