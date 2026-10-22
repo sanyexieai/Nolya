@@ -1,0 +1,33 @@
+[Unit]
+Description=Nolya API and web application
+After=network.target
+
+[Service]
+Type=simple
+User=nolya
+Group=nolya
+WorkingDirectory=/opt/nolya/current
+EnvironmentFile=/etc/nolya/nolya.env
+ExecStart=/opt/nolya/current/backend/target/release/nolya-api
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=30s
+KillSignal=SIGTERM
+UMask=0077
+StateDirectory=nolya
+StateDirectoryMode=0700
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/nolya
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+LockPersonality=true
+CapabilityBoundingSet=
+
+[Install]
+WantedBy=multi-user.target

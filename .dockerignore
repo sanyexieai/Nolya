@@ -1,0 +1,13 @@
+.git
+.env
+.env.*
+!.env.example
+data
+**/data
+**/*.sqlite*
+**/target
+**/node_modules
+**/dist
+**/__pycache__
+artifacts
+backups

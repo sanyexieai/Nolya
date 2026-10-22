@@ -1,8 +1,15 @@
+## 0.4 全页面设计更新
+
+按原始 Page01–18 逐页接入对应人物/场景素材和响应式布局，保留真实数据、隐私及安全边界。辅助页面采用原包品牌资源和同一设计系统，不以照片替代功能。逐页覆盖、无独立原稿的页面及验收边界见 [全页面设计覆盖](docs/ALL_PAGES_DESIGN.md)。本轮验收以最终提交对应的 CI 与截图记录为准，以下旧版记录不代表新改动已通过。
+
 # Nolya · 诺芽
+
+最新浏览器证据：对比度修复提交 `d61576cc4fe8fe2693e821c3cfc5daa65c7e32f8` 的 [托管 CI](https://github.com/sanyexieai/Nolya/actions/runs/39406818397) 通过 25 项 Chromium 检查，包含实际手机文字对比度与固定导航余量；verify（含54项前端测试、综合回归、备份恢复及Docker构建）也已完整通过。截图 artifact `12258181146`。完整生产部署和手工无障碍验收仍单列，不把脚本范围扩展为全面认证。
+
 
 基于用户提供的 NolyaV1.1 原型包实现的社交认知产品。Rust 后端、React + TypeScript 移动优先 Web 界面、SQLite 持久化数据库。
 
-> 当前为产品化候选 0.2，未部署公网。核心实现与自动化验证持续完成中；真实浏览器验收仍受环境阻塞，因此不能称已完整生产验收。当前门槛见 `docs/PRODUCT_READINESS.md`，精确结果见 `docs/RELEASE_VERIFICATION.md`。
+> 当前为产品化候选 0.2，未部署公网。核心功能、托管工程验证与 Chromium 浏览器脚本已取得通过证据；尚未完成生产部署和完整人工可访问性/跨设备验收。当前门槛见 `docs/PRODUCT_READINESS.md`，精确结果见 `docs/RELEASE_VERIFICATION.md`。
 
 ## 产品范围
 
@@ -62,7 +69,7 @@ scripts/       本地启动与校验
 - 不同会话/账户不等于不同真人。开发版去重不能作为生产反作弊证明
 - 原型的人像素材未提供商用许可证明，本工程不直接将其作为正式品牌素材
 - 原型设计、产品文案与商标的权利仍归相应权利人；本工程未擅自授予开源或再分发许可
-- 正式上线前仍需真实浏览器验收、域名、HTTPS、备份调度与恢复演练、监控、边缘防刷、隐私和服务条款审定。邮件/微信是可选扩展，不是假定已接入的功能
+- 正式上线前仍需完整人工可访问性、Safari/跨设备验收、域名、HTTPS、备份调度与恢复演练、监控、边缘防刷、隐私和服务条款审定。邮件/微信是可选扩展，不是假定已接入的功能
 
 ## 配置
 
@@ -70,8 +77,20 @@ scripts/       本地启动与校验
 
 服务启动时自动应用幂等数据库迁移。已有数据库迁移和备份策略见架构文档。此仓库不含原始 199 MB 原型 ZIP，也不含其签名下载地址。
 
+## 托管验收进展（2026-10-20）
+
+已按授权推送到 `sanyexieai/Nolya` 的 `codex/nolya-local-mvp` 工作分支，默认分支 `main` 的初始化 README 未改动；未合并、部署或发布正式版本。
+
+- [首轮 CI](https://github.com/sanyexieai/Nolya/actions/runs/39405043533) 的 verify job 完整通过，包含 Rust 1.90、综合回归、备份恢复及 Docker 镜像构建。
+- [修复后 CI](https://github.com/sanyexieai/Nolya/actions/runs/39405738917) 的 browser job 通过 23 项检查，`page_errors: []`，保存 8 张合成数据截图（artifact 12257885291）。实际视口为 1440×1000 和 390×844；320/430px 仅有几何回归，不是浏览器验收。
+- 前端测试已增至 54 项；第二轮 browser 与 verify（含 Docker 构建）均完整通过。
+
 ## 生产准备与备份
 
 `docs/OPERATIONS.md` 提供 Linux/systemd、容器/Caddy 配置、健康探针、SQLite 在线备份和安全恢复流程；`deploy/` 为未实际部署的模板。生产模式设置 `NOLYA_ENV=production`，必须显式配置精确 HTTPS Origin 和 Secure Cookie；无效配置在创建数据库前拒绝启动。
 
 `./scripts/verify.sh` 执行构建、单元/组件、HTTP 安全及业务、配置失败关闭、真实重启与备份恢复验证；真实浏览器另行执行 `tests/browser_run.sh`，不能用前者通过代替后者。
+
+## 0.3 设计与社交分享候选
+
+按用户原始设计包对齐样式，提供微信好友、朋友圈、抖音、小红书的真实海报和文案工作流，以及支持时的系统分享。平台入口不代表官方SDK直发，不会自动发布。详见 [设计来源](docs/DESIGN_ALIGNMENT.md)、[分享能力](docs/SOCIAL_SHARING.md) 和 [验收记录](docs/RELEASE_VERIFICATION.md)。

@@ -1,0 +1,229 @@
+{
+  "original_archive_sha256": "a302501991a20d30fd74716d29fa846c30f06d6ec608281fa85602b85b3f7581",
+  "assets": [
+    {
+      "asset": "frontend/public/design/ambassador-cafe.jpg",
+      "sha256": "b4d11cf44443da94b0780ebb6c6952f8a4fc83716c0743bd92175faf36542795",
+      "originals": [
+        "packages/Nolya_Page03_Self_Result_China_Entry_Codex_Package_v1_1/Nolya_Page03_Self_Result_China_Entry_v1_1/source/assets/shan_young_cafe_main_v1_0.jpg"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/ambassador-outdoor.jpg",
+      "sha256": "13029634abc87b06991a302de319aa8f8469759c71e0f0c512f01a56188f4c2f",
+      "originals": [
+        "packages/Nolya_Page03_Self_Result_China_Entry_Codex_Package_v1_1/Nolya_Page03_Self_Result_China_Entry_v1_1/source/assets/shan_young_mobile_crop_v1_0.jpg",
+        "packages/Nolya_Page03_Self_Result_China_Entry_Codex_Package_v1_1/Nolya_Page03_Self_Result_China_Entry_v1_1/source/assets/shan_young_outdoor_insert_v1_0.jpg"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/brand-symbol.png",
+      "sha256": "7729cc9382590b489c77b0fe85bbe2f77d3f478c23f13b42da7b312d80b68189",
+      "originals": [
+        "NolyaV1.1/logo/logo.png"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/brand-wordmark.png",
+      "sha256": "7d50ce670a093bc4df90e1a8a1968eff5832de567fc1bb679c64ad7ad6faea9e",
+      "originals": [
+        "NolyaV1.1/logo/logo_text.png"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/daily-question-desktop-reference.png",
+      "sha256": "4b5cd9e45b9d8dc1f0e5d6eac9da7c9e991fb92db9d38e3601740c86fb2d381d",
+      "originals": [
+        "packages/Nolya_Page15_Daily_Pulse_Codex_Package_v1_0/Nolya_Page15_Daily_Pulse_Desktop_zh-CN_v1_0.png",
+        "packages/Nolya_Page15_Daily_Pulse_Codex_Package_v1_0/Nolya_Page15_Daily_Pulse_v1_0/mockups/Nolya_Page15_Daily_Pulse_Desktop_zh-CN_v1_0.png"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/daily-question-mobile-reference.png",
+      "sha256": "880ed5a89c35c1b26954c1cf4c26cd80765ac5ef39a094b2f9b5a132e8cb2284",
+      "originals": [
+        "packages/Nolya_Page15_Daily_Pulse_Codex_Package_v1_0/Nolya_Page15_Daily_Pulse_Mobile_zh-CN_v1_0.png",
+        "packages/Nolya_Page15_Daily_Pulse_Codex_Package_v1_0/Nolya_Page15_Daily_Pulse_v1_0/mockups/Nolya_Page15_Daily_Pulse_Mobile_zh-CN_v1_0.png"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/daily-result-riverside.png",
+      "sha256": "e35c33ecfd4e1d1b8d32f8c250d347a49ba126b19ad5446428832d04fb15c038",
+      "originals": [
+        "packages/Nolya_Page18_My_Space_Return_Hub_Codex_Package_v1_0/Nolya_Page18_My_Space_Return_Hub_v1_0/source/assets/approved_ambassador_riverside.png",
+        "packages/Nolya_Page16_Daily_Pulse_Result_Codex_Package_v1_0/Nolya_Page16_Daily_Pulse_Result_v1_0/source/assets/nolya_approved_riverside_portrait.png",
+        "packages/Nolya_Page09_Guess_Me_China_Entry_Codex_Package_v1_1/Nolya_Page09_Guess_Me_China_Entry_v1_1/source/assets/approved_young_ambassador_outdoor.png",
+        "packages/Nolya_Page10_Reveal_China_Entry_Codex_Package_v1_1/Nolya_Page10_Reveal_China_Entry_v1_1/source/assets/approved_young_ambassador_outdoor.png",
+        "packages/Nolya_Page17_Choice_Journal_Codex_Package_v1_0/Nolya_Page17_Choice_Journal_v1_0/source/assets/approved_ambassador_small_reference.png"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/first-mirror-cafe.jpg",
+      "sha256": "b9de3103252db10dc46276d5a889f3e5b04c6275a65f7038de3272cc9c0cea0e",
+      "originals": [
+        "packages/Nolya_Page07_First_Mirror_China_Entry_Codex_Package_v1_1/Nolya_Page07_First_Mirror_China_Entry_v1_1/source/assets/page07_approved_shan_cafe_photo_crop.jpg"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/friend-landing-desktop.png",
+      "sha256": "05f9358cbe3941e5bde7bcbe76af68952b73016e16e875aafc8cdc7ec480c242",
+      "originals": [
+        "packages/Nolya_Page05_Friend_Landing_China_Entry_Codex_Package_v1_1/Nolya_Page05_Friend_Landing_China_Entry_v1_1/source/assets/page05_approved_shan_scene_desktop.png"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/friend-landing-mobile.png",
+      "sha256": "0b8787e0e9d75ab0a5c1706d676c69567a43f89b74a67015b99dfe80476054e5",
+      "originals": [
+        "packages/Nolya_Page05_Friend_Landing_China_Entry_Codex_Package_v1_1/Nolya_Page05_Friend_Landing_China_Entry_v1_1/source/assets/page05_approved_shan_scene_mobile.png"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/friend-question-portrait.png",
+      "sha256": "28c4e59751cfcb0f08b35c4a8614315e5e26d50790b3ab65fdd0d8eb0de9b7c4",
+      "originals": [
+        "NolyaV1.1/Nolya_Page02_Self_Swipe_China_Entry_v1_1/assets/shan_young_original_reference.png",
+        "NolyaV1.1/Nolya_Page06_Friend_3_Questions_China_Entry_v1_1/source/assets/shan_young_original_ref_02.png",
+        "packages/Nolya_Page02_Self_Swipe_China_Entry_Codex_Package_v1_1/Nolya_Page02_Self_Swipe_China_Entry_v1_1/assets/shan_young_original_reference.png",
+        "packages/Nolya_Page06_Friend_3_Questions_China_Entry_Codex_Package_v1_1/Nolya_Page06_Friend_3_Questions_China_Entry_v1_1/source/assets/shan_young_original_ref_02.png"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/full-mirror-glance.jpg",
+      "sha256": "50658a28d9a5efc96a1d9849deaf55477d72cbe059d099f6dc8eb333c4b7cab6",
+      "originals": [
+        "packages/Nolya_Page08_Full_Social_Mirror_China_Entry_Codex_Package_v1_1/Nolya_Page08_Full_Social_Mirror_China_Entry_v1_1/source/assets/side_glance.jpg"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/full-mirror-main.jpg",
+      "sha256": "506ecda92e803c77f20d707212001de2dffc05d23a933f991d78bac730a8eb67",
+      "originals": [
+        "packages/Nolya_Page08_Full_Social_Mirror_China_Entry_Codex_Package_v1_1/Nolya_Page08_Full_Social_Mirror_China_Entry_v1_1/source/assets/main_portrait.jpg"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/full-mirror-mobile.jpg",
+      "sha256": "c8cf654b4b487071b9281b16a65374325f2ef3271437911131b2f563f8cec519",
+      "originals": [
+        "packages/Nolya_Page08_Full_Social_Mirror_China_Entry_Codex_Package_v1_1/Nolya_Page08_Full_Social_Mirror_China_Entry_v1_1/source/assets/mobile_portrait.jpg"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/full-mirror-rest.jpg",
+      "sha256": "3e2d28a49181223a607aa6422e618d10ef35ef2483d71c8cd0d1987d78e3e65d",
+      "originals": [
+        "packages/Nolya_Page08_Full_Social_Mirror_China_Entry_Codex_Package_v1_1/Nolya_Page08_Full_Social_Mirror_China_Entry_v1_1/source/assets/side_rest.jpg"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/guess-outdoor.png",
+      "sha256": "e35c33ecfd4e1d1b8d32f8c250d347a49ba126b19ad5446428832d04fb15c038",
+      "originals": [
+        "packages/Nolya_Page18_My_Space_Return_Hub_Codex_Package_v1_0/Nolya_Page18_My_Space_Return_Hub_v1_0/source/assets/approved_ambassador_riverside.png",
+        "packages/Nolya_Page16_Daily_Pulse_Result_Codex_Package_v1_0/Nolya_Page16_Daily_Pulse_Result_v1_0/source/assets/nolya_approved_riverside_portrait.png",
+        "packages/Nolya_Page09_Guess_Me_China_Entry_Codex_Package_v1_1/Nolya_Page09_Guess_Me_China_Entry_v1_1/source/assets/approved_young_ambassador_outdoor.png",
+        "packages/Nolya_Page10_Reveal_China_Entry_Codex_Package_v1_1/Nolya_Page10_Reveal_China_Entry_v1_1/source/assets/approved_young_ambassador_outdoor.png",
+        "packages/Nolya_Page17_Choice_Journal_Codex_Package_v1_0/Nolya_Page17_Choice_Journal_v1_0/source/assets/approved_ambassador_small_reference.png"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/home-v2-reference.png",
+      "sha256": "fa889f0e67dc709847aca85f4e886fb9a32b4cc5b14257eb0f2bccf4742dde35",
+      "originals": [
+        "packages/Nolya_Page01_Home_New_Ambassador_Codex_Package_v2_0/Nolya_Page01_Home_New_Ambassador_v2_0/Nolya_Page01_Home_Desktop_zh-CN_v2_0.png"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/invite-desktop.png",
+      "sha256": "fea926d9ca4bc079e4a3e1f5ed8918282adc9ca416ca2f28e748860ee7c599cc",
+      "originals": [
+        "packages/Nolya_Page04_Invite_Friends_China_Entry_Codex_Package_v1_1/Nolya_Page04_Invite_Friends_China_Entry_v1_1/source/assets/page04_approved_friend_scene_desktop.png"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/invite-mobile.png",
+      "sha256": "35cfb1dcf82f52c12d39c999fcae31d5986f2d379f4683adb88eee62d7dc0d5b",
+      "originals": [
+        "packages/Nolya_Page04_Invite_Friends_China_Entry_Codex_Package_v1_1/Nolya_Page04_Invite_Friends_China_Entry_v1_1/source/assets/page04_approved_friend_scene_mobile.png"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/journal-small-reference.png",
+      "sha256": "e35c33ecfd4e1d1b8d32f8c250d347a49ba126b19ad5446428832d04fb15c038",
+      "originals": [
+        "packages/Nolya_Page18_My_Space_Return_Hub_Codex_Package_v1_0/Nolya_Page18_My_Space_Return_Hub_v1_0/source/assets/approved_ambassador_riverside.png",
+        "packages/Nolya_Page16_Daily_Pulse_Result_Codex_Package_v1_0/Nolya_Page16_Daily_Pulse_Result_v1_0/source/assets/nolya_approved_riverside_portrait.png",
+        "packages/Nolya_Page09_Guess_Me_China_Entry_Codex_Package_v1_1/Nolya_Page09_Guess_Me_China_Entry_v1_1/source/assets/approved_young_ambassador_outdoor.png",
+        "packages/Nolya_Page10_Reveal_China_Entry_Codex_Package_v1_1/Nolya_Page10_Reveal_China_Entry_v1_1/source/assets/approved_young_ambassador_outdoor.png",
+        "packages/Nolya_Page17_Choice_Journal_Codex_Package_v1_0/Nolya_Page17_Choice_Journal_v1_0/source/assets/approved_ambassador_small_reference.png"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/reveal-outdoor.png",
+      "sha256": "e35c33ecfd4e1d1b8d32f8c250d347a49ba126b19ad5446428832d04fb15c038",
+      "originals": [
+        "packages/Nolya_Page18_My_Space_Return_Hub_Codex_Package_v1_0/Nolya_Page18_My_Space_Return_Hub_v1_0/source/assets/approved_ambassador_riverside.png",
+        "packages/Nolya_Page16_Daily_Pulse_Result_Codex_Package_v1_0/Nolya_Page16_Daily_Pulse_Result_v1_0/source/assets/nolya_approved_riverside_portrait.png",
+        "packages/Nolya_Page09_Guess_Me_China_Entry_Codex_Package_v1_1/Nolya_Page09_Guess_Me_China_Entry_v1_1/source/assets/approved_young_ambassador_outdoor.png",
+        "packages/Nolya_Page10_Reveal_China_Entry_Codex_Package_v1_1/Nolya_Page10_Reveal_China_Entry_v1_1/source/assets/approved_young_ambassador_outdoor.png",
+        "packages/Nolya_Page17_Choice_Journal_Codex_Package_v1_0/Nolya_Page17_Choice_Journal_v1_0/source/assets/approved_ambassador_small_reference.png"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/reverse-choice-reference.png",
+      "sha256": "5b86ceecf44edb5b0cf65bdeeddec52a6725e26b8e97c4234a702b7509f7f048",
+      "originals": [
+        "packages/Nolya_Page13_Reverse_Guess_Choice_Codex_Package_v1_0/mockups/Nolya_Page13_Reverse_Guess_Choice_Desktop_zh-CN_v1_0.png"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/reverse-ready-reference.png",
+      "sha256": "ec1f1d77b899fc04a3bd47a4bb7e16070be9b8b566aad1a1ebaa9ad17df12f4b",
+      "originals": [
+        "packages/Nolya_Page12_Reverse_Invite_Sent_Codex_Package_v1_0/Nolya_Page12_Reverse_Invite_Sent_v1_0/mockups/Nolya_Page12_Reverse_Invite_Sent_Desktop_zh-CN_v1_0.png"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/reverse-reveal-reference.png",
+      "sha256": "2d7ec518616bde8ac3c000de86af08492918a888f3216cf2c6c094a862876938",
+      "originals": [
+        "packages/Nolya_Page14_Reverse_Reveal_Codex_Package_v1_0/Nolya_Page14_Reverse_Reveal_v1_0/mockups/Nolya_Page14_Reverse_Reveal_Desktop_zh-CN_v1_0.png"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/reverse-start-outdoor.png",
+      "sha256": "3ca06fc814ab345d0cb1a3a80cd35dffa038f1bafdfef7b50fd33a5fe3f89e2a",
+      "originals": [
+        "packages/Nolya_Page11_Reverse_Guess_Codex_Package_v1_0/Nolya_Page11_Reverse_Guess_China_Entry_v1_0/source/assets/approved_young_ambassador_outdoor.png"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/self-question-portrait.jpg",
+      "sha256": "bdc285f86f960ac9ee8c059ba365b84438b70e52550bba85cf357d1775364387",
+      "originals": [
+        "NolyaV1.1/Nolya_Page02_Self_Swipe_China_Entry_v1_1/assets/shan_young_portrait_natural_crop.jpg",
+        "packages/Nolya_Page02_Self_Swipe_China_Entry_Codex_Package_v1_1/Nolya_Page02_Self_Swipe_China_Entry_v1_1/assets/shan_young_portrait_natural_crop.jpg"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/self-result-mobile.jpg",
+      "sha256": "13029634abc87b06991a302de319aa8f8469759c71e0f0c512f01a56188f4c2f",
+      "originals": [
+        "packages/Nolya_Page03_Self_Result_China_Entry_Codex_Package_v1_1/Nolya_Page03_Self_Result_China_Entry_v1_1/source/assets/shan_young_mobile_crop_v1_0.jpg",
+        "packages/Nolya_Page03_Self_Result_China_Entry_Codex_Package_v1_1/Nolya_Page03_Self_Result_China_Entry_v1_1/source/assets/shan_young_outdoor_insert_v1_0.jpg"
+      ]
+    },
+    {
+      "asset": "frontend/public/design/space-riverside.png",
+      "sha256": "e35c33ecfd4e1d1b8d32f8c250d347a49ba126b19ad5446428832d04fb15c038",
+      "originals": [
+        "packages/Nolya_Page18_My_Space_Return_Hub_Codex_Package_v1_0/Nolya_Page18_My_Space_Return_Hub_v1_0/source/assets/approved_ambassador_riverside.png",
+        "packages/Nolya_Page16_Daily_Pulse_Result_Codex_Package_v1_0/Nolya_Page16_Daily_Pulse_Result_v1_0/source/assets/nolya_approved_riverside_portrait.png",
+        "packages/Nolya_Page09_Guess_Me_China_Entry_Codex_Package_v1_1/Nolya_Page09_Guess_Me_China_Entry_v1_1/source/assets/approved_young_ambassador_outdoor.png",
+        "packages/Nolya_Page10_Reveal_China_Entry_Codex_Package_v1_1/Nolya_Page10_Reveal_China_Entry_v1_1/source/assets/approved_young_ambassador_outdoor.png",
+        "packages/Nolya_Page17_Choice_Journal_Codex_Package_v1_0/Nolya_Page17_Choice_Journal_v1_0/source/assets/approved_ambassador_small_reference.png"
+      ]
+    }
+  ]
+}

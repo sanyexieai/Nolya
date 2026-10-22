@@ -1,0 +1,88 @@
+name: Verify Nolya
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install Rust toolchain
+        run: rustup toolchain install 1.90.0 --profile minimal --component rustfmt --component clippy && rustup default 1.90.0
+      - name: Install locked frontend dependencies
+        run: npm ci --prefix frontend
+      - name: Unit, component, build and HTTP security regression
+        run: ./scripts/verify.sh
+      - name: Backup, restore and retention regression
+        run: |
+          python3 scripts/ops/test_backup.py
+          python3 scripts/ops/test_api_restore.py
+      - name: Build production container
+        run: docker build --tag nolya:ci .
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            frontend/package-lock.json
+            tests/package-lock.json
+      - name: Install Rust
+        run: rustup toolchain install 1.90.0 --profile minimal && rustup default 1.90.0
+      - name: Install locked frontend and browser dependencies
+        run: |
+          npm ci --prefix frontend
+          npm ci --prefix tests
+          tests/node_modules/.bin/playwright install --with-deps chromium
+          sudo apt-get update
+          sudo apt-get install -y fonts-noto-cjk
+          fc-match "Noto Sans CJK SC" | grep NotoSansCJK
+      - name: Run real browser acceptance with disposable local data
+        run: bash tests/browser_run.sh
+      # Keep every screenshot and report, split into independently downloadable archives.
+      - name: Keep synthetic desktop screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nolya-browser-desktop
+          path: artifacts/browser/*desktop*.png
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Keep synthetic mobile screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nolya-browser-mobile
+          path: artifacts/browser/*mobile*.png
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Keep exported posters and browser reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nolya-browser-posters-and-reports
+          path: |
+            artifacts/browser/
+            !artifacts/browser/*desktop*.png
+            !artifacts/browser/*mobile*.png
+          if-no-files-found: warn
+          retention-days: 7

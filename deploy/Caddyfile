@@ -1,0 +1,33 @@
+{
+    servers {
+        timeouts {
+            read_header 10s
+            read_body 15s
+            write 30s
+            idle 2m
+        }
+    }
+}
+
+{$NOLYA_DOMAIN} {
+    request_body {
+        max_size 32KB
+    }
+    encode zstd gzip
+    header {
+        Strict-Transport-Security "max-age=31536000"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "no-referrer"
+        -Server
+    }
+    # No access log by default: invite URLs and query strings can be private.
+    # Do not expose operational health details to the public internet.
+    @health path /api/v1/health /api/v1/health/*
+    respond @health 404
+    reverse_proxy app:3000 {
+        transport http {
+            dial_timeout 5s
+            response_header_timeout 30s
+        }
+    }
+}
