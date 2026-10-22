@@ -170,6 +170,34 @@ export function SelfResultPage() {
   const [feedbackError, setFeedbackError] = useState("");
   const [busy, setBusy] = useState(false);
   const result = resource.data;
+  const dimensionTitles: Record<string, string> = {
+    D1: "做事方式",
+    D2: "表达方式",
+    D3: "体验偏好",
+    D4: "情绪表达",
+  };
+  const traits =
+    result?.observation_details ??
+    (result
+      ? [
+          ...result.dimensions.filter((d) => d.state === "stable").slice(0, 2),
+          ...result.dimensions
+            .filter((d) => d.state === "contextual")
+            .slice(0, 1),
+        ].map((d) => ({
+          dimension: d.dimension,
+          title: dimensionTitles[d.dimension] || "其他维度",
+          value: d.state === "contextual" ? "视情境而定" : `偏向${d.label}`,
+          state: d.state,
+          description:
+            d.state === "contextual"
+              ? "不同情境的选择不同，暂不归为单一倾向。"
+              : "",
+        }))
+      : []);
+  const shareSummary = traits.length
+    ? traits.map((t) => `${t.title}：${t.value}。`).join("")
+    : result?.summary || "";
   async function rate(value: string) {
     if (!result) return;
     setBusy(true);
@@ -239,14 +267,27 @@ export function SelfResultPage() {
               </figcaption>
             </figure>
             <section className="card evidence-card">
-              <Badge>本次回答结果</Badge>
-              <h2>{result.summary}</h2>
-              <div className="observations">
-                {result.observations.map((text, i) => (
-                  <div className="observation" key={i}>
-                    <span>{String(i + 1).padStart(2, "0")}</span>
-                    <p>{text}</p>
-                  </div>
+              <Badge>基于本次 8 道题</Badge>
+              <h2>你的选择倾向</h2>
+              <p className="self-trait-explanation">
+                以下是不同维度的结果，不是二选一。仅反映本次回答。
+              </p>
+              <div className="self-traits" aria-label="不同维度的选择倾向">
+                {traits.map((trait) => (
+                  <section
+                    className="self-trait-card"
+                    key={trait.dimension}
+                    data-dimension={trait.dimension}
+                    aria-label={trait.title}
+                  >
+                    <h3 className="self-trait-title">{trait.title}</h3>
+                    <p className="self-trait-value">{trait.value}</p>
+                    {trait.description && (
+                      <p className="self-trait-description">
+                        {trait.description}
+                      </p>
+                    )}
+                  </section>
                 ))}
               </div>
               <div className="feedback">
@@ -285,7 +326,7 @@ export function SelfResultPage() {
               <ArrowRight size={18} />
             </ActionLink>
           </div>
-          <ResultShare kind="self" summary={result.summary} />
+          <ResultShare kind="self" summary={shareSummary} />
           <div className="result-bottom">
             <Link className="text-link" to="/today">
               回答今日问题 <ArrowRight size={16} />

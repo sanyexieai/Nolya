@@ -96,6 +96,18 @@ async fn persistent_sessions_isolation_and_scoring() {
         .iter()
         .all(|d| d["score"] == 1));
     assert_eq!(result["target_dimensions"], json!(["D1", "D2", "D4"]));
+    let traits = result["observation_details"].as_array().unwrap();
+    assert_eq!(traits.len(), 2);
+    assert_eq!(traits[0]["dimension"], "D1");
+    assert_eq!(traits[0]["title"], "做事方式");
+    assert_eq!(traits[0]["value"], "偏向有计划");
+    assert_eq!(traits[1]["dimension"], "D2");
+    assert_eq!(traits[1]["title"], "表达方式");
+    assert_eq!(traits[1]["value"], "偏向直接表达");
+    assert_eq!(
+        result["summary"],
+        "做事方式：偏向有计划。表达方式：偏向直接表达。"
+    );
     let (_, empty, _) = request(&app, Some(&b), "GET", "/self/latest", None, None).await;
     assert!(empty.is_null());
     drop(app);
@@ -550,4 +562,47 @@ async fn static_spa_deep_links_are_200_but_api_and_asset_misses_are_404() {
         .unwrap()
         .to_bytes()
         .is_empty());
+}
+
+#[tokio::test]
+async fn self_traits_preserve_negative_and_contextual_dimensions() {
+    let (_, _, app) = setup();
+    let owner = guest(&app).await;
+    let (_, bank, _) = request(&app, Some(&owner), "GET", "/self/questions", None, None).await;
+    let answers = bank["questions"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .enumerate()
+        .map(|(i, q)| {
+            let choice = if i < 2 {
+                "B"
+            } else if i < 4 || i % 2 == 0 {
+                "A"
+            } else {
+                "B"
+            };
+            json!({"question_id":q["id"],"choice":choice})
+        })
+        .collect::<Vec<_>>();
+    let (status, result, _) = request(
+        &app,
+        Some(&owner),
+        "POST",
+        "/self/assessments",
+        Some(json!({"version":bank["version"],"answers":answers})),
+        Some("dimension-result-test"),
+    )
+    .await;
+    assert_eq!(status, StatusCode::OK);
+    let traits = result["observation_details"].as_array().unwrap();
+    assert_eq!(traits.len(), 3);
+    assert_eq!(traits[0]["value"], "偏向随性");
+    assert_eq!(traits[1]["value"], "偏向直接表达");
+    assert_eq!(traits[2]["title"], "体验偏好");
+    assert_eq!(traits[2]["value"], "视情境而定");
+    assert_eq!(traits[2]["state"], "contextual");
+    assert_eq!(result["dimensions"][0]["score"], -1);
+    assert_eq!(result["dimensions"][2]["score"], 0);
+    assert!(!result["summary"].as_str().unwrap().contains("有计划"));
 }

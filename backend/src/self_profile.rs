@@ -65,26 +65,46 @@ pub fn assessment_json(db: &Connection, id: &str, user: &str) -> ApiResult<Value
     let answers: Vec<Answer> = serde_json::from_str(&answers)?;
     let targets: Vec<String> = serde_json::from_str(&targets)?;
     let dimensions=scores.iter().map(|(dimension,score)|{let(a,b)=catalog::dimension_labels(dimension);json!({"dimension":dimension,"score":score,"label":if *score==1{a}else if *score==-1{b}else{"看场景"},"state":if *score==0{"contextual"}else{"stable"}})}).collect::<Vec<_>>();
-    let mut observations = scores
+    // Keep the existing two stable + at most one contextual selection policy.
+    // Attach dimension identities instead of asking clients to parse display prose.
+    let selected = scores
         .iter()
-        .filter(|(_, s)| **s != 0)
+        .filter(|(_, score)| **score != 0)
         .take(2)
-        .map(|(d, s)| {
-            let (a, b) = catalog::dimension_labels(d);
-            format!("在这两个场景里，你更偏向{}。", if *s == 1 { a } else { b })
+        .chain(scores.iter().filter(|(_, score)| **score == 0).take(1));
+    let observation_details = selected.map(|(dimension, score)| {
+        let (a, b) = catalog::dimension_labels(dimension);
+        let title = match dimension.as_str() {
+            "D1" => "做事方式", "D2" => "表达方式",
+            "D3" => "体验偏好", "D4" => "情绪表达", _ => "其他维度",
+        };
+        let label = if *score == 1 { a } else if *score == -1 { b } else { "看场景" };
+        let value = if *score == 0 { "视情境而定".to_string() } else { format!("偏向{label}") };
+        let description = if *score == 0 {
+            "不同情境的选择不同，暂不归为单一倾向。".to_string()
+        } else {
+            "".to_string()
+        };
+        json!({"dimension":dimension,"title":title,"value":value,"state":if *score == 0 {"contextual"} else {"stable"},"description":description})
+    }).collect::<Vec<_>>();
+    // Legacy field remains available, now explicitly names each independent dimension.
+    let observations = observation_details
+        .iter()
+        .map(|item| {
+            format!(
+                "{}：{}。",
+                item["title"].as_str().unwrap(),
+                item["value"].as_str().unwrap()
+            )
         })
         .collect::<Vec<_>>();
-    if let Some((d, _)) = scores.iter().find(|(_, s)| **s == 0) {
-        let (a, b) = catalog::dimension_labels(d);
-        observations.push(format!("在「{a} / {b}」这件事上，你比较看场景。"));
-    }
     let summary = if observations.is_empty() {
-        "这些选择只是此刻的自我观察，不是人格定论。".into()
+        "暂时没有可展示的选择倾向。".into()
     } else {
         observations.join("")
     };
     Ok(
-        json!({"id":id,"version":version,"created_at":created,"answers":answers.iter().map(|a|json!({"id":format!("{}:{}",id,a.question_id),"question_id":a.question_id,"choice":a.choice,"answered_at":created})).collect::<Vec<_>>(),"dimensions":dimensions,"observations":observations,"summary":summary,"target_dimensions":targets}),
+        json!({"id":id,"version":version,"created_at":created,"answers":answers.iter().map(|a|json!({"id":format!("{}:{}",id,a.question_id),"question_id":a.question_id,"choice":a.choice,"answered_at":created})).collect::<Vec<_>>(),"dimensions":dimensions,"observations":observations,"observation_details":observation_details,"summary":summary,"target_dimensions":targets}),
     )
 }
 pub fn latest_id(db: &Connection, user: &str) -> ApiResult<Option<String>> {

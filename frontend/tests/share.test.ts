@@ -10,6 +10,8 @@ import {
   renderSharePoster,
   loadShareArtwork,
   shareArtwork,
+  shareTitle,
+  shareContextLabel,
   posterPhotoLayout,
   coverSourceRect,
   invitationShareKind,
@@ -353,4 +355,35 @@ test("image decoding must finish before a PNG can be exported and abort cancels 
   await assert.rejects(loadShareArtwork("guess"), /无法解码/);
   decodeFailure = false;
   assert.ok(await loadShareArtwork("guess"));
+});
+
+test("all five concise square poster titles fit without orphan characters", () => {
+  const measure = (value: string) =>
+    Array.from(value).reduce(
+      (sum, char) =>
+        sum + (/\s/.test(char) ? 16 : /[0-9]/.test(char) ? 35 : 50),
+      0,
+    );
+  for (const kind of [
+    "friend",
+    "guess",
+    "reverse",
+    "self",
+    "mirror",
+  ] as const) {
+    assert.equal(
+      wrapPosterText(shareTitle(kind), measure, 450).length,
+      1,
+      kind,
+    );
+  }
+});
+
+test("poster header describes only the current sharing context", () => {
+  assert.deepEqual(
+    ["friend", "guess", "reverse", "self", "mirror"].map((kind) =>
+      shareContextLabel(kind as keyof typeof shareArtwork),
+    ),
+    ["朋友反馈邀请", "猜答案邀请", "定向反向邀请", "自我评估", "镜像对比"],
+  );
 });

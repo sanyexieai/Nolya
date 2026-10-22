@@ -115,6 +115,13 @@ export interface SelfResult {
     label: string;
     state: "stable" | "contextual";
   }[];
+  observation_details?: {
+    dimension: string;
+    title: string;
+    value: string;
+    state: "stable" | "contextual";
+    description: string;
+  }[];
   observations: string[];
   summary: string;
   target_dimensions: string[];

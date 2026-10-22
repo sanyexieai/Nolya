@@ -83,11 +83,43 @@ const shareChecks = require('./share_browser.cjs');
       samples.push({check:'auth-legible-image-and-form',...auth});
       if(!auth.captionOpaque||!auth.cardOpaque||auth.contrasts.some(sample=>sample.ratio<4.5))problems.push('Auth caption and form text must remain on opaque high-contrast surfaces');
       if(size==='mobile'&&auth.captionTop<auth.photoBottom-.5)problems.push('Mobile auth caption must stay below the photo, not cover its face');
+      // Earlier checks open independent respondent and failure-test pages.
+      // Keyboard acceptance must exercise this foreground authentication page.
+      await targetPage.bringToFront();
       await targetPage.getByLabel('用户名',{exact:true}).focus();
       await targetPage.keyboard.press('Tab');
-      const passwordFocus=await targetPage.getByLabel('密码',{exact:true}).evaluate(element=>element===document.activeElement&&element.matches(':focus-visible')&&parseFloat(getComputedStyle(element).outlineWidth)>=2);
-      if(!passwordFocus)problems.push('Auth password input must remain keyboard-reachable with a visible focus outline');
+      // Native focus and its rendered indicator can settle on different frames.
+      // Keep the keyboard/navigation requirement; never focus the password for
+      // the test or substitute a screenshot-only outline.
+      let passwordFocus=false;
+      try {
+        await targetPage.waitForFunction(()=>{
+          const element=document.querySelector('#password');
+          return element===document.activeElement&&element.matches(':focus-visible')&&parseFloat(getComputedStyle(element).outlineWidth)>=2;
+        },null,{timeout:5000,polling:'raf'});
+        passwordFocus=true;
+      } catch(error) {
+        if(error.name!=='TimeoutError')throw error;
+      }
+      const focusDiagnostic=await targetPage.getByLabel('密码',{exact:true}).evaluate(element=>{
+        const style=getComputedStyle(element),box=element.getBoundingClientRect(),active=document.activeElement;
+        return {active:element===active,focused:element.matches(':focus'),focusVisible:element.matches(':focus-visible'),documentFocused:document.hasFocus(),activeTag:active?.tagName,activeId:active?.id||'',disabled:element.disabled,tabIndex:element.tabIndex,outline:{width:style.outlineWidth,style:style.outlineStyle,color:style.outlineColor,offset:style.outlineOffset},bounds:{left:box.left,right:box.right,top:box.top,bottom:box.bottom},viewport:{width:innerWidth,height:innerHeight}};
+      });
+      samples.push({check:'auth-password-keyboard-focus',...focusDiagnostic});
+      if(!passwordFocus){
+        problems.push('Auth password input must remain keyboard-reachable with a visible focus outline');
+        await targetPage.screenshot({path:path.join(out,`${label}-${size}-focus-failure.png`),fullPage:false,animations:'disabled'});
+        console.error('Auth focus diagnostic '+label+'-'+size+' '+JSON.stringify(focusDiagnostic));
+      }
       await targetPage.evaluate(()=>{if(document.activeElement instanceof HTMLElement)document.activeElement.blur();});
+    }
+    if(label==='self-result') {
+      const cards=await targetPage.locator('.self-traits > .self-trait-card').evaluateAll(elements=>elements.map(element=>{
+        const title=element.querySelector('.self-trait-title').getBoundingClientRect(),value=element.querySelector('.self-trait-value').getBoundingClientRect(),description=element.querySelector('.self-trait-description')?.getBoundingClientRect(),box=element.getBoundingClientRect();
+        return {dimension:element.dataset.dimension,left:box.left,right:box.right,top:box.top,bottom:box.bottom,titleBottom:title.bottom,valueTop:value.top,valueBottom:value.bottom,descriptionTop:description?.top??null};
+      }));
+      samples.push({check:'self-independent-labeled-trait-cards',cards});
+      if(cards.length!==3||cards.some((card,index)=>card.titleBottom>card.valueTop+.5||card.descriptionTop!==null&&card.valueBottom>card.descriptionTop+.5||cards.slice(index+1).some(other=>Math.min(card.right,other.right)-Math.max(card.left,other.left)>1&&Math.min(card.bottom,other.bottom)-Math.max(card.top,other.top)>1)))problems.push('Independent result labels, values, descriptions and cards must not overlap');
     }
     if(label==='space'&&size==='mobile') {
       const cards=await targetPage.locator('.space-source-title').evaluateAll(elements=>elements.map(element=>{
@@ -206,6 +238,10 @@ const shareChecks = require('./share_browser.cjs');
         await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
         const controls=await actions.locator('a.button').evaluateAll(elements=>elements.map(element=>{const box=element.getBoundingClientRect(),nav=document.querySelector('.mobile-nav').getBoundingClientRect();return {height:box.height,top:box.top,bottom:box.bottom,navTop:nav.top,hit:element.contains(document.elementFromPoint(box.left+box.width/2,box.top+box.height/2))};}));
         assert.equal(controls.length,2);for(const control of controls)assert(control.height>=44&&control.top>=0&&control.bottom<=control.navTop&&control.hit,`Home actions must remain usable at ${width}: ${JSON.stringify(control)}`);
+        // Full-page screenshots start at scroll zero so offscreen fixed
+        // accessibility links are not composited into the document capture.
+        // Reachability above was still measured at the actual action scroll.
+        await settle(page,undefined,`home-type-${width}-capture`);
         await page.screenshot({path:path.join(out,`home-type-mobile-${width}.png`),fullPage:true,animations:'disabled'});
       }
       homeTypography.push({width,...type});
@@ -228,13 +264,42 @@ const shareChecks = require('./share_browser.cjs');
     await page.reload();
     await page.getByRole('radio').first().waitFor();
     assert.equal(await page.getByRole('radio').first().getAttribute('aria-checked'), 'false');
+    // Real answers produce two different stable traits (including a reverse
+    // polarity) plus contextual dimensions, not an injected result fixture.
+    const selfChoices=[0,0,1,1,0,1,0,1];
     for(let i=0;i<8;i++) {
       await page.getByRole('radio').first().waitFor();
-      await page.getByRole('radio').nth(i%2).click();
+      await page.getByRole('radio').nth(selfChoices[i]).click();
       await page.getByRole('button',{name:i===7?'提交并查看结果':/下一题/}).click();
     }
     await page.waitForURL('**/self/result');
     await page.locator('.design-self-result .evidence-card').waitFor();
+    const latestSelfResponse=await context.request.get(base+'/api/v1/self/latest');
+    assert.equal(latestSelfResponse.status(),200,'Read the actual completed self assessment for display acceptance');
+    const latestSelf=await latestSelfResponse.json();
+    const selfEvidence=await page.locator('.design-self-result .evidence-card').evaluate(element=>{
+      const all=element.innerText;
+      const cards=[...element.querySelectorAll('.self-traits > .self-trait-card')].map(card=>({
+        dimension:card.dataset.dimension,title:card.querySelector('.self-trait-title').innerText.trim(),value:card.querySelector('.self-trait-value').innerText.trim(),description:card.querySelector('.self-trait-description')?.innerText.trim()||'',
+        tag:card.tagName,label:card.getAttribute('aria-label'),interactive:card.matches('button,a,input,[role="radio"],[role="option"],[aria-checked],[aria-selected],.option,.selected')||!!card.querySelector('button,a,input,select,[role="radio"],[aria-checked],[aria-selected]'),cursor:getComputedStyle(card).cursor,
+      }));
+      return {cards,valueOccurrences:cards.map(card=>all.split(card.value).length-1),titleOccurrences:cards.map(card=>all.split(card.title).length-1)};
+    });
+    const selectedDimensions=[...latestSelf.dimensions.filter(item=>item.score!==0).slice(0,2),...latestSelf.dimensions.filter(item=>item.score===0).slice(0,1)];
+    assert.equal(selectedDimensions.length,3,'Synthetic real answers must exercise two stable traits plus one contextual result');
+    assert.equal(selectedDimensions.filter(item=>item.state==='stable').length,2);
+    assert.deepEqual(selfEvidence.cards.map(card=>card.dimension),selectedDimensions.map(item=>item.dimension),'Keep all selected independent dimensions, in deterministic order');
+    assert.equal(new Set(selfEvidence.cards.map(card=>card.dimension)).size,selfEvidence.cards.length,'One dimension must have exactly one result card');
+    assert.equal(new Set(selfEvidence.cards.map(card=>card.title)).size,selfEvidence.cards.length,'Different traits must have distinct visible dimension labels');
+    const traitNames={D1:'做事方式',D2:'表达方式',D3:'体验偏好',D4:'情绪表达'};
+    assert.deepEqual(selfEvidence.cards.map(({dimension,title,value,description})=>({dimension,title,value,description})),latestSelf.observation_details.map(({dimension,title,value,description})=>({dimension,title,value,description})),'Render every actual structured observation without dropping or inventing a result');
+    for(const [index,card] of selfEvidence.cards.entries()){
+      const dimension=selectedDimensions[index];
+      assert.equal(card.title,traitNames[dimension.dimension]);
+      assert.equal(card.value,dimension.score===0?'视情境而定':'偏向'+dimension.label,'Each dimension must show only its actual calculated value, not both opposing options');
+      assert(card.tag==='SECTION'&&card.label===card.title&&!card.interactive&&card.cursor!=='pointer','Trait results must be independent labeled read-only cards, not selectable answer radios');
+    }
+    assert(selfEvidence.valueOccurrences.every(count=>count===1)&&selfEvidence.titleOccurrences.every(count=>count===1),'Trait values and labels must not repeat as an unlabeled concatenated summary elsewhere in the result card');
     await captureBoth(page,'self-result');
     assert.equal(await page.getByRole('region',{name:'分享结果',exact:true}).count(),0);
     await page.getByRole('button',{name:'分享结果',exact:true}).click();
@@ -612,6 +677,6 @@ const shareChecks = require('./share_browser.cjs');
     assert.equal(new Set(captures.map(capture=>capture.designPage).filter(Boolean)).size,18,'Every original Page01–18 requires a desktop and mobile capture');
     writeManifest();
     if(errors.length)throw new Error('Browser errors: '+errors.join(';'));
-    console.log(JSON.stringify({status:'passed',checks:['home_bold_cjk_typography','self_keyboard_radio','self_required_answer','self_back_preserves_selection','self_interruption_resets','self_8_answers','self_refresh_persistence','daily_vote','friend_consent_owner_exclusion','friend_submission_refresh','mirror_one_response','guess_hidden_until_submit','reveal_refresh','revoke_cancel_confirm_hides_reveal','guest_registration_preserves_self','invitation_filters_and_share_url','history_repeat_compare_refresh','journal_choice_date_reset','password_rotates_sessions','recovery_confirm_hide','logout_all_sessions','recovery_and_relogin_preserve_history','6_secondary_routes','4_mobile_no_overflow','mobile_computed_text_contrast','fixed_nav_scroll_clearance','responsive_design_320_430_768_1440','design_assets_loaded','result_share_explicit_preview_app_link','share_four_platform_png_downloads','share_real_qr_decode','share_caption_edit','share_native_mock_cancel_success_error','share_mobile_no_overflow','share_mobile_visible_unobscured_download_copy','keyboard_skip_link_functional_hidden_when_unfocused','all_design_states_desktop_mobile','mirror_three_independent_responses','reverse_directed_access','reverse_chooser_sent_recipient_reveal','space_icon_text_no_overlap','journal_mobile_single_line_filter_actions','reveal_answer_letters_no_overlap','mirror_mobile_readable_stacked_strips','share_original_photo_pixels_in_downloaded_png','share_native_decode_before_png','share_photo_asset_failure_retry','share_repeated_platform_cycles_and_exports','share_all_five_kinds_photo_posters','auth_original_photo_and_contrast','auth_mobile_photo_caption_no_overlap','home_mobile_type_smaller_desktop_unchanged'],page_errors:errors,screenshots:out}));
+    console.log(JSON.stringify({status:'passed',checks:['home_bold_cjk_typography','self_keyboard_radio','self_required_answer','self_back_preserves_selection','self_interruption_resets','self_8_answers','self_refresh_persistence','daily_vote','friend_consent_owner_exclusion','friend_submission_refresh','mirror_one_response','guess_hidden_until_submit','reveal_refresh','revoke_cancel_confirm_hides_reveal','guest_registration_preserves_self','invitation_filters_and_share_url','history_repeat_compare_refresh','journal_choice_date_reset','password_rotates_sessions','recovery_confirm_hide','logout_all_sessions','recovery_and_relogin_preserve_history','6_secondary_routes','4_mobile_no_overflow','mobile_computed_text_contrast','fixed_nav_scroll_clearance','responsive_design_320_430_768_1440','design_assets_loaded','result_share_explicit_preview_app_link','share_four_platform_png_downloads','share_real_qr_decode','share_caption_edit','share_native_mock_cancel_success_error','share_mobile_no_overflow','share_mobile_visible_unobscured_download_copy','keyboard_skip_link_functional_hidden_when_unfocused','all_design_states_desktop_mobile','mirror_three_independent_responses','reverse_directed_access','reverse_chooser_sent_recipient_reveal','space_icon_text_no_overlap','journal_mobile_single_line_filter_actions','reveal_answer_letters_no_overlap','mirror_mobile_readable_stacked_strips','share_original_photo_pixels_in_downloaded_png','share_native_decode_before_png','share_photo_asset_failure_retry','share_repeated_platform_cycles_and_exports','share_all_five_kinds_photo_posters','auth_original_photo_and_contrast','auth_mobile_photo_caption_no_overlap','home_mobile_type_smaller_desktop_unchanged','self_independent_labeled_traits_without_repeated_or_opposing_values'],page_errors:errors,screenshots:out}));
   } finally { await browser.close(); }
 })().catch(e=>{console.error(e.stack);process.exitCode=1});

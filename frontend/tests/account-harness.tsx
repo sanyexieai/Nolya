@@ -10,6 +10,7 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
+import { SelfResultPage } from "../src/Self";
 import { RecoverPage } from "../src/Security";
 import { GuessNewPage, GuessPage } from "../src/Guess";
 import { InvitePage } from "../src/Friends";
@@ -53,6 +54,7 @@ export function mount(element: HTMLElement) {
             <Route path="/recover" element={<RecoverPage />} />
             <Route path="/self/history" element={<HistoryPage />} />
             <Route path="/journal" element={<JournalPage />} />
+            <Route path="/self/result" element={<SelfResultPage />} />
             <Route path="/guess/new" element={<GuessNewPage />} />
             <Route path="/guess/:token" element={<GuessPage />} />
             <Route path="/invite" element={<KeyedInvite />} />

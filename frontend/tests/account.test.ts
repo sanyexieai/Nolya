@@ -1250,3 +1250,70 @@ for (const directed of [false, true]) {
     }
   });
 }
+
+for (const structured of [true, false]) {
+  test(`self result labels independent dimensions without choice controls (${structured ? "structured" : "legacy"} API)`, async () => {
+    const traits = [
+      {
+        dimension: "D1",
+        title: "做事方式",
+        value: "偏向有计划",
+        state: "stable",
+        description: "",
+      },
+      {
+        dimension: "D2",
+        title: "表达方式",
+        value: "偏向直接表达",
+        state: "stable",
+        description: "",
+      },
+    ];
+    handlers.set("/self/latest", () =>
+      Response.json({
+        id: "two-traits",
+        version: "v1",
+        created_at: "2026-10-22",
+        answers: [],
+        dimensions: [
+          { dimension: "D1", label: "有计划", score: 1, state: "stable" },
+          { dimension: "D2", label: "直接表达", score: 1, state: "stable" },
+        ],
+        ...(structured ? { observation_details: traits } : {}),
+        observations: ["LEGACY OBSERVATION MUST NOT RENDER"],
+        summary: "LEGACY SUMMARY MUST NOT RENDER",
+        target_dimensions: [],
+      }),
+    );
+    await harness.act(async () => harness.go("/self/result"));
+    const evidence = dom.window.document.querySelector(".evidence-card")!;
+    assert.equal(evidence.querySelector("h2")?.textContent, "你的选择倾向");
+    assert.equal(evidence.querySelectorAll(".self-trait-card").length, 2);
+    for (const trait of traits) {
+      const cards = evidence.querySelectorAll(
+        `[data-dimension="${trait.dimension}"]`,
+      );
+      assert.equal(cards.length, 1);
+      assert.equal(
+        cards[0].querySelector(".self-trait-title")?.textContent,
+        trait.title,
+      );
+      assert.equal(
+        cards[0].querySelector(".self-trait-value")?.textContent,
+        trait.value,
+      );
+      assert.equal(
+        (evidence.textContent || "").split(trait.value).length - 1,
+        1,
+      );
+    }
+    assert.equal(
+      evidence.querySelectorAll(
+        '[role="radio"],input[type="radio"],[aria-checked]',
+      ).length,
+      0,
+    );
+    assert.ok(!evidence.textContent?.includes("LEGACY"));
+    assert.match(evidence.textContent!, /不同维度/);
+  });
+}

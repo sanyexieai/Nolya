@@ -17,8 +17,9 @@ test("Page02 and03 use source photography, never fixed result screenshots", () =
   assert.ok(self.includes("self-result-mobile.jpg"));
   assert.ok(!self.includes("result-petal"));
   assert.ok(!self.includes("side-art-circle"));
-  assert.ok(self.includes("{result.summary}"));
-  assert.ok(self.includes("result.observations.map"));
+  assert.ok(self.includes("{shareSummary}"));
+  assert.ok(self.includes("result?.observation_details"));
+  assert.ok(self.includes("traits.map"));
   assert.ok(self.includes("answers[question.id]"));
 });
 test("Page05/06 retain real consent and questions with separate scene art", () => {

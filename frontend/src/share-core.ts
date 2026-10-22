@@ -50,15 +50,24 @@ export const sharePlatforms: {
       "由系统分享面板选择可用应用。应用列表取决于设备；若没有目标应用，可复制链接或保存海报后自行发送。",
   },
 ];
+export function shareContextLabel(kind: ShareKind) {
+  return {
+    friend: "朋友反馈邀请",
+    guess: "猜答案邀请",
+    reverse: "定向反向邀请",
+    self: "自我评估",
+    mirror: "镜像对比",
+  }[kind];
+}
 export function shareTitle(kind: ShareKind) {
   return kind === "self"
     ? "我的自我评估结果"
     : kind === "mirror"
       ? "我的镜像对比结果"
       : kind === "friend"
-        ? "邀请朋友回答 3 道题"
+        ? "邀请朋友答 3 道题"
         : kind === "reverse"
-          ? "请原邀请人猜我的答案"
+          ? "请原邀请人猜答案"
           : "邀请朋友猜我的答案";
 }
 export function defaultShareText(kind: ShareKind) {
@@ -225,7 +234,7 @@ export async function renderSharePoster(
   ctx.fillText("Nolya", 100, 150);
   ctx.fillStyle = "#645578";
   ctx.font = "24px sans-serif";
-  ctx.fillText("邀请朋友参与，或分享评估结果", 100, 203);
+  ctx.fillText(shareContextLabel(kind), 100, 203);
   ctx.font = "21px sans-serif";
   ctx.fillText("品牌示意图 · 非用户照片", 660, 203);
   const box = posterPhotoLayout(height);

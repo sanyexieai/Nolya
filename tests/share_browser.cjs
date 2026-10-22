@@ -187,7 +187,10 @@ module.exports=async function checkSocialShare(page,url,out){
  const payload=await page.evaluate(()=>window.__shareProbe.calls[1]);assert.equal(payload.files[0].type,'image/png');assert(payload.files[0].size>10000);assert.equal(payload.url,undefined);
  await page.evaluate(()=>window.__shareProbe.mode='error');await panel.getByRole('button',{name:'系统分享链接',exact:true}).click();
  await panel.getByText('系统分享未完成。你可以复制链接或保存海报后自行分享。',{exact:true}).waitFor();
- await settleScroll(panel,'start');
+ // A full-page capture must start at scroll zero: otherwise Chromium can
+ // composite offscreen fixed elements into the long image at the scroll offset.
+ // Viewport-only mobile action captures below intentionally retain their scroll.
+ await settleScroll(page.locator('body'),'start');
  await page.screenshot({path:path.join(out,'share-desktop.png'),fullPage:true,animations:'disabled'});
  for(const width of [320,390]){
   await page.setViewportSize({width,height:844});
