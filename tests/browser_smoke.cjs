@@ -139,10 +139,31 @@ const path = require('path');
     assert(await page.locator('.hero-copy h1').evaluate(el=>Number(getComputedStyle(el).fontWeight)>=700),'Home CJK headline must retain bold hierarchy');
     // The accessibility link is hidden only when unfocused, and is functional
     // from the keyboard. Screenshot cleanup must not remove this navigation.
+    await settle(page,undefined,'home-keyboard-ready');
     await page.keyboard.press('Tab');
-    assert(await page.locator('.skip-link').evaluate(element => element === document.activeElement));
+    try {
+      // Check focus and rendered geometry in one frame, after real keyboard
+      // navigation. A fixed sleep or programmatic focus could conceal defects.
+      await page.waitForFunction(()=>{
+        const link=document.querySelector('.skip-link');
+        if(!link||link!==document.activeElement||!link.matches(':focus'))return false;
+        const box=link.getBoundingClientRect();
+        return box.width>0&&box.height>0&&box.top>=0&&box.left>=0&&box.right<=innerWidth&&box.bottom<=innerHeight;
+      },null,{timeout:5000,polling:'raf'});
+    } catch(error) {
+      const diagnostic=await page.locator('.skip-link').evaluate(link=>{
+        const box=link.getBoundingClientRect(),style=getComputedStyle(link);
+        return {active:link===document.activeElement,focused:link.matches(':focus'),documentFocused:document.hasFocus(),viewport:{width:innerWidth,height:innerHeight},bounds:{left:box.left,right:box.right,top:box.top,bottom:box.bottom,width:box.width,height:box.height},style:{top:style.top,position:style.position,display:style.display,visibility:style.visibility,transform:style.transform,transition:style.transition}};
+      });
+      fs.writeFileSync(path.join(out,'skip-link-focus-failure.json'),JSON.stringify(diagnostic,null,2));
+      await page.screenshot({path:path.join(out,'skip-link-focus-failure.png'),fullPage:false,animations:'disabled'});
+      console.error('Skip-link focus diagnostic '+JSON.stringify(diagnostic));
+      throw error;
+    }
+    assert(await page.locator('.skip-link').evaluate(element => element === document.activeElement&&element.matches(':focus')));
     assert((await page.locator('.skip-link').boundingBox()).y >= 0);
     await page.keyboard.press('Enter');
+    await page.waitForFunction(()=>document.querySelector('#main-content')===document.activeElement,null,{timeout:5000,polling:'raf'});
     assert(await page.locator('#main-content').evaluate(element => element === document.activeElement));
     await captureBoth(page,'home');
     await page.getByRole('link', {name:/开始我的第一次镜像/}).click();
