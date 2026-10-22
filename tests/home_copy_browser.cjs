@@ -10,6 +10,8 @@ async function checkHomeCopyVariants(browser, base, out, settle) {
   assert.equal(variants.length, 5);
   assert.equal(new Set(variants.map(variant => variant.id)).size, 5);
   const samples = [];
+  const layoutProblems = [];
+  const checkLayout = (passes, message) => { if (!passes) layoutProblems.push(message); };
   for (const [index, variant] of variants.entries()) {
     const context = await browser.newContext({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1, reducedMotion: 'reduce' });
     await context.addInitScript(value => {
@@ -42,21 +44,45 @@ async function checkHomeCopyVariants(browser, base, out, settle) {
           const copy = hero.querySelector('.hero-copy');
           const art = hero.querySelector('.home-v2-artwork');
           const text = [...copy.querySelectorAll('.badge, h1, :scope > p, .micro-benefits')].map(element => {
-            const bounds = rect(element), range = document.createRange(); range.selectNodeContents(element);
-            const glyphs = [...range.getClientRects()].filter(box => box.width && box.height);
-            return { bounds, right:Math.max(...glyphs.map(box=>box.right)), clipped:glyphs.some(box=>box.left<bounds.left-1||box.right>bounds.right+1||box.top<bounds.top-1||box.bottom>bounds.bottom+1) };
+            const bounds = rect(element), glyphs = [], ancestors = new Map();
+            const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+            while (walker.nextNode()) {
+              if (!walker.currentNode.textContent.trim()) continue;
+              const range = document.createRange(); range.selectNodeContents(walker.currentNode);
+              const boxes = [...range.getClientRects()].filter(box => box.width && box.height);
+              // CJK font ascenders/descenders may extend outside the CSS line
+              // box without being clipped. Only clipping ancestors can cut
+              // these visible glyph extents; inspect every text-node ancestor.
+              const clips = [];
+              for (let parent = walker.currentNode.parentElement; parent; parent = parent.parentElement) {
+                const style = getComputedStyle(parent), box = rect(parent);
+                const info = { tag:parent.tagName, classes:parent.className, overflowX:style.overflowX, overflowY:style.overflowY,
+                  left:box.left+parent.clientLeft, right:box.left+parent.clientLeft+parent.clientWidth,
+                  top:box.top+parent.clientTop, bottom:box.top+parent.clientTop+parent.clientHeight };
+                ancestors.set(parent, info);
+                clips.push(info);
+              }
+              for (const box of boxes) glyphs.push({ left:box.left, right:box.right, top:box.top, bottom:box.bottom,
+                clippedX:clips.some(clip => ['hidden','clip'].includes(clip.overflowX) && (box.left<clip.left-1 || box.right>clip.right+1)),
+                clippedY:clips.some(clip => ['hidden','clip'].includes(clip.overflowY) && (box.top<clip.top-1 || box.bottom>clip.bottom+1)) });
+            }
+            const glyphBounds = { left:Math.min(...glyphs.map(box=>box.left)), right:Math.max(...glyphs.map(box=>box.right)), top:Math.min(...glyphs.map(box=>box.top)), bottom:Math.max(...glyphs.map(box=>box.bottom)) };
+            return { tag:element.tagName, bounds, glyphBounds, glyphs, overflowAncestors:[...ancestors.values()], right:glyphBounds.right,
+              clippedX:glyphs.some(box=>box.clippedX||box.left<bounds.left-1||box.right>bounds.right+1), clippedY:glyphs.some(box=>box.clippedY) };
           });
           return { copy:rect(copy), art:rect(art), mask:getComputedStyle(art).maskImage, text, headline:rect(copy.querySelector('h1')), body:rect(copy.querySelector(':scope > p')), actions:rect(copy.querySelector('.hero-actions')) };
         });
         fs.writeFileSync(path.join(out, `${label}-geometry.json`), JSON.stringify(geometry, null, 2));
-        assert(geometry.text.every(text => !text.clipped), `${label}: copy must fit its own bounds`);
-        assert(geometry.headline.bottom <= geometry.body.top + 1 && geometry.body.bottom <= geometry.actions.top + 1, `${label}: heading, description and actions must not overlap`);
+        checkLayout(geometry.text.every(text => text.glyphs.length > 0 && !text.clippedX && !text.clippedY), `${label}: copy must fit horizontally and have no actual ancestor clipping`);
+        const [badgeText, headlineText, bodyText, benefitsText] = geometry.text;
+        checkLayout(badgeText.glyphBounds.bottom <= headlineText.glyphBounds.top + 1 && headlineText.glyphBounds.bottom <= bodyText.glyphBounds.top + 1 && bodyText.glyphBounds.bottom <= geometry.actions.top + 1 && geometry.actions.bottom <= benefitsText.glyphBounds.top + 1, `${label}: actual text extents and actions must not overlap`);
+        checkLayout(geometry.headline.bottom <= geometry.body.top + 1 && geometry.body.bottom <= geometry.actions.top + 1, `${label}: heading, description and actions must not overlap`);
         if (width < 801) {
-          assert(geometry.art.bottom <= geometry.copy.top + 1, `${label}: mobile artwork must remain above live copy`);
+          checkLayout(geometry.art.bottom <= Math.min(geometry.copy.top, ...geometry.text.map(text => text.glyphBounds.top)) + 1, `${label}: mobile artwork must remain above live copy`);
         } else {
           // The original artwork intentionally fades in across its left 13%.
-          assert(geometry.mask.includes('13%'), `${label}: retain the original artwork's text-safe fade`);
-          assert(geometry.text.every(text => text.right <= geometry.art.left + geometry.art.width * 0.13 + 1), `${label}: live text must not enter the opaque artwork`);
+          checkLayout(geometry.mask.includes('13%'), `${label}: retain the original artwork's text-safe fade`);
+          checkLayout(geometry.text.every(text => text.right <= geometry.art.left + geometry.art.width * 0.13 + 1), `${label}: live text must not enter the opaque artwork`);
         }
         const actions = page.locator('.hero-actions');
         await actions.evaluate(element => element.scrollIntoView({ block:'center', behavior:'instant' }));
@@ -67,7 +93,7 @@ async function checkHomeCopyVariants(browser, base, out, settle) {
           return { height:box.height, visible:box.top>=0&&box.bottom<=bottom&&box.left>=0&&box.right<=innerWidth, hit:element.contains(document.elementFromPoint(box.left+box.width/2,box.top+box.height/2)) };
         }));
         assert.equal(controls.length, 2);
-        assert(controls.every(control => control.height >= 44 && control.visible && control.hit), `${label}: both real CTA links must be reachable and unobscured`);
+        checkLayout(controls.every(control => control.height >= 44 && control.visible && control.hit), `${label}: both real CTA links must be reachable and unobscured`);
         await settle(page, undefined, label);
         // Hero-only PNGs keep the 20-image matrix within split artifact budgets.
         const file = `${label}.png`;
@@ -98,10 +124,11 @@ async function checkHomeCopyVariants(browser, base, out, settle) {
       await page.screenshot({ path:path.join(out, `home-copy-${variant.id}-${width===1440?'desktop':'mobile'}-failure.png`), fullPage:false, animations:'disabled' });
       throw error;
     } finally {
-      fs.writeFileSync(path.join(out, 'home-copy-variants.json'), JSON.stringify({ samples }, null, 2));
+      fs.writeFileSync(path.join(out, 'home-copy-variants.json'), JSON.stringify({ samples, layoutProblems }, null, 2));
       await context.close();
     }
   }
   assert.equal(samples.length, 20);
+  assert.deepEqual(layoutProblems, [], 'All 20 home-copy layout samples must pass; see home-copy-variants.json and per-sample geometry/screenshots');
 }
 module.exports = { checkHomeCopyVariants };
