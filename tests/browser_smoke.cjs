@@ -38,7 +38,23 @@ const path = require('path');
       return {bottom:rect.bottom, focused:element === document.activeElement};
     });
     assert(!skip.focused && skip.bottom <= 0, `Unfocused skip link must stay offscreen: ${label}; do not hide it in screenshot CSS`);
-    assert(await targetPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `Horizontal overflow in ${label}`);
+    const fits=await targetPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1);
+    if(!fits) {
+      const diagnostic=await targetPage.evaluate(() => ({
+        viewport:{width:innerWidth,height:innerHeight,scrollX,scrollY,documentWidth:document.documentElement.scrollWidth},
+        elements:[...document.querySelectorAll('body *')].map(element=>{
+          const box=element.getBoundingClientRect();
+          if(box.right<=innerWidth+1&&box.left>=-1)return null;
+          const style=getComputedStyle(element);
+          return {tag:element.tagName,classes:element.getAttribute('class')||'',left:box.left,right:box.right,top:box.top,bottom:box.bottom,width:box.width,overflowX:style.overflowX,position:style.position,ancestors:[element.parentElement,element.parentElement?.parentElement].filter(Boolean).map(parent=>({tag:parent.tagName,classes:parent.getAttribute('class')||'',overflowX:getComputedStyle(parent).overflowX,left:parent.getBoundingClientRect().left,right:parent.getBoundingClientRect().right}))};
+        }).filter(Boolean)
+      }));
+      fs.writeFileSync(path.join(out,`${label}-overflow.json`),JSON.stringify(diagnostic,null,2));
+      await targetPage.screenshot({path:path.join(out,`${label}-overflow.png`),fullPage:false,animations:'disabled'});
+      await targetPage.screenshot({path:path.join(out,`${label}-overflow-full.png`),fullPage:true,animations:'disabled'});
+      console.error('Overflow diagnostic '+label+' '+JSON.stringify(diagnostic));
+    }
+    assert(fits, `Horizontal overflow in ${label}`);
   }
   function writeManifest() {
     fs.writeFileSync(path.join(out,'design-state-manifest.json'),JSON.stringify({viewports:{desktop:{width:1440,height:1000},mobile:{width:390,height:844}},captures},null,2));

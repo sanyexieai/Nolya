@@ -72,3 +72,17 @@ test("Page02–08 supplied art exists and question controls stay primary on narr
     /\.design-mirror-content \.comparison-card\s*\{\s*grid-template-columns: 1fr/,
   );
 });
+
+test("Page03 intrinsic image dimensions scale proportionally inside constrained grid", () => {
+  assert.match(css, /\.design-result-portrait \{[^}]*min-width: 0/);
+  assert.match(css, /\.design-result-portrait picture \{[^}]*display: block/);
+  assert.match(css, /\.design-result-main \{[^}]*height: auto/);
+  assert.match(css, /\.design-result-inset \{[^}]*height: auto/);
+  assert.ok(!css.includes("overflow-x: hidden"));
+});
+
+test("Page02 and05 never retain intrinsic desktop heights after responsive width scaling", () => {
+  assert.match(css, /\.design-self-portrait img \{[^}]*height: auto/);
+  assert.match(css, /\.design-self-portrait img \{[^}]*max-height: 560px/);
+  assert.match(css, /\.design-friend-landing-photo img \{[^}]*height: auto/);
+});

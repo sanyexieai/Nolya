@@ -35,6 +35,10 @@ test("mockup art windows exclude fixed answers and success labels and remain cli
   assert.match(source, /box=\{\[963, 230, 1490, 748\]\}/);
   assert.match(source, /box=\{\[947, 205, 1370, 700\]\}/);
   assert.match(styles, /\.guess-photo-window\s*\{[^}]*overflow: hidden/s);
+  assert.match(
+    styles,
+    /\.guess-photo-window img\s*\{[^}]*position: absolute;[^}]*height: auto;/s,
+  );
   assert.match(styles, /minmax\(0, 1fr\)/);
   assert.match(source, /kind="reverse"/);
   assert.match(source, /disabled=\{!ownChoice\}/);
