@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowUpRight,
@@ -9,16 +10,23 @@ import {
 } from "lucide-react";
 import { ActionLink, Badge, HeroArt } from "./ui";
 import copy from "./home.zh-CN.json";
+import { selectHomeHero } from "./home-copy";
 import { useSession } from "./session";
 export default function Home() {
   const { user } = useSession();
+  // A route exit unmounts Home. Returning (including Back/Forward) draws again.
+  // Keep the committed choice through session updates and StrictMode replay.
+  const heroRef = useRef<(typeof copy.hero.variants)[number] | null>(null);
+  if (heroRef.current === null)
+    heroRef.current = selectHomeHero(copy.hero.variants);
+  const hero = heroRef.current;
   return (
     <div className="home">
-      <section className="home-hero container">
+      <section className="home-hero container" data-hero-variant={hero.id}>
         <div className="hero-copy">
-          <Badge>{copy.hero.eyebrow}</Badge>
+          <Badge>{hero.eyebrow}</Badge>
           <h1>
-            {copy.hero.headline.split("\n").map((line, index) =>
+            {hero.headline.split("\n").map((line, index) =>
               index === 2 ? (
                 <em key={line}>{line}</em>
               ) : (
@@ -29,7 +37,7 @@ export default function Home() {
               ),
             )}
           </h1>
-          <p>{copy.hero.subheadline}</p>
+          <p>{hero.subheadline}</p>
           <div className="hero-actions">
             <ActionLink to="/self">
               {copy.hero.primaryCTA}

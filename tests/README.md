@@ -59,3 +59,7 @@ share_browser.cjs由浏览器主流程调用，验证四平台PNG下载尺寸/�
 浏览器 CI 安装 Ubuntu 官方 fonts-noto-cjk，并通过 fontconfig 确认 Noto Sans CJK 可用；标题另检查实际计算字重至少 700。应用没有远程字体依赖，使用 PingFang、Microsoft YaHei 及 Noto 系统回退，并允许粗体合成，避免仅 Regular 回退字体导致中文标题偏细。
 
 首页和 Page09 保留桌面/手机截图。分享手机截图先清除键盘测试焦点，分别记录预览和主要操作的正常视口，不为了截图移除无障碍跳转链接或固定导航。PNG 海报仍独立验证尺寸与二维码。最终图必须对应交付 commit 或同 tree 的 PR 测试 merge；旧截图不证明后续视觉改动。
+
+## 首页随机文案回归
+
+home_copy_browser.cjs 在独立浏览器上下文控制随机数，逐一验证五组完整文案在320/390/430/1440px的排版、图文边界与真实CTA可达性，保留20张局部截图与home-copy-variants.json。它另外通过真实访客身份刷新验证本次访问稳定，通过SPA离开/返回验证重新抽选与自然重复。生产代码不提供选择文案的查询参数。详见[文案与抽选规则](../docs/HOME_COPY_VARIANTS.md)。

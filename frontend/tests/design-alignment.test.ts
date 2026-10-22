@@ -19,7 +19,7 @@ test("frozen design palette and editorial typography remain explicit", () => {
     assert.ok(Number(match[1]) >= 13, `tiny font ${match[1]}px`);
 });
 test("home copy comes from supplied v2 locale, with real supplied illustrative images", () => {
-  assert.ok(home.includes("copy.hero.headline"));
+  assert.ok(home.includes("hero.headline"));
   assert.ok(home.includes("copy.steps.map"));
   const hero = ui.slice(ui.indexOf("export function HeroArt"));
   assert.ok(hero.includes("home-v2-reference.png"));

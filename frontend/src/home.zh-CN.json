@@ -1,13 +1,42 @@
 {
   "page": "page01_home",
-  "version": "v2_0",
+  "version": "v2_1",
   "locale": "zh-CN",
   "hero": {
-    "eyebrow": "自我选择 · 朋友反馈 · 每日记录",
-    "headline": "回答生活情境题，\n了解自己的选择，\n对照朋友的看法。",
-    "subheadline": "回答 8 道生活情境题，查看你的选择结果。邀请朋友各回答 3 道题，对照自己的选择与朋友的看法。",
     "primaryCTA": "开始回答 8 道题",
-    "secondaryCTA": "查看朋友反馈"
+    "secondaryCTA": "查看朋友反馈",
+    "variants": [
+      {
+        "id": "everyday-choices",
+        "eyebrow": "自我选择 · 朋友反馈 · 每日记录",
+        "headline": "回答生活情境题，\n了解自己的选择，\n对照朋友的看法。",
+        "subheadline": "回答 8 道生活情境题，查看你的选择结果。邀请朋友各回答 3 道题，对照自己的选择与朋友的看法。"
+      },
+      {
+        "id": "friends-perspective",
+        "eyebrow": "朋友眼中的你",
+        "headline": "朋友怎么看你？\n邀请他们回答，\n查看他们的反馈。",
+        "subheadline": "先回答 8 道题，查看自己的选择结果。再邀请朋友各回答 3 道题，了解他们的看法。"
+      },
+      {
+        "id": "compare-views",
+        "eyebrow": "自己的选择 · 朋友的看法",
+        "headline": "你的选择，\n朋友的看法，\n有哪些不同？",
+        "subheadline": "通过 8 道生活情境题记录自己的选择，再用朋友各 3 道题的反馈，对照相同与不同之处。"
+      },
+      {
+        "id": "choice-history",
+        "eyebrow": "生活选择 · 每日记录",
+        "headline": "回答生活问题，\n查看选择记录，\n回顾不同答案。",
+        "subheadline": "从 8 道生活情境题开始，也可以回答每日问题。邀请朋友各回答 3 道题，查看他们的反馈。"
+      },
+      {
+        "id": "start-with-yourself",
+        "eyebrow": "从你的答案开始",
+        "headline": "面对生活情境，\n你会怎么选？\n答完查看结果。",
+        "subheadline": "回答 8 道题，查看基于本次答案的结果。朋友各回答 3 道题后，你还可以对照他们的看法。"
+      }
+    ]
   },
   "steps": [
     {
