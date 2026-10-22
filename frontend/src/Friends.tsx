@@ -68,8 +68,8 @@ export function InvitePage() {
   return (
     <div className="container narrow-page">
       <PageHeading
-        eyebrow="换个角度，看见自己"
-        title="认识你的人，会觉得你怎么选？"
+        eyebrow="朋友反馈"
+        title="邀请朋友回答 3 道题"
         description="邀请一位熟悉你的人，回答 3 道关于你的生活情境题。看看 TA 觉得你通常会怎么做。"
       />
       {loading || resource.loading ? (
@@ -78,7 +78,7 @@ export function InvitePage() {
         <Notice onRetry={resource.reload}>{resource.error}</Notice>
       ) : !resource.data ? (
         <Empty
-          title="先有自己的选择，再听朋友的视角"
+          title="请先完成自我测评"
           action={
             <ActionLink to="/self">
               先开始我的镜像
@@ -86,21 +86,19 @@ export function InvitePage() {
             </ActionLink>
           }
         >
-          你的 8 个选择，会成为这次镜像的起点。
+          完成 8 道题后，才能对照自己的答案与朋友反馈。
         </Empty>
       ) : (
         <>
           <section className="card invite-card">
             <div className="invite-editorial">
               <div className="invite-copy">
-                <h2>邀请一个熟悉你的人，看看 TA 眼中的你。</h2>
-                <p>
-                  不是请朋友给你打分。只是想知道，在另一个人眼里，你会怎么选。
-                </p>
+                <h2>邀请熟悉你的朋友提供反馈</h2>
+                <p>朋友将根据平时对你的了解作答，结果不用于评分。</p>
                 <ul className="invite-benefits">
                   <li>只需回答 3 道情境题</li>
                   <li>大约 30 秒，无需注册</li>
-                  <li>第一位朋友答完，就有新视角</li>
+                  <li>第一位朋友答完后可查看反馈</li>
                 </ul>
                 <div className="invite-contexts">
                   <span>朋友</span>
@@ -122,10 +120,10 @@ export function InvitePage() {
             </div>
             {link ? (
               <div className="share-section">
-                <Badge>第一位朋友答完，就能看到新视角</Badge>
+                <Badge>第一位朋友答完后，即可查看反馈</Badge>
                 <SocialShare value={shareUrl(link, "friend")} kind="friend" />
                 <Link to="/mirror" className="text-link">
-                  去看看镜像进度 <ArrowRight size={16} />
+                  查看回答进度 <ArrowRight size={16} />
                 </Link>
               </div>
             ) : (
@@ -135,7 +133,7 @@ export function InvitePage() {
                 </p>
                 <Button onClick={create} busy={busy}>
                   <Link2 size={18} />
-                  邀请朋友选一选
+                  创建朋友邀请
                 </Button>
               </>
             )}
@@ -144,14 +142,14 @@ export function InvitePage() {
           <div className="invite-steps">
             <span>01 分享邀请</span>
             <span>02 朋友回答 3 道题</span>
-            <span>03 看见新的视角</span>
+            <span>03 查看朋友反馈</span>
           </div>
           <PrivacyNote>
             只向你展示汇总视角。邀请链接可能被转发，请只发给你信任的人。
           </PrivacyNote>
           <div className="subtle-link-row">
             <Link to="/today">
-              暂时不邀请，先做今天的小选择 <ArrowRight size={15} />
+              暂不邀请，回答今日问题 <ArrowRight size={15} />
             </Link>
           </div>
         </>
@@ -237,10 +235,7 @@ export function FriendPage() {
         </>
       ) : done || context.data?.already_submitted ? (
         <>
-          <PageHeading
-            eyebrow="一个新视角，已送达"
-            title="谢谢，你眼中的 TA 很珍贵。"
-          />
+          <PageHeading eyebrow="提交成功" title="你的回答已提交" />
           <section className="card success-card">
             <span className="success-icon">
               <Check size={36} />
@@ -249,10 +244,10 @@ export function FriendPage() {
             <p>
               {owner} 会在自己的镜像中看到汇总。
               <br />
-              如果你也好奇，试着看看自己吧。
+              你也可以完成自己的自我测评。
             </p>
             <ActionLink to="/self">
-              看看我会怎么选 <ArrowRight size={17} />
+              开始自我测评 <ArrowRight size={17} />
             </ActionLink>
           </section>
         </>
@@ -283,7 +278,7 @@ export function FriendPage() {
           }
         >
           {context.data?.status === "full"
-            ? "这次已经收到足够的回答。你也可以开始发现自己的另一面。"
+            ? "这次邀请已收齐回答。你可以开始自己的自我测评。"
             : "邀请可能已过期或被撤回，可以请朋友发来新的链接。"}
         </Empty>
       ) : session && q ? (
@@ -296,7 +291,7 @@ export function FriendPage() {
             />
             <PageHeading
               eyebrow={`你眼中的 ${owner}`}
-              title="熟悉 TA 的你，会怎么选？"
+              title="请根据你对 TA 的了解作答"
               description="选更接近你平时观察的那一边，不用猜 TA 的答案。"
             />
             <section className="question-card">
@@ -320,7 +315,7 @@ export function FriendPage() {
                 }}
                 disabled={busy}
               />
-              <PrivacyNote>你看见的，只是 TA 真实的一面。</PrivacyNote>
+              <PrivacyNote>请根据平时的观察作答，不需要判断对错。</PrivacyNote>
             </section>
             {error && <Notice>{error}</Notice>}
             <div className="question-actions">
@@ -345,7 +340,7 @@ export function FriendPage() {
               width="1410"
               height="1587"
             />
-            <h2>如果换成 TA，你会选哪边？</h2>
+            <h2>根据你对 TA 的了解选择答案</h2>
             <p>按平时对 TA 的了解来选。你给出的是朋友视角，不是好坏评价。</p>
           </aside>
         </div>
@@ -358,10 +353,10 @@ export function FriendPage() {
                 <>
                   {owner} 想知道，
                   <br />
-                  你眼中的 TA。
+                  TA 通常会怎么选。
                 </>
               }
-              description="3 个轻松的生活选择，大概半分钟。没有标准答案，也不用填写姓名。"
+              description="共 3 道生活情境题，约需 30 秒。没有标准答案，无需填写姓名。"
             />
             <section className="card friend-landing">
               <ul className="design-friend-benefits">
@@ -369,7 +364,7 @@ export function FriendPage() {
                 <li>大约 30 秒</li>
                 <li>没有标准答案</li>
               </ul>
-              <h2>你看见的那一面，或许 TA 还不知道</h2>
+              <h2>完成 3 道题，向邀请人提供反馈</h2>
               <p>
                 请按平时的观察回答，别先看 TA 自己的答案。独立的视角，才有意思。
               </p>
@@ -472,21 +467,21 @@ export function MirrorPage() {
               width="525"
               height="778"
             />
-            <figcaption>同一个你，不同视角。</figcaption>
+            <figcaption>自己的选择与朋友反馈</figcaption>
           </figure>
         )}
       </aside>
       <div className="design-mirror-content">
         <PageHeading
-          eyebrow="同一个你，换个角度看看"
+          eyebrow="朋友反馈结果"
           title={
             mirror?.state === "full"
-              ? "三个人眼里的你，和你想的一样吗？"
+              ? "3 份朋友反馈已收齐"
               : mirror?.completed_count
-                ? "原来，TA 是这样理解你的选择。"
-                : "朋友眼中的你，会是什么样？"
+                ? "已收到朋友反馈"
+                : "等待朋友回答"
           }
-          description="把自己的选择，与熟悉你的人的观察，轻轻放在一起。"
+          description="对照你的测评结果与朋友在相关情境中的回答。"
         >
           <button
             className="icon-button refresh-button"
@@ -503,7 +498,7 @@ export function MirrorPage() {
           <Notice onRetry={resource.reload}>{resource.error}</Notice>
         ) : !mirror?.self_assessment_id ? (
           <Empty
-            title="镜像，从自己的选择开始"
+            title="请先完成自我测评"
             action={
               <ActionLink to="/self">
                 开始我的第一次镜像
@@ -511,7 +506,7 @@ export function MirrorPage() {
               </ActionLink>
             }
           >
-            先留下 8 个生活选择，再邀请朋友发现更多面的你。
+            完成 8 道题后，可邀请朋友回答并查看反馈。
           </Empty>
         ) : (
           <>
@@ -551,11 +546,11 @@ export function MirrorPage() {
                   <Heart size={42} />
                   <span>✧</span>
                 </div>
-                <h2>新的视角，值得等待</h2>
+                <h2>还没有收到朋友回答</h2>
                 <p>
-                  不用催，也不用特意选“最了解你”的人。
+                  将邀请链接发送给熟悉你的朋友。
                   <br />
-                  不同相处方式，会带来不同的观察。
+                  朋友完成回答后，结果会显示在这里。
                 </p>
                 <Link className="text-link" to="/self/result">
                   先看看自己眼中的我 <ArrowRight size={16} />
@@ -615,7 +610,7 @@ export function MirrorPage() {
                 </div>
                 {mirror.insights.length > 0 && (
                   <section className="mirror-insights">
-                    <Badge pink>值得留意的小发现</Badge>
+                    <Badge pink>结果说明</Badge>
                     {mirror.insights.map((insight, i) => (
                       <p key={i}>{insight}</p>
                     ))}
@@ -632,7 +627,7 @@ export function MirrorPage() {
                 kind="mirror"
                 summary={
                   mirror.insights[0] ||
-                  "同一个我，在朋友眼里也有新的视角。不是对错，只是多认识自己一点。"
+                  "我已完成自我测评，并收到朋友对相关情境的回答。"
                 }
               />
             )}
@@ -641,8 +636,8 @@ export function MirrorPage() {
                 <Sparkles size={23} />
               </span>
               <div>
-                <h2>那 TA 能猜中你的选择吗？</h2>
-                <p>选一个真实答案，看看你们想到一起了没有。</p>
+                <h2>邀请朋友猜测你的答案</h2>
+                <p>从已回答的问题中选一道，邀请朋友猜测。</p>
               </div>
               <ActionLink to="/guess/new">
                 让朋友猜猜

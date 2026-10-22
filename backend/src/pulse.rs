@@ -270,7 +270,7 @@ pub async fn solo(State(state): State<AppState>, auth: Auth) -> ApiResult<Json<V
                     if items.len() >= 2 && items.iter().all(|v| *v == items[0]) {
                         let kind = if items[0] == score { "echo" } else { "gap" };
                         comparison = Some(
-                            json!({"dimension":name,"kind":kind,"evidence_count":items.len(),"text":if kind=="echo"{format!("这些选择里，{}次相关选择与最初的自我观察暂时呼应。",items.len())}else{format!("这些选择里，{}次相关选择与最初的自我观察有些不同，值得留意具体场景。",items.len())}}),
+                            json!({"dimension":name,"kind":kind,"evidence_count":items.len(),"text":if kind=="echo"{format!("{}次相关答题的选择方向与首次自我评估结果一致。",items.len())}else{format!("{}次相关答题的选择方向与首次自我评估结果不同；不同题目的情境也可能影响选择。",items.len())}}),
                         );
                         break;
                     }
@@ -279,7 +279,7 @@ pub async fn solo(State(state): State<AppState>, auth: Auth) -> ApiResult<Json<V
         }
     }
     Ok(Json(
-        json!({"answered_days":total,"required_days":7,"eligible":eligible,"window_start":entries.last().map(|v|v["date"].clone()),"window_end":entries.first().map(|v|v["date"].clone()),"most_different":most_different,"most_aligned":most_aligned,"self_comparison":comparison,"notice":if !eligible{"留下 7 个不同日期的选择后，再看看是否有模式。"}else if most_aligned.is_none(){"真实群体样本尚未达到 50，暂不展示精确群体百分比。"}else{"这是这些场景里的暂时观察，不是人格结论。"}}),
+        json!({"answered_days":total,"required_days":7,"eligible":eligible,"window_start":entries.last().map(|v|v["date"].clone()),"window_end":entries.first().map(|v|v["date"].clone()),"most_different":most_different,"most_aligned":most_aligned,"self_comparison":comparison,"notice":if !eligible{"完成 7 个不同日期的答题后，可查看答题汇总。"}else if most_aligned.is_none(){"真实群体样本尚未达到 50，暂不展示精确群体百分比。"}else{"这是这些场景里的暂时观察，不是人格结论。"}}),
     ))
 }
 

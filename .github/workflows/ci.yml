@@ -58,11 +58,31 @@ jobs:
           fc-match "Noto Sans CJK SC" | grep NotoSansCJK
       - name: Run real browser acceptance with disposable local data
         run: bash tests/browser_run.sh
-      - name: Keep synthetic browser screenshots
+      # Keep every screenshot and report, split into independently downloadable archives.
+      - name: Keep synthetic desktop screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: nolya-browser-acceptance
-          path: artifacts/browser/
+          name: nolya-browser-desktop
+          path: artifacts/browser/*desktop*.png
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Keep synthetic mobile screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nolya-browser-mobile
+          path: artifacts/browser/*mobile*.png
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Keep exported posters and browser reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nolya-browser-posters-and-reports
+          path: |
+            artifacts/browser/
+            !artifacts/browser/*desktop*.png
+            !artifacts/browser/*mobile*.png
           if-no-files-found: warn
           retention-days: 7

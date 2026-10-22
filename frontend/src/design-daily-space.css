@@ -68,20 +68,20 @@
   position: relative;
   overflow: hidden;
   width: 100%;
-  aspect-ratio: 720 / 890;
+  aspect-ratio: 405 / 460;
   border-radius: 32px;
   margin-top: -18px;
 }
-/* Original Page15 desktop artwork only: x0..720, y82..972 (1536×1024).
-   It excludes every original question, answer option, and navigation control. */
+/* Page15 text-free photo: x245..650, y240..700 (1536×1024).
+   The tighter window excludes both handwritten captions as well as all UI. */
 .nolya-daily-design .pulse-question-art img {
   position: absolute;
   display: block;
-  width: 213.333333%;
+  width: 379.259259%;
   max-width: none;
   height: auto;
-  left: 0;
-  top: -9.213483%;
+  left: -60.493827%;
+  top: -52.173913%;
 }
 .nolya-daily-design .daily-question {
   padding: 24px;
@@ -1032,14 +1032,14 @@
   }
   .nolya-daily-design .pulse-question-art {
     margin: -7px 0 0;
-    aspect-ratio: 910 / 592;
+    aspect-ratio: 375 / 375;
     border-radius: 23px;
   }
-  /* Original Page15 mobile artwork only: x17..927, y153..745 (941×1672). */
+  /* Page15 mobile text-free photo: x315..690, y230..605 (941×1672). */
   .nolya-daily-design .pulse-question-art img {
-    width: 103.406593%;
-    left: -1.868132%;
-    top: -25.844595%;
+    width: 250.933333%;
+    left: -84%;
+    top: -61.333333%;
   }
   .nolya-daily-design .daily-editorial-heading h1 {
     font-size: 39px;

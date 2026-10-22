@@ -52,23 +52,23 @@ export const sharePlatforms: {
 ];
 export function shareTitle(kind: ShareKind) {
   return kind === "self"
-    ? "自己眼中的我，是这样的"
+    ? "我的自我评估结果"
     : kind === "mirror"
-      ? "同一个我，发现了新的视角"
+      ? "我的镜像对比结果"
       : kind === "friend"
-        ? "认识你的人，会觉得你怎么选？"
+        ? "邀请朋友回答 3 道题"
         : kind === "reverse"
-          ? "这一回，换你猜猜我的选择"
-          : "一个真实选择，你猜得到吗？";
+          ? "请原邀请人猜我的答案"
+          : "邀请朋友猜我的答案";
 }
 export function defaultShareText(kind: ShareKind) {
   if (kind === "self" || kind === "mirror")
-    return "在 Nolya，从不同视角认识自己。这是一次小发现，不是对我的定义。";
+    return "这是我在 Nolya 的评估结果摘要。扫码可打开应用，不包含我的个人结果。";
   return kind === "friend"
-    ? "同一个我，不同的视角。选 3 道生活情境题，让我看看你眼中的我。约 30 秒，无需注册。"
+    ? "请回答 3 道生活情境题，帮助我了解你对我的看法。约 30 秒，无需注册。"
     : kind === "reverse"
-      ? "刚才是我猜你，这一回换你来猜。只发给刚才邀请我的那位朋友，提交后再揭晓答案。"
-      : "我在 Nolya 留下了一个真实选择。凭直觉猜一猜，提交后再揭晓。不是考试，只是多了解彼此一点。";
+      ? "这是给原邀请人的反向邀请。请猜我的答案，提交后查看结果。"
+      : "请根据你对我的了解猜一道题。提交猜测后，可以查看我预先保存的答案。";
 }
 export function checkedShareUrl(value: string): URL {
   const url = new URL(value);
@@ -128,13 +128,82 @@ export function pngFile(dataUrl: string): File {
   );
   return new File([bytes], "nolya-invitation.png", { type: "image/png" });
 }
+export const shareArtwork: Record<ShareKind, string> = {
+  friend: "/design/ambassador-cafe.jpg",
+  guess: "/design/guess-outdoor.png",
+  reverse: "/design/reverse-start-outdoor.png",
+  self: "/design/self-result-mobile.jpg",
+  mirror: "/design/full-mirror-main.jpg",
+};
+export function posterPhotoLayout(height: number) {
+  return height === 1080
+    ? { x: 100, y: 240, width: 390, height: 350 }
+    : { x: 100, y: 230, width: 880, height: height - 960 };
+}
+export function coverSourceRect(
+  width: number,
+  height: number,
+  boxWidth: number,
+  boxHeight: number,
+) {
+  const scale = Math.max(boxWidth / width, boxHeight / height);
+  const w = boxWidth / scale,
+    h = boxHeight / scale;
+  return { x: (width - w) / 2, y: (height - h) * 0.28, width: w, height: h };
+}
+export function loadShareArtwork(
+  kind: ShareKind,
+  signal?: AbortSignal,
+): Promise<HTMLImageElement> {
+  const url = new URL(shareArtwork[kind], window.location.origin);
+  if (url.origin !== window.location.origin)
+    return Promise.reject(new Error("仅可使用同源品牌图片。"));
+  return new Promise((resolve, reject) => {
+    const photo = document.createElement("img");
+    let settled = false;
+    const finish = (error?: Error) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      photo.onload = null;
+      photo.onerror = null;
+      signal?.removeEventListener("abort", abort);
+      if (error) reject(error);
+      else resolve(photo);
+    };
+    const abort = () => finish(new DOMException("取消图片生成", "AbortError"));
+    const timer = setTimeout(
+      () => finish(new Error("品牌图片加载超时，请重试。")),
+      12000,
+    );
+    photo.onload = async () => {
+      try {
+        if (typeof photo.decode === "function") await photo.decode();
+        if (!photo.naturalWidth || !photo.naturalHeight)
+          throw new Error("图片尺寸无效");
+        finish();
+      } catch {
+        finish(new Error("品牌图片无法解码，请重试。"));
+      }
+    };
+    photo.onerror = () => finish(new Error("品牌图片加载失败，请重试。"));
+    signal?.addEventListener("abort", abort, { once: true });
+    if (signal?.aborted) {
+      abort();
+      return;
+    }
+    photo.src = url.href;
+  });
+}
 export async function renderSharePoster(
   kind: ShareKind,
   value: string,
   caption: string,
   platform: SharePlatform,
+  signal?: AbortSignal,
 ): Promise<string> {
   const url = checkedShareUrl(value);
+  const photo = await loadShareArtwork(kind, signal);
   const format = sharePlatforms.find((item) => item.id === platform)!;
   const canvas = document.createElement("canvas");
   canvas.width = format.width;
@@ -156,28 +225,60 @@ export async function renderSharePoster(
   ctx.fillText("Nolya", 100, 150);
   ctx.fillStyle = "#645578";
   ctx.font = "24px sans-serif";
-  ctx.fillText("同一个你，不同的视角", 100, 203);
-  ctx.font = "bold 60px sans-serif";
+  ctx.fillText("邀请朋友参与，或分享评估结果", 100, 203);
+  ctx.font = "21px sans-serif";
+  ctx.fillText("品牌示意图 · 非用户照片", 660, 203);
+  const box = posterPhotoLayout(height);
+  const crop = coverSourceRect(
+    photo.naturalWidth,
+    photo.naturalHeight,
+    box.width,
+    box.height,
+  );
+  ctx.save();
+  ctx.beginPath();
+  ctx.roundRect(box.x, box.y, box.width, box.height, 32);
+  ctx.clip();
+  ctx.drawImage(
+    photo,
+    crop.x,
+    crop.y,
+    crop.width,
+    crop.height,
+    box.x,
+    box.y,
+    box.width,
+    box.height,
+  );
+  ctx.restore();
+  const square = height === 1080;
+  const textX = square ? 530 : 100;
+  const textWidth = square ? 450 : 880;
+  const titleStart = square ? 292 : box.y + box.height + 65;
+  const titleStep = square ? 66 : 70;
+  ctx.font = square ? "bold 50px sans-serif" : "bold 56px sans-serif";
   ctx.fillStyle = "#171531";
   const titleLines = wrapPosterText(
     shareTitle(kind),
     (line) => ctx.measureText(line).width,
-    width - 200,
+    textWidth,
   );
-  titleLines.forEach((line, i) => ctx.fillText(line, 100, 305 + i * 82));
-  const captionStart = 350 + titleLines.length * 82;
-  ctx.font = "32px sans-serif";
+  titleLines.forEach((line, i) =>
+    ctx.fillText(line, textX, titleStart + i * titleStep),
+  );
+  const captionStart = titleStart + (titleLines.length - 1) * titleStep + 50;
+  ctx.font = square ? "28px sans-serif" : "30px sans-serif";
   ctx.fillStyle = "#4C415E";
   const captionLines = wrapPosterText(
     caption.trim(),
     (line) => ctx.measureText(line).width,
-    width - 200,
+    textWidth,
   );
   const qrSize = 280;
   const qrTop = height - 445;
   const maxLines = Math.max(
     1,
-    Math.min(3, Math.floor((qrTop - 55 - captionStart) / 46)),
+    Math.min(square ? 4 : 2, Math.floor((qrTop - 48 - captionStart) / 42) + 1),
   );
   const displayLines = captionLines.slice(0, maxLines);
   if (captionLines.length > maxLines)
@@ -186,51 +287,8 @@ export async function renderSharePoster(
         .slice(0, -1)
         .join("") + "…";
   displayLines.forEach((line, i) =>
-    ctx.fillText(line, 100, captionStart + i * 46),
+    ctx.fillText(line, textX, captionStart + i * 42),
   );
-  // Two perspective cards echo the source design's layered, pastel mirror motif.
-  // Never draw account identity, answer choices or individual friend data.
-  const motifStart = captionStart + displayLines.length * 46 + 36;
-  const motifSpace = qrTop - motifStart - 45;
-  const motifHeight = Math.min(440, motifSpace);
-  const motifTop = motifStart + Math.max(0, (motifSpace - motifHeight) / 2);
-  if (motifHeight >= 150) {
-    const cardWidth = 408;
-    ["自己眼中的我", "朋友眼中的我"].forEach((label, index) => {
-      const x = index === 0 ? 100 : 572;
-      ctx.fillStyle = index === 0 ? "#F0EBFF" : "#FFE8D9";
-      ctx.beginPath();
-      ctx.roundRect(x, motifTop, cardWidth, motifHeight, 32);
-      ctx.fill();
-      ctx.fillStyle = index === 0 ? "#6B57FF" : "#B65C43";
-      const radius = Math.min(76, motifHeight * 0.23);
-      const centerY = motifTop + motifHeight * 0.4;
-      ctx.beginPath();
-      ctx.arc(
-        x + cardWidth / 2 - radius * 0.45,
-        centerY,
-        radius,
-        0,
-        Math.PI * 2,
-      );
-      ctx.fill();
-      ctx.fillStyle = index === 0 ? "#C6B8FF" : "#F6BD9F";
-      ctx.beginPath();
-      ctx.arc(
-        x + cardWidth / 2 + radius * 0.45,
-        centerY,
-        radius,
-        0,
-        Math.PI * 2,
-      );
-      ctx.fill();
-      ctx.fillStyle = "#39264F";
-      ctx.font = "600 28px sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText(label, x + cardWidth / 2, motifTop + motifHeight - 30);
-    });
-    ctx.textAlign = "left";
-  }
   const qr = document.createElement("canvas");
   await QRCode.toCanvas(qr, value, {
     width: qrSize,
@@ -255,6 +313,7 @@ export async function renderSharePoster(
   const origin =
     url.origin.length > 60 ? `${url.origin.slice(0, 57)}…` : url.origin;
   ctx.fillText(origin, width / 2, height - 86);
+  if (signal?.aborted) throw new DOMException("取消图片生成", "AbortError");
   return canvas.toDataURL("image/png");
 }
 export function invitationShareKind(

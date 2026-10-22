@@ -4,9 +4,9 @@ import { PageHeading, PrivacyNote } from "./ui";
 export function HelpPage() {
   return (
     <div className="container narrow-page">
-      <BrandCompanion label="先清楚了解，再安心选择" />
+      <BrandCompanion label="使用帮助与隐私说明" />
       <PageHeading
-        eyebrow="清楚了解，再安心选择"
+        eyebrow="使用说明"
         title="使用帮助与隐私说明"
         description="Nolya 是生活选择的记录与比较工具，不是心理测评、诊断或人格定论。"
       />

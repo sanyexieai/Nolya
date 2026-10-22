@@ -16,18 +16,18 @@ Paths below are relative to the extracted design archive's `packages/` directory
 
 The Page15 package contains only composite mockups, locale files, and its specification, not a separate cafe/journal photograph. Consequently only its original artwork window is CSS-clipped from the unchanged reference. This is an explicit source limitation, not a claim that standalone Page15 photography was supplied.
 
-- Desktop: source **1536 × 1024**, artwork **x0–720, y82–972**, window **720 × 890**. The image width is `213.333333%` of the window, left is `0`, and top is `-9.213483%` of the window height.
-- At widths up to 760px, mobile: source **941 × 1672**, artwork **x17–927, y153–745**, window **910 × 592**. Image width is `103.406593%`, left is `-1.868132%`, and top is `-25.844595%`.
-- Those windows contain only the supplied editorial photo, photo-frame, and decorative handwritten notes. Original navbar, main page headline, A/B controls, and buttons are excluded. All functional equivalents are independently rendered in DOM.
+- Desktop: source **1536 × 1024**, text-free photograph **x245–650, y240–700**, window **405 × 460**. Image width is `379.259259%`, left is `-60.493827%`, and top is `-52.173913%`.
+- At widths up to 760px, mobile: source **941 × 1672**, text-free photograph **x315–690, y230–605**, window **375 × 375**. Image width is `250.933333%`, left is `-84%`, and top is `-61.333333%`.
+- These revised windows implement the user's October22 request for direct, functional copy. They exclude the original handwritten slogans as well as the original navbar, headline, question, options, and buttons. The unchanged source images remain intact; no new raster asset was created. All user-facing functional text is live DOM.
 - Pages16–18 supply the same approved riverside persona photograph for distinct uses. Their implementation preserves that original direction: large Page16 result illustration, a small Page17 scrapbook accent, and a secondary Page18 return-hub photo. The photograph is explicitly labeled as brand illustration, never as the signed-in user's avatar or evidence of real respondents.
 
 ## Hierarchy and responsive adaptation
 
 `frontend/src/design-daily-space.css` is scoped to `.nolya-daily-design` and `.nolya-space-design`; it does not change auth forms, shared controls, or unrelated routes.
 
-- **Page15:** desktop cafe/journal artwork left and editorial headline plus live question right; mobile artwork first, then headline, real question, explicit submit, and three benefit chips. The actual saved count remains a journal link, not a streak.
+- **Page15:** desktop cafe/journal artwork left and functional heading plus live question right; mobile artwork first, then headline, real question, explicit submit, and three benefit chips. The actual saved count remains a journal link, not a streak.
 - **Page16:** desktop real saved result left and photo/statistics right; mobile actual result precedes photography and crowd statistics. History is the primary next step; optional friend guessing remains secondary. Highlighting comes from the saved A/B value, not the illustrative reference's B fixture.
-- **Page17:** headline and retained date/choice filters; real records left and scrapbook right. Mobile places actual records before the scrapbook. The separate server-authorized solo summary remains available below the scrapbook rather than replacing the original editorial structure. Detail expanders revisit the same actual saved answer; pagination keeps active filters.
+- **Page17:** headline and retained date/choice filters; real records left and scrapbook right. Mobile places actual records before the scrapbook. The separate server-authorized solo summary remains available below the scrapbook rather than replacing the photo-accent structure. Detail expanders revisit the same actual saved answer; pagination keeps active filters.
 - **Page18:** a lavender return hero with Today and journal actions; three distinct Self/Daily/Friends source cards, then next-step cards and privacy/identity controls. Mobile stacks these sections and reduces the photo to a secondary accent. Existing invitation managers, revocation confirmations, and account/history/help routes remain intact below.
 
 At 320px, benefit chips and hero actions can stack to avoid overflow. Text uses the frozen purple/lavender/peach/warm-white system; functional copy retains readable darker variants. Selected answer gradients use a darker endpoint than the reference so normal-size white labels retain AA contrast. Touch controls and keyboard-visible selections remain real accessible controls.

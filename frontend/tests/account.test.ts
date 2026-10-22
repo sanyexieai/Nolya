@@ -270,10 +270,10 @@ test("cancelling forgets the preview token and password and retains the guest", 
   assert.equal(dom.window.document.getElementById("merge-confirm"), null);
   assert.equal(harness.currentSession().user?.id, guest.user!.id);
   assert.equal(requests("/auth/merge/confirm").length, 0);
-  assert.equal(button("登录我的空间").disabled, false);
+  assert.equal(button("登录账户").disabled, false);
   await click("保存为账户");
   assert.equal(input("password").value, "");
-  assert.equal(button("创建账户，保存我的选择").disabled, false);
+  assert.equal(button("注册账户并保留记录").disabled, false);
   assert.doesNotMatch(text(), /@existing/);
 });
 
@@ -485,7 +485,7 @@ test("a late preview cannot affect another user identity", async () => {
   assert.equal(harness.currentSession().user?.id, "different-guest");
   assert.equal(dom.window.document.getElementById("merge-confirm"), null);
   assert.equal(input("password").value, "");
-  assert.equal(button("登录我的空间").disabled, false);
+  assert.equal(button("登录账户").disabled, false);
 });
 
 test("a late confirmation cannot replace a newer user identity", async () => {
@@ -530,7 +530,7 @@ test("changing mode after preview discards the pending token and password", asyn
   assert.equal(dom.window.document.getElementById("merge-confirm"), null);
   assert.equal(requests("/auth/merge/confirm").length, 0);
   await click("已有账户");
-  assert.equal(button("登录我的空间").disabled, false);
+  assert.equal(button("登录账户").disabled, false);
 });
 
 test("explicit guest logout followed by ordinary login remains usable", async () => {
@@ -540,7 +540,7 @@ test("explicit guest logout followed by ordinary login remains usable", async ()
   await click("退出访客，登录已有账户");
   assert.equal(harness.currentSession().user, null);
   assert.equal(input("password").value, "");
-  assert.equal(button("登录我的空间").disabled, false);
+  assert.equal(button("登录账户").disabled, false);
   handlers.set("/auth/login", () => Response.json(target));
   await fill("username", "existing");
   await fill("password", "synthetic-password");
@@ -639,7 +639,7 @@ test("an ended session after uncertain confirmation offers login without claimin
     text(),
     /访客记录尚未合并|当前仍是访客空间|本次合并未执行/,
   );
-  assert.equal(button("登录我的空间").disabled, false);
+  assert.equal(button("登录账户").disabled, false);
   assert.equal(requests("/auth/merge/confirm").length, 1);
 });
 
@@ -784,7 +784,7 @@ test("journal filters query the server, preserve filters in pagination, and rese
   await submit();
   assert.match(text(), /问题 filtered/);
   assert.doesNotMatch(text(), /问题 first/);
-  await click("再往前翻翻");
+  await click("加载更早记录");
   assert.match(text(), /问题 older/);
   assert.match(text(), /问题 filtered/);
   assert.equal(requests("/journal?from=2026-10-01&cursor=next").length, 1);
@@ -823,7 +823,7 @@ test("self history compares actual saved dimensions and loads earlier assessment
   await harness.act(async () => harness.go("/self/history"));
   assert.match(text(), /之前：之前偏好/);
   assert.match(text(), /现在：现在偏好/);
-  assert.match(text(), /这一次，有些不同/);
+  assert.match(text(), /结果不同/);
   await click("加载更早镜像");
   assert.match(text(), /最早偏好/);
   assert.equal(requests("/self/history?cursor=older").length, 1);
@@ -962,7 +962,7 @@ test("history does not compare dimension scores across question versions", async
   );
   await harness.act(async () => harness.go("/self/history"));
   assert.match(text(), /不同版本的问题/);
-  assert.doesNotMatch(text(), /这一次，偏好相近|这一次，有些不同/);
+  assert.doesNotMatch(text(), /结果相同|结果不同/);
 });
 
 test("recovering a currently signed-in account refreshes the revoked identity", async () => {
@@ -1134,7 +1134,7 @@ test("guess picker resolves an older selected journal answer and paginates addit
 test("account login deep-link opens login rather than registration", async () => {
   await harness.act(async () => harness.go("/other"));
   await harness.act(async () => harness.go("/account?mode=login"));
-  assert.ok(button("登录我的空间"));
+  assert.ok(button("登录账户"));
   assert.equal(dom.window.document.getElementById("nickname"), null);
 });
 
@@ -1160,7 +1160,7 @@ test("changing identity discards the previous account's generated invitation", a
     }),
   );
   await harness.act(async () => harness.go("/invite"));
-  await click("邀请朋友选一选");
+  await click("创建朋友邀请");
   assert.ok(
     dom.window.document.querySelector('input[value*="account-a-token"]'),
   );
@@ -1169,7 +1169,7 @@ test("changing identity discards the previous account's generated invitation", a
     dom.window.document.querySelector('input[value*="account-a-token"]'),
     null,
   );
-  assert.ok(button("邀请朋友选一选"));
+  assert.ok(button("创建朋友邀请"));
 });
 
 for (const directed of [false, true]) {
@@ -1227,7 +1227,7 @@ for (const directed of [false, true]) {
         `[data-design-page="${directed ? "14" : "10"}"]`,
       ),
     );
-    assert.match(text(), /答案有一点意外/);
+    assert.match(text(), /这次没有猜中/);
     assert.equal(
       dom.window.document.querySelector(".guess-result-relation")?.textContent,
       "≠",

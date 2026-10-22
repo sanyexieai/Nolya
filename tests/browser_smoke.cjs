@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
+const shareChecks = require('./share_browser.cjs');
 (async () => {
   const base = process.env.NOLYA_TEST_BASE || 'http://127.0.0.1:3003';
   const target = new URL(base);
@@ -12,6 +13,7 @@ const path = require('path');
   fs.mkdirSync(out, { recursive: true });
   const browser = await chromium.launch({ headless: true, executablePath: process.env.CHROMIUM_PATH || undefined });
   const context = await browser.newContext({ viewport: { width:1440, height:1000 }, deviceScaleFactor:1, reducedMotion:'reduce' });
+  await shareChecks.installImageProbe(context);
   const page = await context.newPage();
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
@@ -62,6 +64,31 @@ const path = require('path');
   async function checkObservedGeometry(targetPage,label,size) {
     const samples=[];
     const problems=[];
+    if(['account-register','account-login'].includes(label)) {
+      const image=await targetPage.locator('img.account-auth-photo').evaluate(async element=>{await element.decode();const source=new URL(element.currentSrc);return {sameOrigin:source.origin===location.origin,path:source.pathname,width:element.naturalWidth,height:element.naturalHeight};});
+      samples.push({check:'auth-original-artwork',image});
+      if(!image.sameOrigin||image.path!=='/design/ambassador-outdoor.jpg'||image.width<100||image.height<100)problems.push('Both empty authentication modes must load the same-origin original photo');
+      const auth=await targetPage.evaluate(()=>{
+        const parse=value=>{const n=value.match(/[\d.]+/g).map(Number);return [n[0],n[1],n[2],n[3]??1];};
+        const lum=rgb=>rgb.slice(0,3).map(c=>c/255).map(c=>c<=.04045?c/12.92:((c+.055)/1.055)**2.4).reduce((sum,c,i)=>sum+c*[.2126,.7152,.0722][i],0);
+        const photo=document.querySelector('.account-auth-photo').getBoundingClientRect(),caption=document.querySelector('.account-auth-caption').getBoundingClientRect();
+        const contrasts=[...document.querySelectorAll('.account-auth-caption span,.account-auth-caption h2,.account-auth-caption p,.account-card label,.account-card .button:not(:disabled)')].filter(el=>el.getClientRects().length).map(el=>{
+          const stack=[];for(let n=el;n;n=n.parentElement){const style=getComputedStyle(n);if(style.backgroundImage!=='none')throw new Error('Auth text contrast requires opaque, image-free text surfaces');const bg=parse(style.backgroundColor);stack.push(bg);if(bg[3]===1)break;}
+          let background=[255,255,255];for(const front of stack.reverse())background=background.map((c,i)=>front[i]*front[3]+c*(1-front[3]));
+          const foreground=parse(getComputedStyle(el).color),text=background.map((c,i)=>foreground[i]*foreground[3]+c*(1-foreground[3]));
+          const a=lum(text),b=lum(background);return {tag:el.tagName,ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05)};
+        });
+        return {photoBottom:photo.bottom,captionTop:caption.top,captionOpaque:parse(getComputedStyle(document.querySelector('.account-auth-caption')).backgroundColor)[3]===1,cardOpaque:parse(getComputedStyle(document.querySelector('.account-card')).backgroundColor)[3]===1,contrasts};
+      });
+      samples.push({check:'auth-legible-image-and-form',...auth});
+      if(!auth.captionOpaque||!auth.cardOpaque||auth.contrasts.some(sample=>sample.ratio<4.5))problems.push('Auth caption and form text must remain on opaque high-contrast surfaces');
+      if(size==='mobile'&&auth.captionTop<auth.photoBottom-.5)problems.push('Mobile auth caption must stay below the photo, not cover its face');
+      await targetPage.getByLabel('用户名',{exact:true}).focus();
+      await targetPage.keyboard.press('Tab');
+      const passwordFocus=await targetPage.getByLabel('密码',{exact:true}).evaluate(element=>element===document.activeElement&&element.matches(':focus-visible')&&parseFloat(getComputedStyle(element).outlineWidth)>=2);
+      if(!passwordFocus)problems.push('Auth password input must remain keyboard-reachable with a visible focus outline');
+      await targetPage.evaluate(()=>{if(document.activeElement instanceof HTMLElement)document.activeElement.blur();});
+    }
     if(label==='space'&&size==='mobile') {
       const cards=await targetPage.locator('.space-source-title').evaluateAll(elements=>elements.map(element=>{
         const icon=element.querySelector('.tile-icon').getBoundingClientRect();
@@ -117,6 +144,7 @@ const path = require('path');
     for(const [size,width,height] of [['desktop',1440,1000],['mobile',390,844]]) {
       await targetPage.setViewportSize({width,height});
       await settle(targetPage,undefined,`${label}-${size}`);
+      if(['account-register','account-login'].includes(label))assert(await targetPage.locator('#username,#password').evaluateAll(inputs=>inputs.length===2&&inputs.every(input=>!input.value)),'Authentication artwork captures must contain no entered credentials');
       const file=`${label}-${size}.png`;
       await targetPage.screenshot({path:path.join(out,file),fullPage:true,animations:'disabled'});
       captures.push({state:label,designPage:designPages[label]||null,size,file});
@@ -165,8 +193,26 @@ const path = require('path');
     await page.keyboard.press('Enter');
     await page.waitForFunction(()=>document.querySelector('#main-content')===document.activeElement,null,{timeout:5000,polling:'raf'});
     assert(await page.locator('#main-content').evaluate(element => element === document.activeElement));
+    const homeTypography=[];
+    for(const width of [320,390,430,1440]) {
+      await page.setViewportSize({width,height:width===1440?1000:844});
+      await settle(page,undefined,`home-type-${width}`);
+      const type=await page.locator('.hero-copy').evaluate(element=>({headline:parseFloat(getComputedStyle(element.querySelector('h1')).fontSize),body:parseFloat(getComputedStyle(element.querySelector(':scope > p')).fontSize)}));
+      const expected=width===1440?Math.min(58,Math.max(36,width*.04)):Math.min(47,Math.max(27,width*.07));
+      assert(Math.abs(type.headline-expected)<.1,`Home headline at ${width} must match the scoped typography change`);
+      assert.equal(type.body,width===1440?17:15,'Only mobile home copy should shrink');
+      if(width!==1440){
+        const actions=page.locator('.hero-actions');await actions.evaluate(element=>element.scrollIntoView({block:'center',behavior:'instant'}));
+        await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+        const controls=await actions.locator('a.button').evaluateAll(elements=>elements.map(element=>{const box=element.getBoundingClientRect(),nav=document.querySelector('.mobile-nav').getBoundingClientRect();return {height:box.height,top:box.top,bottom:box.bottom,navTop:nav.top,hit:element.contains(document.elementFromPoint(box.left+box.width/2,box.top+box.height/2))};}));
+        assert.equal(controls.length,2);for(const control of controls)assert(control.height>=44&&control.top>=0&&control.bottom<=control.navTop&&control.hit,`Home actions must remain usable at ${width}: ${JSON.stringify(control)}`);
+        await page.screenshot({path:path.join(out,`home-type-mobile-${width}.png`),fullPage:true,animations:'disabled'});
+      }
+      homeTypography.push({width,...type});
+    }
+    fs.writeFileSync(path.join(out,'home-typography.json'),JSON.stringify(homeTypography,null,2));
     await captureBoth(page,'home');
-    await page.getByRole('link', {name:/开始我的第一次镜像/}).click();
+    await page.getByRole('link', {name:/开始回答 8 道题/}).click();
     // Missing answer cannot advance. Previous-step edits survive back navigation.
     await page.getByRole('radio').first().waitFor();
     assert(await page.getByRole('button', {name:/下一题/}).isDisabled());
@@ -185,34 +231,35 @@ const path = require('path');
     for(let i=0;i<8;i++) {
       await page.getByRole('radio').first().waitFor();
       await page.getByRole('radio').nth(i%2).click();
-      await page.getByRole('button',{name:i===7?'看看我的第一张镜像':/下一题/}).click();
+      await page.getByRole('button',{name:i===7?'提交并查看结果':/下一题/}).click();
     }
     await page.waitForURL('**/self/result');
     await page.locator('.design-self-result .evidence-card').waitFor();
     await captureBoth(page,'self-result');
-    assert.equal(await page.getByRole('region',{name:'分享发现',exact:true}).count(),0);
-    await page.getByRole('button',{name:'分享这次发现',exact:true}).click();
-    const resultShare=page.getByRole('region',{name:'分享发现',exact:true});
+    assert.equal(await page.getByRole('region',{name:'分享结果',exact:true}).count(),0);
+    await page.getByRole('button',{name:'分享结果',exact:true}).click();
+    const resultShare=page.getByRole('region',{name:'分享结果',exact:true});
     await resultShare.locator('img.share-poster').waitFor();
     assert.equal(await resultShare.getByRole('textbox',{name:'分享链接',exact:true}).inputValue(),base+'/');
     assert((await resultShare.innerText()).includes('不包含你的个人结果'));
+    await shareChecks.capturePhotoPoster(page,resultShare,'self',base+'/',out,'share-self.png');
     await captureBoth(page,'self-result-share-preview',resultShare);
     await page.getByRole('button',{name:'收起分享预览',exact:true}).click();
-    assert.equal(await page.getByRole('region',{name:'分享发现',exact:true}).count(),0);
+    assert.equal(await page.getByRole('region',{name:'分享结果',exact:true}).count(),0);
     await page.reload();
     await page.locator('.design-self-result .evidence-card').waitFor();
     await page.goto(base+'/today');
     await page.getByRole('radio').first().waitFor();
     await captureBoth(page,'daily-unanswered');
     await page.getByRole('radio').first().click();
-    await page.getByRole('button',{name:/留下今天的选择/}).click();
+    await page.getByRole('button',{name:/提交答案/}).click();
     await page.locator('.saved-choice').waitFor();
     await captureBoth(page,'daily-result');
     // Invite creation, owner exclusion, independent friend consent and persistence.
     await page.goto(base+'/invite');
-    await page.getByRole('button',{name:/生成朋友邀请链接|邀请朋友选一选/}).waitFor();
+    await page.getByRole('button',{name:/生成朋友邀请链接|创建朋友邀请/}).waitFor();
     await captureBoth(page,'invite');
-    await page.getByRole('button',{name:/生成朋友邀请链接|邀请朋友选一选/}).click();
+    await page.getByRole('button',{name:/生成朋友邀请链接|创建朋友邀请/}).click();
     const friendUrl = await page.getByRole('textbox',{name:'分享链接'}).inputValue();
     assert.equal(new URL(friendUrl).origin, target.origin);
     await require('./share_browser.cjs')(page,friendUrl,out);
@@ -222,6 +269,7 @@ const path = require('path');
     await page.goto(friendUrl);
     await page.getByText('这是你自己的邀请', {exact:true}).waitFor();
     const peer = await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'});
+    await shareChecks.installImageProbe(peer);
     const friend = await peer.newPage();
     friend.on('pageerror', e => errors.push(e.message));
     await friend.goto(friendUrl);
@@ -254,6 +302,7 @@ const path = require('path');
     assert.equal(new URL(guessUrl).origin,target.origin);
     const guessShare=page.getByRole('region',{name:'分享邀请',exact:true});
     await guessShare.locator('img.share-poster').waitFor();
+    await shareChecks.capturePhotoPoster(page,guessShare,'guess',guessUrl,out,'share-guess.png');
     await captureBoth(page,'guess-sent',guessShare);
     await friend.goto(guessUrl);
     await friend.getByRole('radio').first().waitFor();
@@ -283,6 +332,7 @@ const path = require('path');
     assert.equal(new URL(reverseUrl).origin,target.origin);
     assert((await reverseShare.innerText()).includes('仅原邀请人可以参与'));
     await friend.locator('[data-design-page="12"]').waitFor();
+    await shareChecks.capturePhotoPoster(friend,reverseShare,'reverse',reverseUrl,out,'share-reverse.png');
     await captureBoth(friend,'reverse-sent',reverseReady);
     const outsider=await browser.newContext({reducedMotion:'reduce'});
     try {
@@ -317,7 +367,7 @@ const path = require('path');
     await friend.getByText(/这轮猜测已撤回|这次猜测已经结束/).waitFor();
     assert.equal(await friend.locator('.actual-choice').count(),0);
     // Invitation manager filters must preserve real state and sharing URLs.
-    const guesses = page.locator('section.card').filter({has:page.getByRole('heading',{name:'猜猜我的选择',exact:true})});
+    const guesses = page.locator('section.card').filter({has:page.getByRole('heading',{name:'我的竞猜邀请',exact:true})});
     await page.getByLabel('筛选猜测邀请').selectOption('active');
     await guesses.getByText('已加载记录中暂无此状态的邀请。',{exact:true}).waitFor();
     await page.getByLabel('筛选猜测邀请').selectOption('ended');
@@ -349,6 +399,12 @@ const path = require('path');
     await page.goto(base+'/mirror');
     await page.getByText('3 / 3 个独立视角已送达',{exact:true}).waitFor();
     await captureBoth(page,'mirror-full');
+    await page.getByRole('button',{name:'分享结果',exact:true}).click();
+    const mirrorShare=page.getByRole('region',{name:'分享结果',exact:true});
+    assert.equal(await mirrorShare.getByRole('textbox',{name:'分享链接',exact:true}).inputValue(),base+'/');
+    await shareChecks.capturePhotoPoster(page,mirrorShare,'mirror',base+'/',out,'share-mirror.png');
+    await captureBoth(page,'mirror-share-preview',mirrorShare);
+    await page.getByRole('button',{name:'收起分享预览',exact:true}).click();
     await page.reload();
     await page.getByText('3 / 3 个独立视角已送达',{exact:true}).waitFor();
     // One-record history, a genuine second assessment, and comparison details.
@@ -358,7 +414,7 @@ const path = require('path');
     await page.getByRole('link',{name:'再做一次镜像',exact:true}).click();
     for(let i=0;i<8;i++) {
       await page.getByRole('radio').nth(1).click();
-      await page.getByRole('button',{name:i===7?'看看我的第一张镜像':/下一题/}).click();
+      await page.getByRole('button',{name:i===7?'提交并查看结果':/下一题/}).click();
     }
     await page.waitForURL('**/self/result');
     await page.locator('.design-self-result .evidence-card').waitFor();
@@ -377,13 +433,13 @@ const path = require('path');
     await captureBoth(page,'journal');
     await page.getByLabel('筛选选择').selectOption('B');
     await page.getByRole('button',{name:'筛选记录',exact:true}).click();
-    await page.getByText('没有符合筛选条件的选择',{exact:true}).waitFor();
+    await page.getByText('没有符合筛选条件的记录',{exact:true}).waitFor();
     await page.getByRole('button',{name:'重置',exact:true}).click();
     await page.locator('.journal-entry').waitFor();
     await page.getByLabel('开始日期',{exact:true}).fill('2000-01-01');
     await page.getByLabel('结束日期',{exact:true}).fill('2000-01-02');
     await page.getByRole('button',{name:'筛选记录',exact:true}).click();
-    await page.getByText('没有符合筛选条件的选择',{exact:true}).waitFor();
+    await page.getByText('没有符合筛选条件的记录',{exact:true}).waitFor();
     await page.getByRole('button',{name:'重置',exact:true}).click();
     await page.locator('.journal-entry').waitFor();
     // Upgrade the synthetic guest and verify the completed assessment remains.
@@ -394,13 +450,13 @@ const path = require('path');
     await page.getByLabel('用户名',{exact:true}).waitFor();
     await captureBoth(page,'account-register');
     await page.goto(base+'/account?mode=login');
-    await page.getByRole('button',{name:'登录我的空间',exact:true}).waitFor();
+    await page.getByRole('button',{name:'登录账户',exact:true}).waitFor();
     await captureBoth(page,'account-login');
     await page.goto(base+'/account');
     const username = 'qa_'+Date.now();
     await page.getByLabel('用户名',{exact:true}).fill(username);
     await page.getByLabel('密码',{exact:true}).fill('Synthetic-Only-Password-2026');
-    await page.getByRole('button',{name:'创建账户，保存我的选择'}).click();
+    await page.getByRole('button',{name:'注册账户并保留记录'}).click();
     await page.waitForURL('**/space');
     await page.goto(base+'/account');
     await page.getByRole('button',{name:'退出登录',exact:true}).waitFor();
@@ -416,7 +472,7 @@ const path = require('path');
       await targetPage.goto(base+'/account?mode=login');
       await targetPage.getByLabel('用户名',{exact:true}).fill(username);
       await targetPage.getByLabel('密码',{exact:true}).fill(password);
-      await targetPage.getByRole('button',{name:'登录我的空间',exact:true}).click();
+      await targetPage.getByRole('button',{name:'登录账户',exact:true}).click();
       await targetPage.waitForURL('**/space');
       await targetPage.goto(base+'/account');
       await targetPage.getByRole('button',{name:'退出登录',exact:true}).waitFor();
@@ -430,7 +486,7 @@ const path = require('path');
     await security.getByRole('button',{name:'更新密码',exact:true}).click();
     await security.getByText('密码已更新，其他设备已退出登录，旧恢复码已失效。请重新生成恢复码。',{exact:true}).waitFor();
     await other.goto(base+'/account?mode=login');
-    await other.getByRole('button',{name:'登录我的空间',exact:true}).waitFor();
+    await other.getByRole('button',{name:'登录账户',exact:true}).waitFor();
     await login(other,'Synthetic-Changed-Password-2026');
     await security.getByLabel('当前密码',{exact:true}).fill('Synthetic-Changed-Password-2026');
     await security.getByRole('button',{name:'生成新的恢复码',exact:true}).click();
@@ -446,7 +502,7 @@ const path = require('path');
     await security.getByRole('button',{name:'确认退出所有设备',exact:true}).click();
     await page.getByLabel('用户名',{exact:true}).waitFor();
     await other.goto(base+'/account?mode=login');
-    await other.getByRole('button',{name:'登录我的空间',exact:true}).waitFor();
+    await other.getByRole('button',{name:'登录账户',exact:true}).waitFor();
     await otherContext.close();
     await page.goto(base+'/recover');
     await page.getByLabel('恢复码',{exact:true}).waitFor();
@@ -551,11 +607,11 @@ const path = require('path');
         assert.equal(await page.locator('img').evaluateAll(images=>images.filter(image=>image.complete&&image.naturalWidth===0).length),0);
       }
     }
-    const expectedStates=['home','self-question','self-result','self-result-share-preview','invite','friend-landing','friend-question','friend-thanks','mirror-waiting','mirror-first','mirror-full','guess-launch','guess-sent','guess-recipient','guess-reveal','reverse-chooser','reverse-sent','reverse-recipient','reverse-reveal','daily-unanswered','daily-result','journal','space','history-first','history-comparison','account-register','account-login','account-security','recover','recover-success','help','not-found'];
+    const expectedStates=['home','self-question','self-result','self-result-share-preview','invite','friend-landing','friend-question','friend-thanks','mirror-waiting','mirror-first','mirror-full','mirror-share-preview','guess-launch','guess-sent','guess-recipient','guess-reveal','reverse-chooser','reverse-sent','reverse-recipient','reverse-reveal','daily-unanswered','daily-result','journal','space','history-first','history-comparison','account-register','account-login','account-security','recover','recover-success','help','not-found'];
     for(const state of expectedStates) for(const size of ['desktop','mobile']) assert(captures.some(capture=>capture.state===state&&capture.size===size&&!capture.section),`Missing ${state} ${size} acceptance image`);
     assert.equal(new Set(captures.map(capture=>capture.designPage).filter(Boolean)).size,18,'Every original Page01–18 requires a desktop and mobile capture');
     writeManifest();
     if(errors.length)throw new Error('Browser errors: '+errors.join(';'));
-    console.log(JSON.stringify({status:'passed',checks:['home_bold_cjk_typography','self_keyboard_radio','self_required_answer','self_back_preserves_selection','self_interruption_resets','self_8_answers','self_refresh_persistence','daily_vote','friend_consent_owner_exclusion','friend_submission_refresh','mirror_one_response','guess_hidden_until_submit','reveal_refresh','revoke_cancel_confirm_hides_reveal','guest_registration_preserves_self','invitation_filters_and_share_url','history_repeat_compare_refresh','journal_choice_date_reset','password_rotates_sessions','recovery_confirm_hide','logout_all_sessions','recovery_and_relogin_preserve_history','6_secondary_routes','4_mobile_no_overflow','mobile_computed_text_contrast','fixed_nav_scroll_clearance','responsive_design_320_430_768_1440','design_assets_loaded','result_share_explicit_preview_app_link','share_four_platform_png_downloads','share_real_qr_decode','share_caption_edit','share_native_mock_cancel_success_error','share_mobile_no_overflow','share_mobile_visible_unobscured_download_copy','keyboard_skip_link_functional_hidden_when_unfocused','all_design_states_desktop_mobile','mirror_three_independent_responses','reverse_directed_access','reverse_chooser_sent_recipient_reveal','space_icon_text_no_overlap','journal_mobile_single_line_filter_actions','reveal_answer_letters_no_overlap','mirror_mobile_readable_stacked_strips'],page_errors:errors,screenshots:out}));
+    console.log(JSON.stringify({status:'passed',checks:['home_bold_cjk_typography','self_keyboard_radio','self_required_answer','self_back_preserves_selection','self_interruption_resets','self_8_answers','self_refresh_persistence','daily_vote','friend_consent_owner_exclusion','friend_submission_refresh','mirror_one_response','guess_hidden_until_submit','reveal_refresh','revoke_cancel_confirm_hides_reveal','guest_registration_preserves_self','invitation_filters_and_share_url','history_repeat_compare_refresh','journal_choice_date_reset','password_rotates_sessions','recovery_confirm_hide','logout_all_sessions','recovery_and_relogin_preserve_history','6_secondary_routes','4_mobile_no_overflow','mobile_computed_text_contrast','fixed_nav_scroll_clearance','responsive_design_320_430_768_1440','design_assets_loaded','result_share_explicit_preview_app_link','share_four_platform_png_downloads','share_real_qr_decode','share_caption_edit','share_native_mock_cancel_success_error','share_mobile_no_overflow','share_mobile_visible_unobscured_download_copy','keyboard_skip_link_functional_hidden_when_unfocused','all_design_states_desktop_mobile','mirror_three_independent_responses','reverse_directed_access','reverse_chooser_sent_recipient_reveal','space_icon_text_no_overlap','journal_mobile_single_line_filter_actions','reveal_answer_letters_no_overlap','mirror_mobile_readable_stacked_strips','share_original_photo_pixels_in_downloaded_png','share_native_decode_before_png','share_photo_asset_failure_retry','share_repeated_platform_cycles_and_exports','share_all_five_kinds_photo_posters','auth_original_photo_and_contrast','auth_mobile_photo_caption_no_overlap','home_mobile_type_smaller_desktop_unchanged'],page_errors:errors,screenshots:out}));
   } finally { await browser.close(); }
 })().catch(e=>{console.error(e.stack);process.exitCode=1});

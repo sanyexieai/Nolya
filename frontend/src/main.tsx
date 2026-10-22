@@ -84,12 +84,12 @@ function App() {
           path="*"
           element={
             <div className="container narrow-page">
-              <BrandCompanion label="换一个方向，继续发现" />
+              <BrandCompanion label="页面未找到" />
               <Empty
-                title="这一页还没找到"
+                title="页面不存在"
                 action={<ActionLink to="/">回到首页</ActionLink>}
               >
-                也许是链接有一点点偏差，先回去看看吧。
+                请检查链接地址，或返回首页。
               </Empty>
             </div>
           }

@@ -157,8 +157,8 @@ export function GuessNewPage() {
         <div className="guess-launch-copy">
           <PageHeading
             eyebrow="GUESS ME · 猜猜我的选择"
-            title="最了解你的人，猜得中你的选择吗？"
-            description="从你答过的题里挑一道，发给熟悉你的人猜。你的答案先藏好，等 TA 选完再揭晓。"
+            title="选择一道题，邀请朋友猜答案"
+            description="从已回答的题目中选择一道，邀请朋友猜测。朋友提交后才会看到你的答案。"
           />
           {loading || resource.loading ? (
             <Loading />
@@ -166,10 +166,10 @@ export function GuessNewPage() {
             <Notice onRetry={resource.reload}>{resource.error}</Notice>
           ) : !resource.data?.answers.length ? (
             <Empty
-              title="先留下一个真实答案"
+              title="请先回答一道问题"
               action={
                 <ActionLink to="/today">
-                  去做今天的小选择
+                  回答今日问题
                   <ArrowRight size={17} />
                 </ActionLink>
               }
@@ -181,8 +181,8 @@ export function GuessNewPage() {
               <span className="success-icon">
                 <Sparkles size={31} />
               </span>
-              <Badge>谜底已经收好</Badge>
-              <h2>让朋友凭直觉猜一猜</h2>
+              <Badge>答案已保存</Badge>
+              <h2>朋友将猜测这道题</h2>
               <p>{selected?.question.prompt}</p>
               <SocialShare value={shareUrl(link, "guess")} kind="guess" />
               <PrivacyNote>朋友提交猜测后，才会看到你选的答案。</PrivacyNote>
@@ -279,7 +279,7 @@ export function GuessNewPage() {
             alt="春日河畔的品牌示意人物，非真实用户结果"
           />
           <figcaption>
-            这次先不告诉你。 <Sparkles size={20} aria-hidden="true" />
+            提交猜测后揭晓答案。 <Sparkles size={20} aria-hidden="true" />
           </figcaption>
         </figure>
       </div>
@@ -301,8 +301,8 @@ export function GuessNewPage() {
         <article>
           <span>03</span>
           <div>
-            <h3>猜完揭晓，看看多懂你</h3>
-            <p>一题就能开启一次有趣的对话</p>
+            <h3>提交后查看答案</h3>
+            <p>对照猜测与原答案</p>
           </div>
         </article>
       </section>
@@ -410,7 +410,7 @@ export function GuessPage() {
           title="这次猜测已经结束"
           action={
             <ActionLink to="/today">
-              留一个自己的选择 <ArrowRight size={17} />
+              回答今日问题 <ArrowRight size={17} />
             </ActionLink>
           }
         >
@@ -440,7 +440,7 @@ export function GuessPage() {
                 </PrivacyNote>
               </section>
               <section className="card reverse-status-card">
-                <h2>接下来，慢慢了解彼此</h2>
+                <h2>接下来的步骤</h2>
                 <ol>
                   <li aria-current="step">
                     <strong>01 题目已准备</strong>
@@ -479,7 +479,7 @@ export function GuessPage() {
           <div className="guess-flow-content">
             <PageHeading
               eyebrow="这是你的猜测邀请"
-              title="你的答案，已经好好收起来了。"
+              title="答案已保存，等待朋友猜测"
               description="把链接发给朋友吧。你不能猜自己的答案。"
             />
             <section className="card">
@@ -501,7 +501,7 @@ export function GuessPage() {
               <PageHeading
                 eyebrow="刚才你猜了 TA · 现在换个方向"
                 title="刚才你猜了 TA。现在，换 TA 猜你。"
-                description="同一道生活题，选你自己的真实答案。答案先藏好，再把题发回去。"
+                description="回答同一道生活题，再把邀请发送给 TA。TA 提交猜测后才会看到你的答案。"
               />
               <section className="question-card reverse-answer-card">
                 <Badge>只需回答这一题</Badge>
@@ -530,7 +530,7 @@ export function GuessPage() {
                 disabled={busy}
                 onClick={() => setReverseOpen(false)}
               >
-                暂时不发，回到刚才的发现
+                暂不发送，返回上次结果
               </button>
             </div>
             <GuessArtwork scene="start" />
@@ -550,24 +550,18 @@ export function GuessPage() {
                     ? "反向竞猜 · 答案揭晓"
                     : "关于 TA 的选择 · 答案揭晓"
                 }
-                title={
-                  result.correct
-                    ? "这一次，你猜中了。"
-                    : "这一次，答案有一点意外。"
-                }
+                title={result.correct ? "这一次，你猜中了。" : "这次没有猜中"}
                 description={
                   result.correct
-                    ? "真正有趣的，不只是答对，而是你们在这个瞬间，想到了一起。"
-                    : "没有猜中也没关系。认识一个人，也从看见不同开始。"
+                    ? "你的猜测与 TA 的答案一致。"
+                    : "你的猜测与 TA 的答案不同，可在下方查看。"
                 }
               />
               <section
                 className={`card reveal-card guess-designed-reveal ${result.correct ? "is-match" : "is-different"}`}
               >
                 <Badge pink>
-                  {result.correct
-                    ? "这次，你们想到了一起"
-                    : "这里，你们想得不太一样"}
+                  {result.correct ? "猜测与答案一致" : "猜测与答案不同"}
                 </Badge>
                 <h2>{question.prompt}</h2>
                 <div className="reveal-comparison">
@@ -600,7 +594,7 @@ export function GuessPage() {
                   {result.relationship.display_mode === "getting_started" ? (
                     <>
                       <Sparkles size={17} />
-                      你们还在慢慢摸清彼此。一个选择，不代表全部。
+                      当前互动次数较少，不代表你们整体的了解程度。
                     </>
                   ) : (
                     <>
@@ -622,7 +616,7 @@ export function GuessPage() {
                   ? "再来一题，让来回更有意思。"
                   : "现在，换 TA 来猜你。"}
               </h2>
-              <p>不是给彼此打分。一次来回，多认识一点。</p>
+              <p>回答同一道题后，可以邀请 TA 猜测你的答案。</p>
             </div>
             <div>
               {result.can_reverse && (
@@ -634,7 +628,7 @@ export function GuessPage() {
                 选一道自己的生活题 <ArrowRight size={16} />
               </Link>
               <Link className="text-link" to="/today">
-                继续今天的小选择 <ArrowRight size={16} />
+                回答今日问题 <ArrowRight size={16} />
               </Link>
             </div>
           </section>
@@ -709,18 +703,18 @@ function GuessFlowSteps() {
     <section className="guess-flow-steps" aria-label="来回了解的三个步骤">
       <article>
         <span>01</span>
-        <h3>看见一点不同</h3>
-        <p>猜中或没猜中，都有新发现</p>
+        <h3>查看答案对照</h3>
+        <p>提交后查看是否猜中</p>
       </article>
       <article>
         <span>02</span>
         <h3>换个方向</h3>
-        <p>留一个真实答案，请 TA 来猜</p>
+        <p>回答同一道题，邀请 TA 猜测</p>
       </article>
       <article>
         <span>03</span>
-        <h3>让了解有来有回</h3>
-        <p>一题一题，慢慢认识彼此</p>
+        <h3>查看互动记录</h3>
+        <p>在我的空间查看历史结果</p>
       </article>
     </section>
   );
@@ -819,14 +813,14 @@ function GuessArtwork({
       )}
       <figcaption>
         {scene === "ready"
-          ? "答案先藏好，让了解慢慢发生。"
+          ? "朋友提交猜测后才能查看答案。"
           : scene === "choice"
             ? "TA 这次会怎么选？"
             : scene === "reverseReveal"
-              ? "被认真了解，是一件小小的开心事。"
+              ? "查看本次猜测与答案的对照。"
               : scene === "reveal"
-                ? "同一个人，还有很多值得认识的面。"
-                : "一次来回，多懂一点。"}
+                ? "结果仅对应本次题目。"
+                : "你也可以回答同一道题。"}
       </figcaption>
     </figure>
   );

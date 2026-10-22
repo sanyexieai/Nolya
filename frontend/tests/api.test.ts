@@ -111,7 +111,7 @@ test("invalid non-JSON upstream errors become an honest fallback message", async
     (e: unknown) => {
       assert.ok(e instanceof ApiError);
       assert.equal(e.status, 503);
-      assert.equal(e.message, "这次没有完成，请稍后再试。");
+      assert.equal(e.message, "操作未完成，请稍后重试。");
       return true;
     },
   );
@@ -185,5 +185,5 @@ test("dates use China schedule and error helper handles unknown values", () => {
   assert.equal(formatDate("2026-10-19"), "10月19日");
   assert.equal(formatDate("2026-10-18T23:00:00Z"), "10月19日");
   assert.equal(errorMessage(new Error("retriable")), "retriable");
-  assert.equal(errorMessage(null), "出了点小问题，请重试。");
+  assert.equal(errorMessage(null), "操作失败，请重试。");
 });

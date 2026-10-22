@@ -50,10 +50,10 @@ export function HistoryPage() {
   }
   return (
     <div className="container journal-page">
-      <BrandCompanion label="不同时间，也有不同面的自己" />
+      <BrandCompanion label="查看历史答题结果" />
       <PageHeading
         eyebrow="SELF HISTORY · 镜像历史"
-        title="在变化里，重新认识自己。"
+        title="镜像历史与对比"
         description="每次镜像独立保存。这里比较你自己在不同时间的选择，不评判成长或退步。"
       />
       {resource.loading ? (
@@ -74,7 +74,7 @@ export function HistoryPage() {
       ) : (
         <>
           <section className="card history-comparison">
-            <h2>最近一次与过去的我</h2>
+            <h2>最新与历史结果对比</h2>
             <p>
               最新记录：{formatDate(latest.created_at)} ·{" "}
               {latest.created_at.slice(0, 4)}
@@ -121,8 +121,8 @@ export function HistoryPage() {
                           {latest.version !== previous.version || !before
                             ? "暂无可比结果"
                             : before.score === d.score
-                              ? "这一次，偏好相近"
-                              : "这一次，有些不同"}
+                              ? "结果相同"
+                              : "结果不同"}
                         </span>
                       </article>
                     );
@@ -130,9 +130,7 @@ export function HistoryPage() {
                 </div>
               </>
             ) : (
-              <p>
-                目前只有一次镜像。将来再回答时，可以回来看当下的选择有哪些变化。
-              </p>
+              <p>目前只有一次记录。再次完成答题后，可在这里对比两次结果。</p>
             )}
             <Link className="text-link" to="/self">
               再做一次镜像

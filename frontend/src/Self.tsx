@@ -75,15 +75,15 @@ export function SelfPage() {
           返回首页
         </Link>
         <PageHeading
-          eyebrow="先从自己开始"
+          eyebrow="自我测评 · 8 道题"
           title={
             <>
-              先看看，
+              回答问题，
               <br />
-              你会怎么选。
+              选择符合你的答案。
             </>
           }
-          description="8 道生活题。别想太久，选更像你的那一边。"
+          description="共 8 道生活情境题，请按你的实际情况选择。"
         />
         <PrivacyNote>
           完成后才会保存结果，离开此页将不保留未提交的选择。
@@ -137,14 +137,14 @@ export function SelfPage() {
                 onClick={next}
               >
                 {index === data.questions.length - 1
-                  ? "看看我的第一张镜像"
+                  ? "提交并查看结果"
                   : "下一题"}
                 <ArrowRight size={19} />
               </Button>
             </div>
           </>
         ) : (
-          <Empty title="暂时还没有题目">请稍后回来看看。</Empty>
+          <Empty title="暂时还没有题目">请稍后重试。</Empty>
         )}
       </div>
       <figure className="design-self-portrait">
@@ -154,7 +154,7 @@ export function SelfPage() {
           width="1165"
           height="860"
         />
-        <figcaption>同一个人，也会有不同的选择。</figcaption>
+        <figcaption>请根据题目情境选择答案。</figcaption>
       </figure>
     </div>
   );
@@ -190,9 +190,9 @@ export function SelfResultPage() {
   return (
     <div className="container result-page design-self-result">
       <PageHeading
-        eyebrow="这是今天的你"
-        title="8 个选择，照见了你的一面。"
-        description="来自你的 8 个真实生活选择。一个开始，不是一个定义。"
+        eyebrow="自我测评结果"
+        title="你的自我测评结果"
+        description="结果基于本次 8 道题的答案，不代表完整的人格评价。"
       />
       {loading || resource.loading ? (
         <Loading />
@@ -200,7 +200,7 @@ export function SelfResultPage() {
         <Notice onRetry={resource.reload}>{resource.error}</Notice>
       ) : !result ? (
         <Empty
-          title="从一个选择开始认识自己"
+          title="你还没有完成自我测评"
           action={
             <ActionLink to="/self">
               开始 8 道生活题
@@ -208,7 +208,7 @@ export function SelfResultPage() {
             </ActionLink>
           }
         >
-          完成后，你的第一张镜像会出现在这里。
+          完成 8 道题后，可在这里查看结果。
         </Empty>
       ) : (
         <>
@@ -239,7 +239,7 @@ export function SelfResultPage() {
               </figcaption>
             </figure>
             <section className="card evidence-card">
-              <Badge>从选择里，看见一点自己</Badge>
+              <Badge>本次回答结果</Badge>
               <h2>{result.summary}</h2>
               <div className="observations">
                 {result.observations.map((text, i) => (
@@ -250,7 +250,7 @@ export function SelfResultPage() {
                 ))}
               </div>
               <div className="feedback">
-                <p>这张镜像像你吗？</p>
+                <p>这个结果符合你的实际情况吗？</p>
                 <div>
                   {[
                     ["very_like", "挺像我"],
@@ -267,9 +267,7 @@ export function SelfResultPage() {
                     </button>
                   ))}
                 </div>
-                {feedback && (
-                  <small role="status">已记下你的反馈，谢谢你。</small>
-                )}
+                {feedback && <small role="status">反馈已保存。</small>}
                 {feedbackError && <Notice>{feedbackError}</Notice>}
               </div>
             </section>
@@ -279,18 +277,18 @@ export function SelfResultPage() {
               <Heart size={25} />
             </span>
             <div>
-              <h2>朋友眼里的你，也是这样吗？</h2>
-              <p>邀请朋友，各用 3 个问题，给你一个新的视角。</p>
+              <h2>邀请朋友提供反馈</h2>
+              <p>每位朋友回答 3 道题，完成后可对照你们的选择。</p>
             </div>
             <ActionLink to="/invite">
-              听听朋友怎么想
+              邀请朋友回答
               <ArrowRight size={18} />
             </ActionLink>
           </div>
           <ResultShare kind="self" summary={result.summary} />
           <div className="result-bottom">
             <Link className="text-link" to="/today">
-              今天再留一个小选择 <ArrowRight size={16} />
+              回答今日问题 <ArrowRight size={16} />
             </Link>
             <Link className="text-link muted" to="/self">
               重新回答

@@ -69,19 +69,17 @@ export default function Home() {
       </section>
       <section className="home-bottom container">
         <div>
-          <span className="eyebrow">A LITTLE CHOICE, EVERY DAY</span>
-          <h2>今天的你，会怎么选？</h2>
-          <p>不急着定义自己。一个人，也可以慢慢发现。</p>
+          <span className="eyebrow">每日问题</span>
+          <h2>回答今日问题</h2>
+          <p>选择符合你实际情况的答案，并在我的空间查看记录。</p>
         </div>
         <Link to="/today" className="daily-teaser">
           <span className="teaser-icon">
             <Sparkles size={23} />
           </span>
           <div>
-            <span>DAILY PULSE</span>
-            <strong>
-              {user ? "继续今天的小选择" : "留给今天的一个小问题"}
-            </strong>
+            <span>每日选择</span>
+            <strong>{user ? "查看今日问题" : "回答今日问题"}</strong>
           </div>
           <ArrowUpRight size={23} />
         </Link>

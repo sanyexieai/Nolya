@@ -11,6 +11,7 @@ import {
   renderSharePoster,
   sharePlatforms,
   shareTitle,
+  shareArtwork,
 } from "./share-core";
 import type { ShareKind, SharePlatform } from "./share-core";
 export function SocialShare({
@@ -41,12 +42,12 @@ export function ResultShare({
   useEffect(() => setOpen(false), [user?.id, summary]);
   return (
     <section className="result-share-entry">
-      <h2>把这次发现，留给自己或分享出去</h2>
+      <h2>分享评估结果</h2>
       <p>
         仅分享你确认的概括，不含逐题答案、朋友姓名或个人回答。应用链接不会公开你的结果。
       </p>
       <Button secondary onClick={() => setOpen(!open)}>
-        {open ? "收起分享预览" : "分享这次发现"}
+        {open ? "收起分享预览" : "分享结果"}
       </Button>
       {open && (
         <SharePanel
@@ -74,13 +75,15 @@ export function SharePanel({
     initialCaption ?? defaultShareText(kind),
   );
   const [poster, setPoster] = useState<{ key: string; data: string }>();
+  const [attempt, setAttempt] = useState(0);
+  const [photoFailed, setPhotoFailed] = useState(false);
   const [posterError, setPosterError] = useState("");
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState("");
   const mounted = useRef(true);
   const current = useRef("");
-  const revision = `${value}:${kind}:${platform}:${caption}`;
+  const revision = `${value}:${kind}:${platform}:${caption}:${attempt}`;
   current.current = revision;
   const format = sharePlatforms.find((item) => item.id === platform)!;
   let invalid = "";
@@ -99,11 +102,13 @@ export function SharePanel({
   }, []);
   useEffect(() => {
     let active = true;
+    const controller = new AbortController();
+    setPhotoFailed(false);
     setPosterError("");
     setNotice("");
     setCopied("");
     if (!invalid)
-      renderSharePoster(kind, value, caption, platform)
+      renderSharePoster(kind, value, caption, platform, controller.signal)
         .then((data) => {
           if (active) setPoster({ key: revision, data });
         })
@@ -115,6 +120,7 @@ export function SharePanel({
         });
     return () => {
       active = false;
+      controller.abort();
     };
   }, [revision, invalid]);
   const ready = poster?.key === revision ? poster.data : undefined;
@@ -184,12 +190,30 @@ export function SharePanel({
   return (
     <section
       className="social-share"
-      aria-label={resultShare ? "分享发现" : "分享邀请"}
+      aria-label={resultShare ? "分享结果" : "分享邀请"}
     >
-      <div className="social-share-heading">
-        <span className="share-kicker">把一个新视角，带给熟悉的人</span>
-        <h3>选择你的分享方式</h3>
-        <p>先预览，再由你决定发给谁。不会自动发布。</p>
+      <div className="share-introduction">
+        <div className="social-share-heading">
+          <span className="share-kicker">
+            {resultShare ? "分享评估结果" : "分享邀请"}
+          </span>
+          <h3>选择你的分享方式</h3>
+          <p>先预览，再由你决定发给谁。不会自动发布。</p>
+        </div>
+        <figure className="share-brand-art">
+          {!photoFailed ? (
+            <img
+              key={attempt}
+              className="share-brand-photo"
+              src={shareArtwork[kind]}
+              alt="原设计品牌示意人物，非用户照片"
+              onError={() => setPhotoFailed(true)}
+            />
+          ) : (
+            <div className="share-brand-fallback">图片暂未加载</div>
+          )}
+          <figcaption>品牌示意图，非用户照片</figcaption>
+        </figure>
       </div>
       <div className="share-platforms" role="group" aria-label="选择社交平台">
         {sharePlatforms.map((item) => (
@@ -216,7 +240,7 @@ export function SharePanel({
       </p>
       {resultShare && (
         <p className="share-disclosure">
-          分享发现请保存海报；应用链接不包含你的个人结果。
+          分享结果请保存海报；应用链接不包含你的个人结果。
         </p>
       )}
       {local && (
@@ -333,21 +357,7 @@ export function SharePanel({
           <button
             type="button"
             className="text-button"
-            onClick={() => {
-              setPosterError("");
-              const started = revision;
-              renderSharePoster(kind, value, caption, platform)
-                .then((data) => {
-                  if (mounted.current && current.current === started)
-                    setPoster({ key: started, data });
-                })
-                .catch(() => {
-                  if (mounted.current && current.current === started)
-                    setPosterError(
-                      "此浏览器暂时无法生成海报，请复制链接分享。",
-                    );
-                });
-            }}
+            onClick={() => setAttempt((value) => value + 1)}
           >
             重新生成海报
           </button>

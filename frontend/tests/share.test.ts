@@ -8,6 +8,10 @@ import { build } from "esbuild";
 import { JSDOM } from "jsdom";
 import {
   renderSharePoster,
+  loadShareArtwork,
+  shareArtwork,
+  posterPhotoLayout,
+  coverSourceRect,
   invitationShareKind,
   checkedShareUrl,
   isLocalShareUrl,
@@ -57,6 +61,11 @@ let harness: typeof import("./share-harness.tsx");
 const dom = new JSDOM("<div id='root'></div>", { url: "https://nolya.test/" });
 const saved = new Map<string, PropertyDescriptor | undefined>();
 const canvasRects: number[][] = [];
+const drawnImages: unknown[][] = [];
+let imageFailure = false;
+let decodedImages = 0;
+let decodeFailure = false;
+let pendingDecode: Promise<void> | undefined;
 before(async () => {
   for (const [key, value] of Object.entries({
     window: dom.window,
@@ -72,6 +81,38 @@ before(async () => {
       configurable: true,
     });
   }
+  Object.defineProperty(dom.window.HTMLImageElement.prototype, "naturalWidth", {
+    configurable: true,
+    get: () => 1122,
+  });
+  Object.defineProperty(
+    dom.window.HTMLImageElement.prototype,
+    "naturalHeight",
+    { configurable: true, get: () => 1402 },
+  );
+  Object.defineProperty(dom.window.HTMLImageElement.prototype, "decode", {
+    configurable: true,
+    value: async () => {
+      decodedImages++;
+      if (decodeFailure) throw new Error("bad image");
+      if (pendingDecode) await pendingDecode;
+    },
+  });
+  const originalSrc = Object.getOwnPropertyDescriptor(
+    dom.window.HTMLImageElement.prototype,
+    "src",
+  )!;
+  Object.defineProperty(dom.window.HTMLImageElement.prototype, "src", {
+    configurable: true,
+    get: originalSrc.get,
+    set(value) {
+      originalSrc.set!.call(this, value);
+      queueMicrotask(() => {
+        if (imageFailure) this.onerror?.(new dom.window.Event("error"));
+        else this.onload?.(new dom.window.Event("load"));
+      });
+    },
+  });
   const ctx = {
     createLinearGradient: () => ({ addColorStop() {} }),
     fillRect() {},
@@ -83,7 +124,12 @@ before(async () => {
     fill() {},
     fillText() {},
     measureText: (x: string) => ({ width: Array.from(x).length * 32 }),
-    drawImage() {},
+    drawImage(...args: unknown[]) {
+      drawnImages.push(args);
+    },
+    save() {},
+    restore() {},
+    clip() {},
     clearRect() {},
     createImageData: (w: number, h: number) => ({
       data: new Uint8ClampedArray(w * h * 4),
@@ -222,23 +268,89 @@ test("directed reopened panel visibly warns private delivery and keeps special c
   assert.match(document.body.textContent!, /请私发，不建议发布到公开平台/);
   assert.match(
     (document.querySelector("textarea") as HTMLTextAreaElement).value,
-    /只发给刚才邀请我的那位朋友/,
+    /给原邀请人的反向邀请/,
   );
   await harness.act(async () => root.unmount());
 });
 
-test("tall poster cards are centered in available space without moving QR", async () => {
-  canvasRects.length = 0;
-  await renderSharePoster(
+test("every poster format draws decoded same-origin original photo without moving QR", async () => {
+  for (const kind of [
     "friend",
-    "https://nolya.test/friend/public",
-    "A short caption",
-    "douyin",
+    "guess",
+    "reverse",
+    "self",
+    "mirror",
+  ] as const) {
+    for (const platform of ["moments", "wechat", "douyin"] as const) {
+      drawnImages.length = 0;
+      const before = decodedImages;
+      await renderSharePoster(
+        kind,
+        "https://nolya.test/friend/public",
+        "A short caption",
+        platform,
+      );
+      assert.ok(decodedImages > before);
+      const [photo, qr] = drawnImages;
+      assert.ok(photo[0] instanceof dom.window.HTMLImageElement);
+      assert.equal(
+        (photo[0] as HTMLImageElement).getAttribute("src"),
+        `https://nolya.test${shareArtwork[kind]}`,
+      );
+      const height = sharePlatforms.find((x) => x.id === platform)!.height;
+      const box = posterPhotoLayout(height);
+      assert.deepEqual(photo.slice(5), [box.x, box.y, box.width, box.height]);
+      assert.deepEqual(qr.slice(1), [400, height - 445, 280, 280]);
+      assert.ok(box.y + box.height < height - 445);
+    }
+  }
+});
+test("photo failures reject rather than exporting a blank poster, and the next load recovers", async () => {
+  imageFailure = true;
+  await assert.rejects(loadShareArtwork("friend"), /加载失败/);
+  imageFailure = false;
+  assert.ok(await loadShareArtwork("friend"));
+  const controller = new AbortController();
+  controller.abort();
+  await assert.rejects(loadShareArtwork("friend", controller.signal), {
+    name: "AbortError",
+  });
+});
+test("cover crop keeps original proportions and uses bounded top-biased source pixels", () => {
+  const crop = coverSourceRect(1122, 1402, 880, 480);
+  assert.equal(crop.width, 1122);
+  assert.equal(crop.y, (1402 - crop.height) * 0.28);
+  assert.ok(crop.y >= 0 && crop.y + crop.height <= 1402);
+});
+
+test("image decoding must finish before a PNG can be exported and abort cancels pending renders", async () => {
+  let release!: () => void;
+  pendingDecode = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  const controller = new AbortController();
+  let finished = false;
+  const rendering = renderSharePoster(
+    "guess",
+    "https://nolya.test/guess/token",
+    "hello",
+    "moments",
+    controller.signal,
   );
-  const cards = canvasRects.filter((rect) => rect[2] === 408);
-  assert.equal(cards.length, 2);
-  assert.equal(cards[0][1], cards[1][1]);
-  assert.equal(cards[0][3], 440);
-  assert.ok(cards[0][1] > 600);
-  assert.ok(cards[0][1] + cards[0][3] < 1920 - 445 - 45);
+  void rendering.then(
+    () => {
+      finished = true;
+    },
+    () => {},
+  );
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(finished, false);
+  controller.abort();
+  await assert.rejects(rendering, { name: "AbortError" });
+  release();
+  pendingDecode = undefined;
+  decodeFailure = true;
+  await assert.rejects(loadShareArtwork("guess"), /无法解码/);
+  decodeFailure = false;
+  assert.ok(await loadShareArtwork("guess"));
 });

@@ -251,9 +251,9 @@ export function RecoverPage() {
   }
   return (
     <div className="container narrow-page">
-      <BrandCompanion label="安全地回来，继续自己的节奏" />
+      <BrandCompanion label="账户恢复" />
       <PageHeading
-        eyebrow="安全地回到你的空间"
+        eyebrow="账户恢复"
         title="使用恢复码找回账户"
         description="恢复成功后旧密码、旧恢复码和其他登录会话将失效。请重新生成并保存恢复码。"
       />

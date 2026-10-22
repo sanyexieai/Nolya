@@ -103,7 +103,7 @@ export function Notice({
     </div>
   );
 }
-export function Loading({ text = "正在打开这一页…" }: { text?: string }) {
+export function Loading({ text = "正在加载…" }: { text?: string }) {
   return (
     <div className="loading-state" role="status">
       <LoaderCircle className="spin" size={28} />
@@ -192,7 +192,7 @@ export function Layout({ children }: { children: ReactNode }) {
               <span>
                 {user?.kind === "registered"
                   ? user.display_name
-                  : "保存我的选择"}
+                  : "登录 / 注册"}
               </span>
             </Link>
           </div>
@@ -211,7 +211,7 @@ export function Layout({ children }: { children: ReactNode }) {
             height="680"
           />
         </Link>
-        <p>先选一选，再慢慢发现更多面的自己。</p>
+        <p>记录生活选择，查看答题结果与朋友反馈。</p>
         <Link to="/help">帮助与隐私</Link>
       </footer>
       <nav className="mobile-nav" aria-label="手机导航">

@@ -83,7 +83,7 @@ export async function api<T>(
     response.status === 204 ? null : await response.json().catch(() => null);
   if (!response.ok)
     throw new ApiError(
-      data?.error?.message || data?.message || "这次没有完成，请稍后再试。",
+      data?.error?.message || data?.message || "操作未完成，请稍后重试。",
       response.status,
       data?.error?.code || "",
     );
@@ -96,7 +96,7 @@ export function patch<T>(path: string, body?: unknown) {
   return api<T>(path, { method: "PATCH", body: JSON.stringify(body ?? {}) });
 }
 export function errorMessage(error: unknown) {
-  return error instanceof Error ? error.message : "出了点小问题，请重试。";
+  return error instanceof Error ? error.message : "操作失败，请重试。";
 }
 export interface SavedAnswer {
   id: string;
