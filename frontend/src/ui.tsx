@@ -167,7 +167,13 @@ export function Layout({ children }: { children: ReactNode }) {
       <header className="site-header">
         <div className="header-inner">
           <Link to="/" className="wordmark" aria-label="Nolya 首页">
-            Nolya<span>.</span>
+            <img
+              src="/design/brand-wordmark.png"
+              alt="Nolya"
+              className="brand-wordmark"
+              width="2048"
+              height="680"
+            />
           </Link>
           <nav className="desktop-nav" aria-label="主要导航">
             <NavLink to="/mirror">镜像</NavLink>
@@ -197,7 +203,13 @@ export function Layout({ children }: { children: ReactNode }) {
       </main>
       <footer className="site-footer">
         <Link className="wordmark small" to="/">
-          Nolya<span>.</span>
+          <img
+            src="/design/brand-wordmark.png"
+            alt="Nolya"
+            className="brand-wordmark"
+            width="2048"
+            height="680"
+          />
         </Link>
         <p>先选一选，再慢慢发现更多面的自己。</p>
         <Link to="/help">帮助与隐私</Link>
@@ -458,6 +470,16 @@ export function HeroArt({ compact = false }: { compact?: boolean }) {
           fetchPriority="high"
         />
       </div>
+    </div>
+  );
+}
+
+/** Supplied brand artwork for utility routes without a dedicated PageXX mockup. */
+export function BrandCompanion({ label }: { label: string }) {
+  return (
+    <div className="brand-companion">
+      <img src="/design/brand-symbol.png" alt="" width="1254" height="1254" />
+      <span>{label}</span>
     </div>
   );
 }

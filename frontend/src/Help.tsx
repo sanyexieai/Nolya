@@ -1,8 +1,10 @@
+import { BrandCompanion } from "./ui";
 import { Link } from "react-router-dom";
 import { PageHeading, PrivacyNote } from "./ui";
 export function HelpPage() {
   return (
     <div className="container narrow-page">
+      <BrandCompanion label="先清楚了解，再安心选择" />
       <PageHeading
         eyebrow="清楚了解，再安心选择"
         title="使用帮助与隐私说明"

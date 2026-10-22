@@ -1,15 +1,9 @@
+import "./design-guess.css";
 import { invitationShareKind } from "./share-core";
 import { SocialShare } from "./Share";
 import { useRef, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import {
-  ArrowRight,
-  Check,
-  Heart,
-  Lightbulb,
-  Shuffle,
-  Sparkles,
-} from "lucide-react";
+import { ArrowRight, Check, Lightbulb, Sparkles } from "lucide-react";
 import { api, errorMessage, mutate, newKey, shareUrl } from "./api";
 import type {
   Choice,
@@ -398,8 +392,12 @@ export function GuessPage() {
       setBusy(false);
     }
   }
+  const question = context?.question;
+  const isReverse = !!context?.is_directed;
+  const ready =
+    reverseLink || (context?.is_owner && isReverse ? { token } : undefined);
   return (
-    <div className="container narrow-page">
+    <div className="container guess-flow-page">
       {sessionLoading || resource.loading ? (
         <Loading />
       ) : resource.error ? (
@@ -407,7 +405,7 @@ export function GuessPage() {
           <PageHeading eyebrow="猜测邀请" title="暂时打不开这个问题" />
           <Notice onRetry={resource.reload}>{resource.error}</Notice>
         </>
-      ) : !context || context.status !== "active" ? (
+      ) : !context || !question || context.status !== "active" ? (
         <Empty
           title="这次猜测已经结束"
           action={
@@ -418,167 +416,418 @@ export function GuessPage() {
         >
           链接可能已过期或被撤回，可以向朋友要一个新的邀请。
         </Empty>
-      ) : context.is_owner ? (
+      ) : ready ? (
         <>
-          <PageHeading
-            eyebrow="这是你的猜测邀请"
-            title="你的答案，已经好好收起来了。"
-            description={
-              context.is_directed
-                ? "这是一条定向反向邀请，请只私发给原邀请人。"
-                : "把链接发给朋友吧。你不能猜自己的答案。"
-            }
-          />
-          <section className="card">
-            <h2>{context.question.prompt}</h2>
+          <div
+            className="guess-flow-grid reverse-ready-layout"
+            data-design-page="12"
+          >
+            <div className="reverse-ready-scene">
+              <GuessArtwork scene="ready" />
+              <PageHeading
+                eyebrow="反向邀请 · 题目已准备"
+                title="题目准备好了，发给 TA 吧。"
+                description="你的真实选择已保存。只发给刚才邀请你的那位朋友，等 TA 提交猜测后再揭晓。"
+              />
+            </div>
+            <div className="guess-flow-content">
+              <section className="card guess-preview-card">
+                <Badge>这次你让 TA 猜的是</Badge>
+                <h2>{question.prompt}</h2>
+                <ReadOnlyQuestion question={question} />
+                <PrivacyNote>
+                  答案已保密。链接创建成功不代表消息已经送达。
+                </PrivacyNote>
+              </section>
+              <section className="card reverse-status-card">
+                <h2>接下来，慢慢了解彼此</h2>
+                <ol>
+                  <li aria-current="step">
+                    <strong>01 题目已准备</strong>
+                    <span>你的答案已保存</span>
+                  </li>
+                  <li>
+                    <strong>02 由你分享</strong>
+                    <span>请私发给原邀请人</span>
+                  </li>
+                  <li>
+                    <strong>03 TA 提交猜测</strong>
+                    <span>提交后才揭晓答案</span>
+                  </li>
+                </ol>
+              </section>
+            </div>
+          </div>
+          <section className="card reverse-share-ready">
+            <h2>你的反向邀请准备好了</h2>
             <SocialShare
-              value={`${window.location.origin}/guess/${encodeURIComponent(token)}`}
-              kind={invitationShareKind("guess", context)}
+              value={`${window.location.origin}/guess/${encodeURIComponent(ready.token)}`}
+              kind="reverse"
             />
-            <PrivacyNote>朋友提交猜测后才会看到你的答案。</PrivacyNote>
           </section>
-        </>
-      ) : result ? (
-        <>
-          <PageHeading
-            eyebrow={result.correct ? "想到一起了" : "原来，你看见的是另一面"}
-            title={
-              result.correct ? "这一次，你猜中了。" : "这一次，答案有一点意外。"
-            }
-            description={
-              result.correct
-                ? "一个小选择里，藏着一点熟悉。"
-                : "没有猜中也没关系，这就是多了解一点的开始。"
-            }
-          />
-          <section className="card reveal-card">
-            <span
-              className={`reveal-symbol ${result.correct ? "correct" : ""}`}
-            >
-              {result.correct ? <Heart size={36} /> : <Sparkles size={36} />}
-            </span>
-            <h2>{context.question.prompt}</h2>
-            <div className="reveal-comparison">
-              <div>
-                <small>你的猜测</small>
-                <span>{result.guessed_choice}</span>
-                <strong>
-                  {result.guessed_choice === "A"
-                    ? context.question.choice_a
-                    : context.question.choice_b}
-                </strong>
-              </div>
-              <div className="actual-choice">
-                <small>{owner} 的真实选择</small>
-                <span>{result.actual_choice}</span>
-                <strong>
-                  {result.actual_choice === "A"
-                    ? context.question.choice_a
-                    : context.question.choice_b}
-                </strong>
-              </div>
-            </div>
-            <div className="relationship-note">
-              {result.relationship.display_mode === "getting_started" ? (
-                <>
-                  <Sparkles size={17} />
-                  你们还在慢慢摸清彼此。一个选择，不代表全部。
-                </>
-              ) : (
-                <>
-                  你已猜过 TA 的 {result.relationship.total_count}{" "}
-                  个不同选择，其中 {result.relationship.correct_count}{" "}
-                  次想到一起。
-                </>
-              )}
-            </div>
-          </section>
-          {result.can_reverse && (
-            <section className="card reverse-card">
-              {reverseLink ? (
-                <>
-                  <Badge>现在，换 TA 来猜</Badge>
-                  <h2>你的反向邀请准备好了</h2>
-                  <SocialShare
-                    value={shareUrl(reverseLink, "guess")}
-                    kind="reverse"
-                  />
-                  <p className="small muted">
-                    发给刚才邀请你的那位朋友。只面向原邀请人。
-                  </p>
-                </>
-              ) : reverseOpen ? (
-                <>
-                  <Badge>这一回，选你自己的答案</Badge>
-                  <h2>同一个问题，你会怎么选？</h2>
-                  <Options
-                    question={context.question}
-                    selected={ownChoice}
-                    onSelect={(c) => {
-                      setOwnChoice(c);
-                      reverseKey.current = newKey();
-                    }}
-                    disabled={busy}
-                  />
-                  <p className="small muted">
-                    选好并创建后，TA
-                    提交猜测就能看到你的答案。这个选择不会改写自我镜像或每日记录。
-                  </p>
-                  <Button disabled={!ownChoice} busy={busy} onClick={reverse}>
-                    保存我的答案，让 TA 猜 <ArrowRight size={18} />
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <div>
-                    <Shuffle size={24} />
-                    <h2>要不要，也让 TA 猜猜你？</h2>
-                    <p>同一个小问题，换个方向，再发现一点。</p>
-                  </div>
-                  <Button onClick={() => setReverseOpen(true)}>
-                    换 TA 来猜我 <ArrowRight size={18} />
-                  </Button>
-                </>
-              )}
-              {error && <Notice>{error}</Notice>}
-            </section>
-          )}
-          <div className="subtle-link-row">
+          <div className="guess-flow-exits">
+            <Link to="/mirror">
+              看看我的镜像 <ArrowRight size={16} />
+            </Link>
             <Link to="/today">
-              继续今天的小选择 <ArrowRight size={16} />
+              回到今天 <ArrowRight size={16} />
             </Link>
           </div>
         </>
-      ) : (
-        <>
-          <PageHeading
-            eyebrow={`来自 ${owner} 的一个小问题`}
-            title="这一次，你能猜中 TA 吗？"
-            description="答案已经提前选好。选完以后，一起揭晓。"
-          />
-          <section className="question-card guess-question">
-            <Badge pink>猜猜 TA 的真实选择</Badge>
-            <h2>{context.question.prompt}</h2>
-            <Options
-              question={context.question}
-              selected={choice}
-              onSelect={(c) => {
-                setChoice(c);
-                submitKey.current = newKey();
-              }}
-              disabled={busy}
+      ) : context.is_owner ? (
+        <div className="guess-flow-grid">
+          <div className="guess-flow-content">
+            <PageHeading
+              eyebrow="这是你的猜测邀请"
+              title="你的答案，已经好好收起来了。"
+              description="把链接发给朋友吧。你不能猜自己的答案。"
             />
-            <p className="small muted">
-              你的猜测会记录到你们之间的互动中。提交后揭晓 TA 的答案。
-            </p>
-            <Button disabled={!choice} busy={busy} onClick={submit}>
-              我猜好了，揭晓答案 <ArrowRight size={18} />
-            </Button>
-            {error && <Notice>{error}</Notice>}
-            <PrivacyNote>别问答案，凭你对 TA 的了解就好。</PrivacyNote>
-          </section>
+            <section className="card">
+              <h2>{question.prompt}</h2>
+              <ReadOnlyQuestion question={question} />
+              <SocialShare
+                value={`${window.location.origin}/guess/${encodeURIComponent(token)}`}
+                kind={invitationShareKind("guess", context)}
+              />
+              <PrivacyNote>朋友提交猜测后才会看到你的答案。</PrivacyNote>
+            </section>
+          </div>
+          <GuessArtwork scene="start" />
+        </div>
+      ) : result && reverseOpen ? (
+        <>
+          <div className="guess-flow-grid" data-design-page="11">
+            <div className="guess-flow-content">
+              <PageHeading
+                eyebrow="刚才你猜了 TA · 现在换个方向"
+                title="刚才你猜了 TA。现在，换 TA 猜你。"
+                description="同一道生活题，选你自己的真实答案。答案先藏好，再把题发回去。"
+              />
+              <section className="question-card reverse-answer-card">
+                <Badge>只需回答这一题</Badge>
+                <h2>{question.prompt}</h2>
+                <Options
+                  question={question}
+                  selected={ownChoice}
+                  onSelect={(c) => {
+                    setOwnChoice(c);
+                    reverseKey.current = newKey();
+                  }}
+                  disabled={busy}
+                />
+                <PrivacyNote>
+                  TA
+                  提交猜测前看不到你的答案。这个选择不会改写自我镜像或每日记录。
+                </PrivacyNote>
+                <Button disabled={!ownChoice} busy={busy} onClick={reverse}>
+                  保存我的答案，让 TA 猜 <ArrowRight size={18} />
+                </Button>
+                {error && <Notice>{error}</Notice>}
+              </section>
+              <button
+                type="button"
+                className="text-button"
+                disabled={busy}
+                onClick={() => setReverseOpen(false)}
+              >
+                暂时不发，回到刚才的发现
+              </button>
+            </div>
+            <GuessArtwork scene="start" />
+          </div>
+          <GuessFlowSteps />
         </>
+      ) : result ? (
+        <>
+          <div
+            className={`guess-flow-grid guess-reveal-layout ${isReverse ? "is-reverse-reveal" : ""}`}
+            data-design-page={isReverse ? "14" : "10"}
+          >
+            <div className="guess-flow-content">
+              <PageHeading
+                eyebrow={
+                  isReverse
+                    ? "反向竞猜 · 答案揭晓"
+                    : "关于 TA 的选择 · 答案揭晓"
+                }
+                title={
+                  result.correct
+                    ? "这一次，你猜中了。"
+                    : "这一次，答案有一点意外。"
+                }
+                description={
+                  result.correct
+                    ? "真正有趣的，不只是答对，而是你们在这个瞬间，想到了一起。"
+                    : "没有猜中也没关系。认识一个人，也从看见不同开始。"
+                }
+              />
+              <section
+                className={`card reveal-card guess-designed-reveal ${result.correct ? "is-match" : "is-different"}`}
+              >
+                <Badge pink>
+                  {result.correct
+                    ? "这次，你们想到了一起"
+                    : "这里，你们想得不太一样"}
+                </Badge>
+                <h2>{question.prompt}</h2>
+                <div className="reveal-comparison">
+                  <div>
+                    <small>你的猜测</small>
+                    <span>{result.guessed_choice}</span>
+                    <strong>
+                      {result.guessed_choice === "A"
+                        ? question.choice_a
+                        : question.choice_b}
+                    </strong>
+                  </div>
+                  <span
+                    className="guess-result-relation"
+                    aria-label={result.correct ? "相同" : "不同"}
+                  >
+                    {result.correct ? "=" : "≠"}
+                  </span>
+                  <div className="actual-choice">
+                    <small>{owner} 的真实选择</small>
+                    <span>{result.actual_choice}</span>
+                    <strong>
+                      {result.actual_choice === "A"
+                        ? question.choice_a
+                        : question.choice_b}
+                    </strong>
+                  </div>
+                </div>
+                <div className="relationship-note">
+                  {result.relationship.display_mode === "getting_started" ? (
+                    <>
+                      <Sparkles size={17} />
+                      你们还在慢慢摸清彼此。一个选择，不代表全部。
+                    </>
+                  ) : (
+                    <>
+                      你已猜过 TA 的 {result.relationship.total_count}{" "}
+                      个不同选择，其中 {result.relationship.correct_count}{" "}
+                      次想到一起。
+                    </>
+                  )}
+                </div>
+              </section>
+            </div>
+            <GuessArtwork scene={isReverse ? "reverseReveal" : "reveal"} />
+          </div>
+          <section className="guess-next-panel">
+            <div>
+              <span className="eyebrow">让了解，继续发生</span>
+              <h2>
+                {isReverse
+                  ? "再来一题，让来回更有意思。"
+                  : "现在，换 TA 来猜你。"}
+              </h2>
+              <p>不是给彼此打分。一次来回，多认识一点。</p>
+            </div>
+            <div>
+              {result.can_reverse && (
+                <Button onClick={() => setReverseOpen(true)}>
+                  换 TA 来猜我 <ArrowRight size={18} />
+                </Button>
+              )}
+              <Link className="text-link" to="/guess/new">
+                选一道自己的生活题 <ArrowRight size={16} />
+              </Link>
+              <Link className="text-link" to="/today">
+                继续今天的小选择 <ArrowRight size={16} />
+              </Link>
+            </div>
+          </section>
+          <GuessFlowSteps />
+        </>
+      ) : (
+        <div
+          className="guess-flow-grid guess-choice-layout"
+          data-design-page={isReverse ? "13" : "09-choice"}
+        >
+          <div className="guess-flow-content">
+            <PageHeading
+              eyebrow={
+                isReverse
+                  ? "朋友发来一道反向竞猜"
+                  : `来自 ${owner} 的一个小问题`
+              }
+              title={
+                isReverse
+                  ? "刚才 TA 猜了你。现在，轮到你猜 TA。"
+                  : "这一次，你能猜中 TA 吗？"
+              }
+              description="TA 已选好真实答案，暂时不告诉你。凭你对 TA 的了解，猜猜会是哪边。"
+            />
+            <section className="question-card guess-question">
+              <Badge pink>只需 1 题 · 猜猜 TA 的真实选择</Badge>
+              <h2>{question.prompt}</h2>
+              <Options
+                question={question}
+                selected={choice}
+                onSelect={(c) => {
+                  setChoice(c);
+                  submitKey.current = newKey();
+                }}
+                disabled={busy}
+              />
+              <p className="small muted">
+                你的猜测会记录到你们之间的互动中。提交后揭晓 TA 的答案。
+              </p>
+              <Button disabled={!choice} busy={busy} onClick={submit}>
+                我猜好了，揭晓答案 <ArrowRight size={18} />
+              </Button>
+              {error && <Notice>{error}</Notice>}
+              <PrivacyNote>别问答案，凭你对 TA 的了解就好。</PrivacyNote>
+            </section>
+            <Link className="text-link" to="/today">
+              暂时不猜，回到今天
+            </Link>
+          </div>
+          <GuessArtwork scene={isReverse ? "choice" : "start"} />
+        </div>
       )}
     </div>
+  );
+}
+function ReadOnlyQuestion({ question }: { question: Question }) {
+  return (
+    <div className="guess-readonly-options">
+      <div>
+        <b>A</b>
+        <span>{question.choice_a}</span>
+      </div>
+      <div>
+        <b>B</b>
+        <span>{question.choice_b}</span>
+      </div>
+    </div>
+  );
+}
+function GuessFlowSteps() {
+  return (
+    <section className="guess-flow-steps" aria-label="来回了解的三个步骤">
+      <article>
+        <span>01</span>
+        <h3>看见一点不同</h3>
+        <p>猜中或没猜中，都有新发现</p>
+      </article>
+      <article>
+        <span>02</span>
+        <h3>换个方向</h3>
+        <p>留一个真实答案，请 TA 来猜</p>
+      </article>
+      <article>
+        <span>03</span>
+        <h3>让了解有来有回</h3>
+        <p>一题一题，慢慢认识彼此</p>
+      </article>
+    </section>
+  );
+}
+function PhotoWindow({
+  src,
+  width,
+  height,
+  box,
+  alt,
+}: {
+  src: string;
+  width: number;
+  height: number;
+  box: [number, number, number, number];
+  alt: string;
+}) {
+  const [x, y, right, bottom] = box;
+  const w = right - x;
+  const h = bottom - y;
+  return (
+    <div className="guess-photo-window" style={{ aspectRatio: `${w} / ${h}` }}>
+      <img
+        src={src}
+        width={width}
+        height={height}
+        alt={alt}
+        style={{
+          width: `${(width / w) * 100}%`,
+          left: `${(-x / w) * 100}%`,
+          top: `${(-y / h) * 100}%`,
+        }}
+      />
+    </div>
+  );
+}
+function GuessArtwork({
+  scene,
+}: {
+  scene: "start" | "reveal" | "ready" | "choice" | "reverseReveal";
+}) {
+  const description = "原设计中的虚拟品牌示意人物，非参与者头像";
+  return (
+    <figure className={`guess-artwork guess-artwork-${scene}`}>
+      {scene === "ready" ? (
+        <div className="guess-ready-collage">
+          <PhotoWindow
+            src="/design/reverse-ready-reference.png"
+            width={1586}
+            height={992}
+            box={[125, 245, 690, 610]}
+            alt={`春日咖啡馆场景，${description}`}
+          />
+          <div>
+            <PhotoWindow
+              src="/design/reverse-ready-reference.png"
+              width={1586}
+              height={992}
+              box={[740, 190, 905, 408]}
+              alt=""
+            />
+            <PhotoWindow
+              src="/design/reverse-ready-reference.png"
+              width={1586}
+              height={992}
+              box={[778, 480, 900, 670]}
+              alt=""
+            />
+          </div>
+        </div>
+      ) : scene === "choice" ? (
+        <PhotoWindow
+          src="/design/reverse-choice-reference.png"
+          width={1586}
+          height={992}
+          box={[963, 230, 1490, 748]}
+          alt={`春日河畔，${description}`}
+        />
+      ) : scene === "reverseReveal" ? (
+        <PhotoWindow
+          src="/design/reverse-reveal-reference.png"
+          width={1536}
+          height={1024}
+          box={[947, 205, 1370, 700]}
+          alt={`春日户外咖啡馆，${description}`}
+        />
+      ) : (
+        <img
+          src={
+            scene === "reveal"
+              ? "/design/reveal-outdoor.png"
+              : "/design/reverse-start-outdoor.png"
+          }
+          alt={`春日户外，${description}`}
+        />
+      )}
+      <figcaption>
+        {scene === "ready"
+          ? "答案先藏好，让了解慢慢发生。"
+          : scene === "choice"
+            ? "TA 这次会怎么选？"
+            : scene === "reverseReveal"
+              ? "被认真了解，是一件小小的开心事。"
+              : scene === "reveal"
+                ? "同一个人，还有很多值得认识的面。"
+                : "一次来回，多懂一点。"}
+      </figcaption>
+    </figure>
   );
 }

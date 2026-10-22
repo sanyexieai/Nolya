@@ -158,6 +158,7 @@ before(async () => {
   });
   directory = await mkdtemp(join(tmpdir(), "nolya-component-tests-"));
   const output = await build({
+    loader: { ".css": "empty" },
     entryPoints: [
       fileURLToPath(new URL("account-harness.tsx", import.meta.url)),
     ],
@@ -1170,3 +1171,82 @@ test("changing identity discards the previous account's generated invitation", a
   );
   assert.ok(button("邀请朋友选一选"));
 });
+
+for (const directed of [false, true]) {
+  test(`guess design ${directed ? "Page13/14" : "Page10/11"} preserves unselected choice and dynamic mismatch`, async () => {
+    const question = {
+      id: "q-test",
+      prompt: "周末想去哪里？",
+      choice_a: "去公园",
+      choice_b: "去书店",
+      dimension_key: "test",
+    };
+    handlers.set("/guesses/design-token", () =>
+      Response.json({
+        status: "active",
+        is_owner: false,
+        is_directed: directed,
+        owner_display_name: "朋友",
+        question,
+        reveal: null,
+      }),
+    );
+    handlers.set("/guesses/design-token/answers", () =>
+      Response.json({
+        guessed_choice: "B",
+        actual_choice: "A",
+        correct: false,
+        can_reverse: !directed,
+        relationship: {
+          display_mode: "getting_started",
+          total_count: 1,
+          correct_count: 0,
+        },
+      }),
+    );
+    await harness.act(async () => harness.go("/guess/design-token"));
+    assert.equal(button("我猜好了，揭晓答案").disabled, true);
+    assert.equal(
+      dom.window.document.querySelectorAll(
+        '[role="radio"][aria-checked="true"]',
+      ).length,
+      0,
+    );
+    const second =
+      dom.window.document.querySelectorAll<HTMLButtonElement>(
+        '[role="radio"]',
+      )[1];
+    assert.ok(second);
+    await harness.act(async () => second.click());
+    await click("我猜好了，揭晓答案");
+    assert.deepEqual(requests("/guesses/design-token/answers")[0].body, {
+      choice: "B",
+    });
+    assert.ok(
+      dom.window.document.querySelector(
+        `[data-design-page="${directed ? "14" : "10"}"]`,
+      ),
+    );
+    assert.match(text(), /答案有一点意外/);
+    assert.equal(
+      dom.window.document.querySelector(".guess-result-relation")?.textContent,
+      "≠",
+    );
+    assert.match(
+      dom.window.document.querySelector(".actual-choice")!.textContent!,
+      /去公园/,
+    );
+    if (!directed) {
+      await click("换 TA 来猜我");
+      assert.ok(dom.window.document.querySelector('[data-design-page="11"]'));
+      assert.equal(button("保存我的答案，让 TA 猜").disabled, true);
+      assert.equal(
+        dom.window.document.querySelectorAll(
+          '[role="radio"][aria-checked="true"]',
+        ).length,
+        0,
+      );
+      assert.equal(dom.window.document.querySelector(".actual-choice"), null);
+    }
+  });
+}

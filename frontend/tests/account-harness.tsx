@@ -11,7 +11,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { RecoverPage } from "../src/Security";
-import { GuessNewPage } from "../src/Guess";
+import { GuessNewPage, GuessPage } from "../src/Guess";
 import { InvitePage } from "../src/Friends";
 import { HistoryPage } from "../src/History";
 import { JournalPage } from "../src/Daily";
@@ -54,6 +54,7 @@ export function mount(element: HTMLElement) {
             <Route path="/self/history" element={<HistoryPage />} />
             <Route path="/journal" element={<JournalPage />} />
             <Route path="/guess/new" element={<GuessNewPage />} />
+            <Route path="/guess/:token" element={<GuessPage />} />
             <Route path="/invite" element={<KeyedInvite />} />
             <Route path="/manage" element={<SpacePage />} />
             <Route path="/space" element={<p>账户空间已打开</p>} />

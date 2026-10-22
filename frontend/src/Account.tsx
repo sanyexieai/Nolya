@@ -1,3 +1,5 @@
+import "./design-daily-space.css";
+import { BrandCompanion } from "./ui";
 import { invitationShareKind } from "./share-core";
 import { SocialShare } from "./Share";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -12,7 +14,6 @@ import {
   Settings,
   ShieldCheck,
   Sparkles,
-  Sun,
   Trash2,
 } from "lucide-react";
 import {
@@ -375,6 +376,7 @@ export function AccountPage() {
   }
   return (
     <div className="container narrow-page">
+      <BrandCompanion label="属于你的选择，留在你的空间" />
       {loading ? (
         <Loading />
       ) : user?.kind === "registered" ? (
@@ -866,119 +868,223 @@ export function SpacePage() {
   );
   const space = resource.data;
   return (
-    <div className="container space-page">
-      <PageHeading
-        eyebrow="MY SPACE · 我的空间"
-        title={
-          user?.kind === "registered"
-            ? `${user.display_name}，慢慢认识自己。`
-            : "每一个选择，都是你的一小块。"
-        }
-        description="你的镜像、朋友的视角和每天的小变化，都在这里。"
-      >
-        <Link to="/account" className="icon-button" aria-label="账户设置">
-          <Settings size={21} />
-        </Link>
-      </PageHeading>
+    <div className="container space-page nolya-space-design">
+      <section className="space-return-hero">
+        <div className="space-return-copy">
+          <span className="space-return-badge">我的 Nolya</span>
+          <h1>
+            你的故事，
+            <br />
+            <em>不只这一题。</em>
+          </h1>
+          <p>
+            今天留下一次真实选择。下次回来，再看看自己会怎么选。朋友的视角会让它更有意思，但不必等谁，你也能一直玩下去。
+          </p>
+        </div>
+        <figure className="space-return-photo">
+          <img
+            src="/design/space-riverside.png"
+            alt="Nolya 品牌情境插图，不是用户头像或真实参与者。"
+          />
+          <Heart size={30} className="space-photo-heart" aria-hidden="true" />
+          <figcaption>同一个你，更多面。</figcaption>
+        </figure>
+        <div className="space-return-actions">
+          <ActionLink to="/today">
+            {space?.daily.answered_today ? "回看今天的选择" : "看看今天的问题"}
+          </ActionLink>
+          <ActionLink to="/journal" secondary>
+            翻翻我的选择
+          </ActionLink>
+        </div>
+      </section>
       {loading || resource.loading ? (
         <Loading />
       ) : resource.error ? (
         <Notice onRetry={resource.reload}>{resource.error}</Notice>
       ) : !space ? (
         <Empty
-          title="先留下第一个自己的选择"
+          title="从今天的一道小选择开始"
           action={
             <ActionLink to="/self">
-              开始我的第一次镜像
-              <ArrowRight size={17} />
+              开始我的第一次镜像 <ArrowRight size={17} />
             </ActionLink>
           }
         >
-          不用注册，8 个生活小问题就能开始。
+          不必等朋友，也不用先注册。每天一题和 8
+          个生活小问题，都可以成为认识自己的开始。
         </Empty>
       ) : (
         <>
-          {user?.kind === "guest" && (
-            <div className="guest-banner">
-              <ShieldCheck size={24} />
-              <div>
-                <strong>这是你的访客空间</strong>
-                <p>
-                  当前浏览器可继续。清除 Cookie 或访客会话到期后，可能无法找回。
-                  {space.guest_expires_at &&
-                    `当前会话到 ${formatDate(space.guest_expires_at)}。`}
-                </p>
-              </div>
-              <ActionLink to="/account" secondary>
-                保存为账户
-                <ArrowRight size={16} />
-              </ActionLink>
-            </div>
-          )}
+          <header className="space-section-heading">
+            <span className="eyebrow">属于你的三个视角</span>
+            <h2>从自己开始，慢慢有了不同的角度。</h2>
+            <p>这里只展示你已保存的真实记录。</p>
+          </header>
           <div className="space-cards">
             <Link
               className="space-card mirror-tile"
               to={space.self.completed ? "/self/result" : "/self"}
             >
-              <span className="tile-icon">
-                <Sparkles size={25} />
-              </span>
-              <span className="eyebrow">SELF MIRROR</span>
-              <h2>自己眼中的我</h2>
+              <div className="space-source-title">
+                <span className="tile-icon">
+                  <Sparkles size={25} />
+                </span>
+                <div>
+                  <h2>你眼中的自己</h2>
+                  <strong className="space-source-status">
+                    {space.self.completed
+                      ? "8 道自我选择已完成"
+                      : "还没有留下自我镜像"}
+                  </strong>
+                </div>
+              </div>
               <p>
                 {space.self.completed
-                  ? "你的第一张镜像，已好好保存。"
+                  ? "回看那张只属于你的自我画像。"
                   : "从 8 个生活选择，开始发现。"}
               </p>
               <span className="tile-action">
-                {space.self.completed ? "看看我的镜像" : "开始第一次镜像"}
-                <ArrowRight size={18} />
+                {space.self.completed ? "查看自我结果" : "开始第一次镜像"}
+                <ArrowRight size={17} />
               </span>
             </Link>
-            <Link className="space-card friends-tile" to="/mirror">
-              <span className="tile-icon">
-                <Heart size={25} />
+            <Link
+              className="space-card today-tile"
+              to={space.daily.saved_count ? "/journal" : "/today"}
+            >
+              <div className="space-source-title">
+                <span className="tile-icon">
+                  <BookOpen size={25} />
+                </span>
+                <div>
+                  <h2>你真实的选择</h2>
+                  <strong className="space-source-status">
+                    已保存 {space.daily.saved_count} 次选择
+                  </strong>
+                </div>
+              </div>
+              <p>
+                {space.daily.saved_count
+                  ? "一条记录也值得留下。"
+                  : "第一笔，留给今天吧。"}
+              </p>
+              <span className="tile-action">
+                {space.daily.saved_count ? "打开选择手册" : "看看今天的问题"}
+                <ArrowRight size={17} />
               </span>
-              <span className="eyebrow">SOCIAL MIRROR</span>
-              <h2>朋友眼中的我</h2>
-              <p>{space.friends.completed_count} / 3 个独立视角已留下</p>
+            </Link>
+            <Link
+              className="space-card friends-tile"
+              to={
+                space.friends.completed_count
+                  ? "/mirror"
+                  : space.capabilities?.can_invite
+                    ? "/invite"
+                    : "/self"
+              }
+            >
+              <div className="space-source-title">
+                <span className="tile-icon">
+                  <Heart size={25} />
+                </span>
+                <div>
+                  <h2>朋友眼中的你</h2>
+                  <strong className="space-source-status">
+                    {space.friends.completed_count
+                      ? `${space.friends.completed_count} 个独立视角已留下`
+                      : "还在等第一位朋友"}
+                  </strong>
+                </div>
+              </div>
+              <p>
+                {space.friends.completed_count >= 3
+                  ? "真实的不同视角，放在一起看看。"
+                  : space.friends.completed_count
+                    ? "先看看已有的视角，不急着下结论。"
+                    : "邀请是可选的，随时可以开始。"}
+              </p>
               <span className="tile-action">
                 {space.friends.completed_count
                   ? "看看朋友的视角"
-                  : "邀请一个新视角"}
-                <ArrowRight size={18} />
-              </span>
-            </Link>
-            <Link className="space-card today-tile" to="/today">
-              <span className="tile-icon">
-                <Sun size={25} />
-              </span>
-              <span className="eyebrow">DAILY PULSE</span>
-              <h2>今天的小选择</h2>
-              <p>
-                {space.daily.answered_today
-                  ? "今天的选择已经留下，看看结果吧。"
-                  : "今天还没有回答，留一点时间给自己。"}
-              </p>
-              <span className="tile-action">
-                {space.daily.answered_today
-                  ? "回看今天的选择"
-                  : "看看今天的问题"}
-                <ArrowRight size={18} />
+                  : space.capabilities?.can_invite
+                    ? "请朋友选一选"
+                    : "先留下自我镜像"}
+                <ArrowRight size={17} />
               </span>
             </Link>
           </div>
-          <Link to="/journal" className="journal-banner">
-            <span className="round-icon">
-              <BookOpen size={25} />
-            </span>
+          <header className="space-section-heading space-next-heading">
+            <span className="eyebrow">下一步，由你决定</span>
+            <h2>今天想继续哪一面？</h2>
+          </header>
+          <div className="space-next-grid">
+            <Link className="space-next-card" to="/today">
+              <span>01 · 每天一题</span>
+              <h3>
+                {space.daily.answered_today
+                  ? "回看今天留下的选择"
+                  : "先选一道今天的题"}
+              </h3>
+              <p>
+                {space.daily.answered_today
+                  ? "今天的答案已经收好，随时可以回来。"
+                  : "不用等朋友，留一点时间给自己。"}
+              </p>
+              <ArrowRight size={23} />
+            </Link>
+            <Link className="space-next-card" to="/journal">
+              <span>02 · 只属于你的记录</span>
+              <h3>把选过的留给未来</h3>
+              <p>当时怎么想的，以后还能回来看看。</p>
+              <ArrowRight size={23} />
+            </Link>
+            <Link
+              className="space-next-card"
+              to={space.capabilities?.can_invite ? "/invite" : "/self"}
+            >
+              <span>03 · 真实朋友的视角</span>
+              <h3>熟悉你的人，会怎么选？</h3>
+              <p>
+                {space.capabilities?.can_invite
+                  ? "邀请一位朋友回答三道生活题。"
+                  : "先完成自我镜像，再邀请朋友。"}
+              </p>
+              <ArrowRight size={23} />
+            </Link>
+          </div>
+          <section className="space-privacy-panel">
             <div>
-              <h2>选择日记</h2>
-              <p>{space.daily.saved_count} 个选择，留下真实的轨迹</p>
+              <h2>你的选择，属于你。</h2>
+              <p>
+                只有你主动发起邀请，朋友才会参与相应的问题。你的私人记录不会自动公开。
+              </p>
+              {user?.kind === "guest" ? (
+                <p className="space-guest-notice">
+                  <ShieldCheck size={17} />
+                  这是你的访客空间。当前浏览器可继续，清除 Cookie
+                  或访客会话到期后可能无法找回。
+                  {space.guest_expires_at &&
+                    `当前会话到 ${formatDate(space.guest_expires_at)}。`}
+                </p>
+              ) : (
+                <p className="space-guest-notice">
+                  <Check size={16} />
+                  {user?.display_name}的账户空间 · 已保存到当前账户
+                </p>
+              )}
             </div>
-            <ArrowRight size={21} />
-          </Link>
-          <div className="settings-actions">
+            <div className="space-privacy-actions">
+              {user?.kind === "guest" && space.capabilities?.can_register && (
+                <ActionLink to="/account">保存我的 Nolya</ActionLink>
+              )}
+              <Link to="/account" className="text-link">
+                <Settings size={17} />
+                隐私与账户
+              </Link>
+            </div>
+          </section>
+          <div className="settings-actions space-support-actions">
             <Link className="button secondary" to="/self/history">
               回顾镜像历史
             </Link>

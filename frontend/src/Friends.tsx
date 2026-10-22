@@ -1,3 +1,4 @@
+import "./design-self-friends.css";
 import { ResultShare, SocialShare } from "./Share";
 import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -225,7 +226,7 @@ export function FriendPage() {
     }
   }
   return (
-    <div className="container narrow-page">
+    <div className="container design-friend-page">
       {context.loading || sessionLoading ? (
         <Loading />
       ) : context.error ? (
@@ -286,95 +287,138 @@ export function FriendPage() {
             : "邀请可能已过期或被撤回，可以请朋友发来新的链接。"}
         </Empty>
       ) : session && q ? (
-        <>
-          <PageHeading
-            eyebrow={`你眼中的 ${owner}`}
-            title="熟悉 TA 的你，会怎么选？"
-            description="选更接近你平时观察的那一边，不用猜 TA 的答案。"
-          />
-          <section className="question-card">
-            <div className="question-meta">
-              <span>
-                <Heart size={16} />
-                你的视角
-              </span>
-              <strong>
-                {String(index + 1).padStart(2, "0")} <small>/ 03</small>
-              </strong>
-            </div>
-            <Progress current={index + 1} total={3} />
-            <h2>{q.prompt}</h2>
-            <Options
-              question={q}
-              selected={answers[q.id]}
-              onSelect={(choice) => {
-                setAnswers({ ...answers, [q.id]: choice });
-                submitKey.current = newKey();
-              }}
-              disabled={busy}
+        <div className="design-friend-questions">
+          <div className="design-friend-question-content">
+            <img
+              className="design-friend-question-thumbnail"
+              src="/design/friend-question-portrait.png"
+              alt="品牌人物示例，非邀请者照片"
             />
-            <PrivacyNote>你看见的，只是 TA 真实的一面。</PrivacyNote>
-          </section>
-          {error && <Notice>{error}</Notice>}
-          <div className="question-actions">
-            <button
-              className="text-button"
-              disabled={index === 0 || busy}
-              onClick={() => setIndex((i) => i - 1)}
-            >
-              <ArrowLeft size={16} />
-              上一题
-            </button>
-            <Button disabled={!answers[q.id]} busy={busy} onClick={next}>
-              {index === 2 ? "送出我的视角" : "下一题"}
-              <ArrowRight size={18} />
-            </Button>
-          </div>
-        </>
-      ) : (
-        <>
-          <PageHeading
-            eyebrow="来自一个熟悉的人的邀请"
-            title={
-              <>
-                {owner} 想知道，
-                <br />
-                你眼中的 TA。
-              </>
-            }
-            description="3 个轻松的生活选择，大概半分钟。没有标准答案，也不用填写姓名。"
-          />
-          <section className="card friend-landing">
-            <div className="friend-hearts">
-              <Heart size={52} />
-              <Sparkles size={24} />
-            </div>
-            <h2>你看见的那一面，或许 TA 还不知道</h2>
-            <p>
-              请按平时的观察回答，别先看 TA 自己的答案。独立的视角，才有意思。
-            </p>
-            <div className="privacy-box">
-              <ShieldCheck size={23} />
-              <p>
-                {context.data?.privacy_notice ||
-                  "你的结构化选择将作为汇总反馈给邀请人。只有一位参与者时，邀请人可能看出这是你的个人视角；这不是完全匿名的回答。"}
-              </p>
-            </div>
-            <label className="checkbox-row">
-              <input
-                type="checkbox"
-                checked={consent}
-                onChange={(e) => setConsent(e.target.checked)}
+            <PageHeading
+              eyebrow={`你眼中的 ${owner}`}
+              title="熟悉 TA 的你，会怎么选？"
+              description="选更接近你平时观察的那一边，不用猜 TA 的答案。"
+            />
+            <section className="question-card">
+              <div className="question-meta">
+                <span>
+                  <Heart size={16} />
+                  你的视角
+                </span>
+                <strong>
+                  {String(index + 1).padStart(2, "0")} <small>/ 03</small>
+                </strong>
+              </div>
+              <Progress current={index + 1} total={3} />
+              <h2>{q.prompt}</h2>
+              <Options
+                question={q}
+                selected={answers[q.id]}
+                onSelect={(choice) => {
+                  setAnswers({ ...answers, [q.id]: choice });
+                  submitKey.current = newKey();
+                }}
+                disabled={busy}
               />
-              <span>我理解以上说明，同意把这 3 个选择分享给邀请人</span>
-            </label>
-            <Button disabled={!consent} busy={busy} onClick={start}>
-              说说我眼中的 {owner}
-              <ArrowRight size={18} />
-            </Button>
+              <PrivacyNote>你看见的，只是 TA 真实的一面。</PrivacyNote>
+            </section>
             {error && <Notice>{error}</Notice>}
-          </section>
-        </>
+            <div className="question-actions">
+              <button
+                className="text-button"
+                disabled={index === 0 || busy}
+                onClick={() => setIndex((i) => i - 1)}
+              >
+                <ArrowLeft size={16} />
+                上一题
+              </button>
+              <Button disabled={!answers[q.id]} busy={busy} onClick={next}>
+                {index === 2 ? "送出我的视角" : "下一题"}
+                <ArrowRight size={18} />
+              </Button>
+            </div>
+          </div>
+          <aside className="design-friend-question-aside">
+            <img
+              src="/design/friend-question-portrait.png"
+              alt="手持饮品的品牌人物"
+              width="1410"
+              height="1587"
+            />
+            <h2>如果换成 TA，你会选哪边？</h2>
+            <p>按平时对 TA 的了解来选。你给出的是朋友视角，不是好坏评价。</p>
+          </aside>
+        </div>
+      ) : (
+        <div className="design-friend-landing">
+          <div className="design-friend-landing-copy">
+            <PageHeading
+              eyebrow="来自一个熟悉的人的邀请"
+              title={
+                <>
+                  {owner} 想知道，
+                  <br />
+                  你眼中的 TA。
+                </>
+              }
+              description="3 个轻松的生活选择，大概半分钟。没有标准答案，也不用填写姓名。"
+            />
+            <section className="card friend-landing">
+              <ul className="design-friend-benefits">
+                <li>只选 3 题</li>
+                <li>大约 30 秒</li>
+                <li>没有标准答案</li>
+              </ul>
+              <h2>你看见的那一面，或许 TA 还不知道</h2>
+              <p>
+                请按平时的观察回答，别先看 TA 自己的答案。独立的视角，才有意思。
+              </p>
+              <div className="privacy-box">
+                <ShieldCheck size={23} />
+                <p>
+                  {context.data?.privacy_notice ||
+                    "你的结构化选择将作为汇总反馈给邀请人。只有一位参与者时，邀请人可能看出这是你的个人视角；这不是完全匿名的回答。"}
+                </p>
+              </div>
+              <label className="checkbox-row">
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(e) => setConsent(e.target.checked)}
+                />
+                <span>我理解以上说明，同意把这 3 个选择分享给邀请人</span>
+              </label>
+              <Button disabled={!consent} busy={busy} onClick={start}>
+                说说我眼中的 {owner}
+                <ArrowRight size={18} />
+              </Button>
+              {error && <Notice>{error}</Notice>}
+            </section>
+            <details className="design-friend-explainer">
+              <summary>先看看怎么玩</summary>
+              <ol>
+                <li>三个生活场景：每题两个合理选项。</li>
+                <li>凭平时的了解：不是答对错的考试。</li>
+                <li>形成朋友视角：完成后，邀请人可查看你的观察。</li>
+              </ol>
+            </details>
+          </div>
+          <figure className="design-friend-landing-photo">
+            <picture>
+              <source
+                media="(max-width: 700px)"
+                srcSet="/design/friend-landing-mobile.png"
+              />
+              <img
+                src="/design/friend-landing-desktop.png"
+                alt="咖啡馆品牌人物与两张生活照片"
+                width="862"
+                height="799"
+              />
+            </picture>
+            <figcaption>想到 TA 平时的样子，你会怎么选？</figcaption>
+          </figure>
+        </div>
       )}
     </div>
   );
@@ -398,182 +442,219 @@ export function MirrorPage() {
     return () => clearInterval(timer);
   }, [user?.id, mirror?.state]);
   return (
-    <div className="container mirror-page">
-      <PageHeading
-        eyebrow="同一个你，换个角度看看"
-        title={
-          mirror?.state === "full"
-            ? "三个视角，让你更立体。"
-            : mirror?.completed_count
-              ? "朋友眼中的你，开始浮现。"
-              : "朋友眼中的你，会是什么样？"
-        }
-        description="把自己的选择，与熟悉你的人的观察，轻轻放在一起。"
-      >
-        <button
-          className="icon-button refresh-button"
-          title="刷新镜像"
-          aria-label="刷新镜像"
-          onClick={resource.reload}
-        >
-          <RefreshCw size={19} />
-        </button>
-      </PageHeading>
-      {loading || resource.loading ? (
-        <Loading />
-      ) : resource.error ? (
-        <Notice onRetry={resource.reload}>{resource.error}</Notice>
-      ) : !mirror?.self_assessment_id ? (
-        <Empty
-          title="镜像，从自己的选择开始"
-          action={
-            <ActionLink to="/self">
-              开始我的第一次镜像
-              <ArrowRight size={17} />
-            </ActionLink>
+    <div
+      className={`container mirror-page design-mirror-page ${mirror?.state === "full" ? "design-mirror-full" : "design-mirror-first"}`}
+    >
+      <aside className="design-mirror-imagery" aria-label="品牌场景图">
+        {mirror?.state === "full" ? (
+          <>
+            <picture>
+              <source
+                media="(max-width: 700px)"
+                srcSet="/design/full-mirror-mobile.jpg"
+              />
+              <img
+                className="design-mirror-main"
+                src="/design/full-mirror-main.jpg"
+                alt="阳光咖啡馆里的品牌人物"
+              />
+            </picture>
+            <div className="design-mirror-insets">
+              <img src="/design/full-mirror-glance.jpg" alt="" />
+              <img src="/design/full-mirror-rest.jpg" alt="" />
+            </div>
+          </>
+        ) : (
+          <figure className="design-mirror-first-photo">
+            <img
+              src="/design/first-mirror-cafe.jpg"
+              alt="在咖啡馆手持饮品的品牌人物"
+              width="525"
+              height="778"
+            />
+            <figcaption>同一个你，不同视角。</figcaption>
+          </figure>
+        )}
+      </aside>
+      <div className="design-mirror-content">
+        <PageHeading
+          eyebrow="同一个你，换个角度看看"
+          title={
+            mirror?.state === "full"
+              ? "三个人眼里的你，和你想的一样吗？"
+              : mirror?.completed_count
+                ? "原来，TA 是这样理解你的选择。"
+                : "朋友眼中的你，会是什么样？"
           }
+          description="把自己的选择，与熟悉你的人的观察，轻轻放在一起。"
         >
-          先留下 8 个生活选择，再邀请朋友发现更多面的你。
-        </Empty>
-      ) : (
-        <>
-          <div className="mirror-status">
-            <div className="respondent-dots">
-              {[0, 1, 2].map((i) => (
-                <span
-                  className={i < mirror.completed_count ? "completed" : ""}
-                  key={i}
-                >
-                  {i < mirror.completed_count ? (
-                    <Check size={19} />
-                  ) : (
-                    <Users size={18} />
-                  )}
-                </span>
-              ))}
-            </div>
-            <div>
-              <strong>{mirror.completed_count} / 3 个独立视角已送达</strong>
-              <p>
-                {mirror.completed_count === 0
-                  ? "朋友还没有回答，先把链接分享给 TA 吧。"
-                  : mirror.completed_count < 3
-                    ? "先看看这些独立观察，3 个视角齐了再比较共识。"
-                    : "这一次，三个独立视角都已到齐。"}
-              </p>
-            </div>
-            <ActionLink to="/invite" secondary>
-              {mirror.completed_count ? "查看邀请链接" : "邀请朋友"}
-              <ArrowRight size={17} />
-            </ActionLink>
-          </div>
-          {mirror.completed_count === 0 ? (
-            <section className="card waiting-mirror">
-              <div className="waiting-orbit">
-                <Heart size={42} />
-                <span>✧</span>
-              </div>
-              <h2>新的视角，值得等待</h2>
-              <p>
-                不用催，也不用特意选“最了解你”的人。
-                <br />
-                不同相处方式，会带来不同的观察。
-              </p>
-              <Link className="text-link" to="/self/result">
-                先看看自己眼中的我 <ArrowRight size={16} />
-              </Link>
-            </section>
-          ) : (
-            <>
-              <div className="mirror-legend">
-                <span>
-                  <span className="legend-dot purple" />
-                  自己眼中的我
-                </span>
-                <span>
-                  <span className="legend-dot pink" />
-                  朋友看到的我
-                </span>
-              </div>
-              <div className="comparison-grid">
-                {mirror.comparisons.map((c) => (
-                  <section className="card comparison-card" key={c.dimension}>
-                    <div className="comparison-heading">
-                      <span>{dimensionNames[c.dimension] || c.dimension}</span>
-                      {mirror.state === "full" &&
-                        c.relation !== "insufficient" && (
-                          <span
-                            className={`relation-tag ${c.relation === "gap" ? "gap" : ""}`}
-                          >
-                            {c.relation === "aligned"
-                              ? "想在了一起"
-                              : c.relation === "gap"
-                                ? "一个意外的不同"
-                                : "更看情境"}
-                          </span>
-                        )}
-                    </div>
-                    <div className="comparison-own">
-                      <small>你自己的选择</small>
-                      <h3>{c.self_label}</h3>
-                    </div>
-                    <div className="comparison-friend">
-                      <small>{c.sample_size} 个独立视角</small>
-                      <h3>{c.friend_label || "还需要更多观察"}</h3>
-                      <div className="count-pills">
-                        <span>A · {c.a_count} 人</span>
-                        <span>B · {c.b_count} 人</span>
-                      </div>
-                    </div>
-                    {mirror.state !== "full" && (
-                      <p className="small muted">
-                        目前是个人观察，还不能代表朋友们的共识。
-                      </p>
+          <button
+            className="icon-button refresh-button"
+            title="刷新镜像"
+            aria-label="刷新镜像"
+            onClick={resource.reload}
+          >
+            <RefreshCw size={19} />
+          </button>
+        </PageHeading>
+        {loading || resource.loading ? (
+          <Loading />
+        ) : resource.error ? (
+          <Notice onRetry={resource.reload}>{resource.error}</Notice>
+        ) : !mirror?.self_assessment_id ? (
+          <Empty
+            title="镜像，从自己的选择开始"
+            action={
+              <ActionLink to="/self">
+                开始我的第一次镜像
+                <ArrowRight size={17} />
+              </ActionLink>
+            }
+          >
+            先留下 8 个生活选择，再邀请朋友发现更多面的你。
+          </Empty>
+        ) : (
+          <>
+            <div className="mirror-status">
+              <div className="respondent-dots">
+                {[0, 1, 2].map((i) => (
+                  <span
+                    className={i < mirror.completed_count ? "completed" : ""}
+                    key={i}
+                  >
+                    {i < mirror.completed_count ? (
+                      <Check size={19} />
+                    ) : (
+                      <Users size={18} />
                     )}
-                  </section>
+                  </span>
                 ))}
               </div>
-              {mirror.insights.length > 0 && (
-                <section className="mirror-insights">
-                  <Badge pink>值得留意的小发现</Badge>
-                  {mirror.insights.map((insight, i) => (
-                    <p key={i}>{insight}</p>
-                  ))}
-                </section>
-              )}
-            </>
-          )}
-          <Notice kind="info">
-            {mirror.identity_notice ||
-              "目前按独立浏览器或账户区分参与者，无法证明是三个不同的真实人物。"}
-          </Notice>
-          {mirror.state === "full" && (
-            <ResultShare
-              kind="mirror"
-              summary={
-                mirror.insights[0] ||
-                "同一个我，在朋友眼里也有新的视角。不是对错，只是多认识自己一点。"
-              }
-            />
-          )}
-          <div className="next-step-banner">
-            <span className="round-icon">
-              <Sparkles size={23} />
-            </span>
-            <div>
-              <h2>那 TA 能猜中你的选择吗？</h2>
-              <p>选一个真实答案，看看你们想到一起了没有。</p>
+              <div>
+                <strong>{mirror.completed_count} / 3 个独立视角已送达</strong>
+                <p>
+                  {mirror.completed_count === 0
+                    ? "朋友还没有回答，先把链接分享给 TA 吧。"
+                    : mirror.completed_count < 3
+                      ? "先看看这些独立观察，3 个视角齐了再比较共识。"
+                      : "这一次，三个独立视角都已到齐。"}
+                </p>
+              </div>
+              <ActionLink to="/invite" secondary>
+                {mirror.completed_count ? "查看邀请链接" : "邀请朋友"}
+                <ArrowRight size={17} />
+              </ActionLink>
             </div>
-            <ActionLink to="/guess/new">
-              让朋友猜猜
-              <ArrowRight size={18} />
-            </ActionLink>
-          </div>
-          <PrivacyNote>
-            这是不同视角之间的对照，不是评判，也不是谁对谁错。
-          </PrivacyNote>
-        </>
-      )}
+            {mirror.completed_count === 0 ? (
+              <section className="card waiting-mirror">
+                <div className="waiting-orbit">
+                  <Heart size={42} />
+                  <span>✧</span>
+                </div>
+                <h2>新的视角，值得等待</h2>
+                <p>
+                  不用催，也不用特意选“最了解你”的人。
+                  <br />
+                  不同相处方式，会带来不同的观察。
+                </p>
+                <Link className="text-link" to="/self/result">
+                  先看看自己眼中的我 <ArrowRight size={16} />
+                </Link>
+              </section>
+            ) : (
+              <>
+                <div className="mirror-legend">
+                  <span>
+                    <span className="legend-dot purple" />
+                    自己眼中的我
+                  </span>
+                  <span>
+                    <span className="legend-dot pink" />
+                    朋友看到的我
+                  </span>
+                </div>
+                <div className="comparison-grid">
+                  {mirror.comparisons.map((c) => (
+                    <section className="card comparison-card" key={c.dimension}>
+                      <div className="comparison-heading">
+                        <span>
+                          {dimensionNames[c.dimension] || c.dimension}
+                        </span>
+                        {mirror.state === "full" &&
+                          c.relation !== "insufficient" && (
+                            <span
+                              className={`relation-tag ${c.relation === "gap" ? "gap" : ""}`}
+                            >
+                              {c.relation === "aligned"
+                                ? "想在了一起"
+                                : c.relation === "gap"
+                                  ? "一个意外的不同"
+                                  : "更看情境"}
+                            </span>
+                          )}
+                      </div>
+                      <div className="comparison-own">
+                        <small>你自己的选择</small>
+                        <h3>{c.self_label}</h3>
+                      </div>
+                      <div className="comparison-friend">
+                        <small>{c.sample_size} 个独立视角</small>
+                        <h3>{c.friend_label || "还需要更多观察"}</h3>
+                        <div className="count-pills">
+                          <span>A · {c.a_count} 人</span>
+                          <span>B · {c.b_count} 人</span>
+                        </div>
+                      </div>
+                      {mirror.state !== "full" && (
+                        <p className="small muted">
+                          目前是个人观察，还不能代表朋友们的共识。
+                        </p>
+                      )}
+                    </section>
+                  ))}
+                </div>
+                {mirror.insights.length > 0 && (
+                  <section className="mirror-insights">
+                    <Badge pink>值得留意的小发现</Badge>
+                    {mirror.insights.map((insight, i) => (
+                      <p key={i}>{insight}</p>
+                    ))}
+                  </section>
+                )}
+              </>
+            )}
+            <Notice kind="info">
+              {mirror.identity_notice ||
+                "目前按独立浏览器或账户区分参与者，无法证明是三个不同的真实人物。"}
+            </Notice>
+            {mirror.state === "full" && (
+              <ResultShare
+                kind="mirror"
+                summary={
+                  mirror.insights[0] ||
+                  "同一个我，在朋友眼里也有新的视角。不是对错，只是多认识自己一点。"
+                }
+              />
+            )}
+            <div className="next-step-banner">
+              <span className="round-icon">
+                <Sparkles size={23} />
+              </span>
+              <div>
+                <h2>那 TA 能猜中你的选择吗？</h2>
+                <p>选一个真实答案，看看你们想到一起了没有。</p>
+              </div>
+              <ActionLink to="/guess/new">
+                让朋友猜猜
+                <ArrowRight size={18} />
+              </ActionLink>
+            </div>
+            <PrivacyNote>
+              这是不同视角之间的对照，不是评判，也不是谁对谁错。
+            </PrivacyNote>
+          </>
+        )}
+      </div>
     </div>
   );
 }

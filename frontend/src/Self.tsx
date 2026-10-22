@@ -1,3 +1,4 @@
+import "./design-self-friends.css";
 import { ResultShare } from "./Share";
 import { useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -67,7 +68,7 @@ export function SelfPage() {
     }
   }
   return (
-    <div className="container flow-page">
+    <div className="container flow-page design-self-question">
       <div className="flow-intro">
         <Link className="back-link" to="/">
           <ArrowLeft size={16} />
@@ -84,15 +85,6 @@ export function SelfPage() {
           }
           description="8 道生活题。别想太久，选更像你的那一边。"
         />
-        <div className="self-side-art">
-          <span>
-            同一个人，
-            <br />
-            也会有不同的选择。
-          </span>
-          <div className="side-art-circle" />
-          <Sparkles size={35} />
-        </div>
         <PrivacyNote>
           完成后才会保存结果，离开此页将不保留未提交的选择。
         </PrivacyNote>
@@ -155,6 +147,15 @@ export function SelfPage() {
           <Empty title="暂时还没有题目">请稍后回来看看。</Empty>
         )}
       </div>
+      <figure className="design-self-portrait">
+        <img
+          src="/design/self-question-portrait.jpg"
+          alt="日常饮品场景中的品牌人物"
+          width="1165"
+          height="860"
+        />
+        <figcaption>同一个人，也会有不同的选择。</figcaption>
+      </figure>
     </div>
   );
 }
@@ -187,10 +188,10 @@ export function SelfResultPage() {
     }
   }
   return (
-    <div className="container result-page">
+    <div className="container result-page design-self-result">
       <PageHeading
         eyebrow="这是今天的你"
-        title="你的第一张镜像，来了。"
+        title="8 个选择，照见了你的一面。"
         description="来自你的 8 个真实生活选择。一个开始，不是一个定义。"
       />
       {loading || resource.loading ? (
@@ -212,22 +213,34 @@ export function SelfResultPage() {
       ) : (
         <>
           <div className="result-grid">
-            <section className="self-result-art">
-              <div className="result-graphic">
-                <div className="result-petal p1" />
-                <div className="result-petal p2" />
-                <div className="result-petal p3" />
-                <div className="result-petal p4" />
-                <Sparkles size={32} />
-              </div>
-              <span className="eyebrow">MY FIRST MIRROR</span>
-              <h2>{result.summary}</h2>
-              <p>更多面的你，值得慢慢看见。</p>
-              <span className="result-signature">Nolya.</span>
-            </section>
+            <figure className="design-result-portrait">
+              <picture>
+                <source
+                  media="(max-width: 700px)"
+                  srcSet="/design/self-result-mobile.jpg"
+                />
+                <img
+                  className="design-result-main"
+                  src="/design/ambassador-cafe.jpg"
+                  alt="日常场景中的品牌人物"
+                  width="1122"
+                  height="1402"
+                />
+              </picture>
+              <img
+                className="design-result-inset"
+                src="/design/ambassador-outdoor.jpg"
+                alt=""
+                width="1122"
+                height="1402"
+              />
+              <figcaption>
+                这只是你在这些情境里的选择，不是全部的你。
+              </figcaption>
+            </figure>
             <section className="card evidence-card">
               <Badge>从选择里，看见一点自己</Badge>
-              <h2>有些倾向，已经露出轮廓</h2>
+              <h2>{result.summary}</h2>
               <div className="observations">
                 {result.observations.map((text, i) => (
                   <div className="observation" key={i}>

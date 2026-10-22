@@ -1,3 +1,4 @@
+import { BrandCompanion } from "./ui";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { errorMessage, post } from "./api";
@@ -250,6 +251,7 @@ export function RecoverPage() {
   }
   return (
     <div className="container narrow-page">
+      <BrandCompanion label="安全地回来，继续自己的节奏" />
       <PageHeading
         eyebrow="安全地回到你的空间"
         title="使用恢复码找回账户"

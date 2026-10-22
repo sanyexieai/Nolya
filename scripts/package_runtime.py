@@ -36,7 +36,7 @@ with zipfile.ZipFile(output,'w',zipfile.ZIP_DEFLATED) as archive:
     for file in sorted(web.rglob('*')):
         if file.is_file() and not file.is_symlink():add('frontend/dist/'+file.relative_to(web).as_posix(),file.read_bytes())
     for file in sorted((ROOT/'docs').glob('*.md')):add('docs/'+file.name,file.read_bytes())
-    add('README.md',('''# Nolya 0.3 Linux x64 产品化候选
+    add('README.md',('''# Nolya 0.4 Linux x64 产品化候选
 
 解压后运行 bash start.sh，打开 http://127.0.0.1:3000 。不需要安装 Rust/Node。需要 Linux x86_64，glibc 2.34+。
 
@@ -47,7 +47,7 @@ with zipfile.ZipFile(output,'w',zipfile.ZIP_DEFLATED) as archive:
 源码提交：'''+commit+'\n').encode())
     for file in sorted((ROOT/'scripts/ops').glob('*.py')):
         if file.name=='sqlite_backup.py':add('scripts/ops/'+file.name,file.read_bytes())
-    add('BUILD.json',json.dumps({'version':'0.3.0','commit':commit,'platform':'linux-x86_64','acceptance':'release candidate; hosted Chromium scope passed; operator production acceptance pending'},indent=2).encode())
+    add('BUILD.json',json.dumps({'version':'0.4.0','commit':commit,'platform':'linux-x86_64','acceptance':'release candidate; hosted Chromium scope passed; operator production acceptance pending'},indent=2).encode())
     archive.writestr('nolya-linux-x64/MANIFEST.json',json.dumps(manifest,ensure_ascii=False,indent=2))
 with zipfile.ZipFile(output) as archive:assert archive.testzip() is None
 print(json.dumps({'file':str(output),'bytes':output.stat().st_size,'sha256':hashlib.sha256(output.read_bytes()).hexdigest(),'commit':commit}))

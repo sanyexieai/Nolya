@@ -9,8 +9,9 @@ import { FriendPage, InvitePage, MirrorPage } from "./Friends";
 import { TodayPage, JournalPage } from "./Daily";
 import { GuessNewPage, GuessPage } from "./Guess";
 import { AccountPage, SpacePage } from "./Account";
-import { ActionLink, Empty, Layout } from "./ui";
+import { ActionLink, BrandCompanion, Empty, Layout } from "./ui";
 import "./styles.css";
+import "./design-support.css";
 import { RecoverPage } from "./Security";
 import { HelpPage } from "./Help";
 import { HistoryPage } from "./History";
@@ -83,6 +84,7 @@ function App() {
           path="*"
           element={
             <div className="container narrow-page">
+              <BrandCompanion label="换一个方向，继续发现" />
               <Empty
                 title="这一页还没找到"
                 action={<ActionLink to="/">回到首页</ActionLink>}

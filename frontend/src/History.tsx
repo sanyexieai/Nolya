@@ -1,3 +1,4 @@
+import { BrandCompanion } from "./ui";
 import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { api, errorMessage, formatDate } from "./api";
@@ -49,6 +50,7 @@ export function HistoryPage() {
   }
   return (
     <div className="container journal-page">
+      <BrandCompanion label="不同时间，也有不同面的自己" />
       <PageHeading
         eyebrow="SELF HISTORY · 镜像历史"
         title="在变化里，重新认识自己。"
