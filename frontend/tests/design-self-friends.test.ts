@@ -120,6 +120,6 @@ test("Mobile self-result invitation gives copy its own column and moves CTA belo
   );
   assert.match(
     mobile,
-    /\.design-self-result \.next-step-banner > \.button \{[^}]*grid-column: 1 \/ -1;[^}]*width: 100%;[^}]*min-height: 44px/,
+    /\.design-self-result \.next-step-banner > \.button \{[^}]*grid-column: 1 \/ -1;[^}]*width: 100%;[^}]*margin-left: 0;[^}]*min-height: 44px/,
   );
 });
