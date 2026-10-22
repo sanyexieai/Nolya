@@ -145,9 +145,23 @@
   color: #fff;
 }
 .guess-designed-reveal .reveal-comparison > div > span {
+  display: block;
+  width: auto;
+  height: auto;
+  background: none;
+  border-radius: 0;
   font-size: 46px;
+  line-height: 1.2;
+  margin-bottom: 10px;
 }
-.guess-result-relation {
+.guess-designed-reveal .reveal-comparison > .guess-result-relation {
+  display: block;
+  width: auto;
+  height: auto;
+  background: none;
+  border-radius: 0;
+  margin: 0;
+  line-height: 1.2;
   align-self: center;
   justify-self: center;
   font-size: 26px;

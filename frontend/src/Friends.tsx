@@ -389,7 +389,7 @@ export function FriendPage() {
                 <span>我理解以上说明，同意把这 3 个选择分享给邀请人</span>
               </label>
               <Button disabled={!consent} busy={busy} onClick={start}>
-                说说我眼中的 {owner}
+                说说我眼中的 TA
                 <ArrowRight size={18} />
               </Button>
               {error && <Notice>{error}</Notice>}

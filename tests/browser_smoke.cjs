@@ -59,6 +59,59 @@ const path = require('path');
   function writeManifest() {
     fs.writeFileSync(path.join(out,'design-state-manifest.json'),JSON.stringify({viewports:{desktop:{width:1440,height:1000},mobile:{width:390,height:844}},captures},null,2));
   }
+  async function checkObservedGeometry(targetPage,label,size) {
+    const samples=[];
+    const problems=[];
+    if(label==='space'&&size==='mobile') {
+      const cards=await targetPage.locator('.space-source-title').evaluateAll(elements=>elements.map(element=>{
+        const icon=element.querySelector('.tile-icon').getBoundingClientRect();
+        const text=element.querySelector(':scope > div').getBoundingClientRect();
+        return {icon:{left:icon.left,right:icon.right,top:icon.top,bottom:icon.bottom},text:{left:text.left,right:text.right,top:text.top,bottom:text.bottom},overlap:Math.min(icon.right,text.right)-Math.max(icon.left,text.left)>1&&Math.min(icon.bottom,text.bottom)-Math.max(icon.top,text.top)>1};
+      }));
+      samples.push({check:'space-source-icons',cards});
+      if(cards.length!==3||cards.some(card=>card.overlap))problems.push('Space source icons must not overlap their title/status text');
+    }
+    if(label==='journal'&&size==='mobile') {
+      const buttons=await targetPage.locator('.journal-filters button').evaluateAll(elements=>elements.map(element=>{
+        const rect=element.getBoundingClientRect();
+        const walker=document.createTreeWalker(element,NodeFilter.SHOW_TEXT);
+        const lines=[];
+        while(walker.nextNode()) {
+          const node=walker.currentNode;
+          if(!node.textContent.trim())continue;
+          const range=document.createRange();range.selectNodeContents(node);
+          for(const box of range.getClientRects())if(box.width>0&&box.height>0&&!lines.some(top=>Math.abs(top-box.top)<1))lines.push(box.top);
+        }
+        return {height:rect.height,width:rect.width,textLines:lines.length};
+      }));
+      samples.push({check:'journal-filter-actions',buttons});
+      if(buttons.length!==2||buttons.some(button=>button.textLines!==1||button.height>60))problems.push('Journal filter actions must keep a readable single-line label, not a vertical stack');
+    }
+    if(['mirror-waiting','mirror-first','mirror-full'].includes(label)&&size==='mobile') {
+      const strips=await targetPage.locator('.design-mirror-content .mirror-status, .design-mirror-content .next-step-banner').evaluateAll(elements=>elements.map(element=>{
+        const copy=element.querySelector(element.classList.contains('mirror-status')?':scope > div:nth-child(2)':':scope > div');
+        const button=element.querySelector(':scope > .button');
+        const text=copy.getBoundingClientRect(),action=button.getBoundingClientRect();
+        return {kind:element.classList.contains('mirror-status')?'mirror-status':'next-step',containerWidth:element.clientWidth,copyWidth:text.width,copyBottom:text.bottom,buttonTop:action.top,buttonWidth:action.width};
+      }));
+      samples.push({check:'mirror-mobile-stacked-strips',strips});
+      if(strips.length!==2||strips.some(strip=>strip.copyWidth<strip.containerWidth*.65||strip.buttonTop<strip.copyBottom-.5))problems.push('Mobile mirror strip copy must retain readable width with its action below, not squeeze between icons and buttons');
+    }
+    if(['guess-reveal','reverse-reveal'].includes(label)) {
+      const answers=await targetPage.locator('.reveal-comparison > div').evaluateAll(elements=>elements.map(element=>{
+        const letter=element.querySelector(':scope > span');
+        const wording=element.querySelector(':scope > strong');
+        const glyph=letter.getBoundingClientRect(),text=wording.getBoundingClientRect();
+        const style=getComputedStyle(letter);
+        return {actual:element.classList.contains('actual-choice'),glyphBottom:glyph.bottom,wordingTop:text.top,glyphHeight:glyph.height,fontSize:parseFloat(style.fontSize),background:style.backgroundColor};
+      }));
+      samples.push({check:'reveal-answer-letters',answers});
+      if(answers.length!==2||answers.some(answer=>answer.glyphBottom>answer.wordingTop+.5||answer.glyphHeight<answer.fontSize))problems.push('Reveal A/B letters must fit their own line box and not overlap answer wording');
+      if(answers.some(answer=>answer.actual&&!['transparent','rgba(0, 0, 0, 0)'].includes(answer.background)))problems.push('Actual-answer glyph must not inherit the obsolete small background circle');
+    }
+    if(samples.length)fs.writeFileSync(path.join(out,`${label}-${size}-geometry.json`),JSON.stringify({samples,problems},null,2));
+    assert.equal(problems.length,0,`${label}-${size}: ${problems.join('; ')}`);
+  }
   async function captureBoth(targetPage, label, anchor) {
     const original=targetPage.viewportSize();
     for(const [size,width,height] of [['desktop',1440,1000],['mobile',390,844]]) {
@@ -68,6 +121,7 @@ const path = require('path');
       await targetPage.screenshot({path:path.join(out,file),fullPage:true,animations:'disabled'});
       captures.push({state:label,designPage:designPages[label]||null,size,file});
       writeManifest();
+      await checkObservedGeometry(targetPage,label,size);
       if(anchor) {
         await settle(targetPage,anchor,`${label}-${size}-detail`);
         const detail=`${label}-${size}-detail.png`;
@@ -481,6 +535,6 @@ const path = require('path');
     assert.equal(new Set(captures.map(capture=>capture.designPage).filter(Boolean)).size,18,'Every original Page01–18 requires a desktop and mobile capture');
     writeManifest();
     if(errors.length)throw new Error('Browser errors: '+errors.join(';'));
-    console.log(JSON.stringify({status:'passed',checks:['home_bold_cjk_typography','self_keyboard_radio','self_required_answer','self_back_preserves_selection','self_interruption_resets','self_8_answers','self_refresh_persistence','daily_vote','friend_consent_owner_exclusion','friend_submission_refresh','mirror_one_response','guess_hidden_until_submit','reveal_refresh','revoke_cancel_confirm_hides_reveal','guest_registration_preserves_self','invitation_filters_and_share_url','history_repeat_compare_refresh','journal_choice_date_reset','password_rotates_sessions','recovery_confirm_hide','logout_all_sessions','recovery_and_relogin_preserve_history','6_secondary_routes','4_mobile_no_overflow','mobile_computed_text_contrast','fixed_nav_scroll_clearance','responsive_design_320_430_768_1440','design_assets_loaded','result_share_explicit_preview_app_link','share_four_platform_png_downloads','share_real_qr_decode','share_caption_edit','share_native_mock_cancel_success_error','share_mobile_no_overflow','share_mobile_visible_unobscured_download_copy','keyboard_skip_link_functional_hidden_when_unfocused','all_design_states_desktop_mobile','mirror_three_independent_responses','reverse_directed_access','reverse_chooser_sent_recipient_reveal'],page_errors:errors,screenshots:out}));
+    console.log(JSON.stringify({status:'passed',checks:['home_bold_cjk_typography','self_keyboard_radio','self_required_answer','self_back_preserves_selection','self_interruption_resets','self_8_answers','self_refresh_persistence','daily_vote','friend_consent_owner_exclusion','friend_submission_refresh','mirror_one_response','guess_hidden_until_submit','reveal_refresh','revoke_cancel_confirm_hides_reveal','guest_registration_preserves_self','invitation_filters_and_share_url','history_repeat_compare_refresh','journal_choice_date_reset','password_rotates_sessions','recovery_confirm_hide','logout_all_sessions','recovery_and_relogin_preserve_history','6_secondary_routes','4_mobile_no_overflow','mobile_computed_text_contrast','fixed_nav_scroll_clearance','responsive_design_320_430_768_1440','design_assets_loaded','result_share_explicit_preview_app_link','share_four_platform_png_downloads','share_real_qr_decode','share_caption_edit','share_native_mock_cancel_success_error','share_mobile_no_overflow','share_mobile_visible_unobscured_download_copy','keyboard_skip_link_functional_hidden_when_unfocused','all_design_states_desktop_mobile','mirror_three_independent_responses','reverse_directed_access','reverse_chooser_sent_recipient_reveal','space_icon_text_no_overlap','journal_mobile_single_line_filter_actions','reveal_answer_letters_no_overlap','mirror_mobile_readable_stacked_strips'],page_errors:errors,screenshots:out}));
   } finally { await browser.close(); }
 })().catch(e=>{console.error(e.stack);process.exitCode=1});

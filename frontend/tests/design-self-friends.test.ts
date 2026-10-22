@@ -86,3 +86,16 @@ test("Page02 and05 never retain intrinsic desktop heights after responsive width
   assert.match(css, /\.design-self-portrait img \{[^}]*max-height: 560px/);
   assert.match(css, /\.design-friend-landing-photo img \{[^}]*height: auto/);
 });
+
+test("Mobile mirror actions stack and friend CTA speaks from recipient perspective", () => {
+  assert.match(
+    css,
+    /\.design-mirror-content \.next-step-banner \{[^}]*flex-direction: column/,
+  );
+  assert.match(
+    css,
+    /\.design-mirror-content \.next-step-banner > div \{[^}]*width: 100%/,
+  );
+  assert.ok(friends.includes("说说我眼中的 TA"));
+  assert.ok(!friends.includes("说说我眼中的 {owner}"));
+});

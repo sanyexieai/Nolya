@@ -617,3 +617,39 @@
     display: none;
   }
 }
+/* Keep action/status copy readable rather than squeezing between fixed controls. */
+@media (max-width: 700px) {
+  .design-self-portrait img {
+    height: 190px;
+    object-position: center 75%;
+  }
+  .design-mirror-content .mirror-status,
+  .design-mirror-content .next-step-banner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .design-mirror-content .mirror-status > div,
+  .design-mirror-content .next-step-banner > div {
+    width: 100%;
+    min-width: 0;
+    flex: none;
+  }
+  .design-mirror-content .mirror-status > .button,
+  .design-mirror-content .next-step-banner > .button {
+    width: 100%;
+    margin-left: 0;
+  }
+  .design-mirror-first-photo img {
+    height: 230px;
+    object-position: center 45%;
+  }
+  .design-mirror-first-photo figcaption {
+    bottom: 0;
+    left: 0;
+    min-height: 85px;
+    width: 84%;
+    border-radius: 0 20px 0 20px;
+  }
+}

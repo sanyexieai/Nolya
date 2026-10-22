@@ -44,3 +44,14 @@ test("mockup art windows exclude fixed answers and success labels and remain cli
   assert.match(source, /disabled=\{!ownChoice\}/);
   assert.match(source, /disabled=\{!choice\}/);
 });
+
+test("large reveal letters reset inherited 33px badges so actual answers never overlap", () => {
+  assert.match(
+    styles,
+    /\.guess-designed-reveal \.reveal-comparison > div > span\s*\{[^}]*height: auto;[^}]*background: none;[^}]*line-height: 1\.2;/s,
+  );
+  assert.match(
+    styles,
+    /\.guess-designed-reveal \.reveal-comparison > \.guess-result-relation\s*\{[^}]*height: auto;[^}]*background: none;/s,
+  );
+});
