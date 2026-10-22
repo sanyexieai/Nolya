@@ -91,25 +91,33 @@ const shareChecks = require('./share_browser.cjs');
       // Native focus and its rendered indicator can settle on different frames.
       // Keep the keyboard/navigation requirement; never focus the password for
       // the test or substitute a screenshot-only outline.
+      const inspectPasswordFocus=requireReady=>{
+        const element=document.querySelector('#password');
+        const style=getComputedStyle(element),box=element.getBoundingClientRect(),active=document.activeElement;
+        const nav=document.querySelector('.mobile-nav'),navStyle=nav&&getComputedStyle(nav),navBox=nav?.getBoundingClientRect();
+        const usableBottom=navStyle?.display!=='none'&&navStyle?.position==='fixed'?navBox.top:innerHeight;
+        const outlineWidth=parseFloat(style.outlineWidth),outlineExtent=outlineWidth+Math.max(0,parseFloat(style.outlineOffset));
+        const points=[[box.left+box.width/2,box.top+box.height/2],[box.left+2,box.top+box.height/2],[box.right-2,box.top+box.height/2],[box.left+box.width/2,box.bottom-2]];
+        const unobscured=points.every(([x,y])=>element===document.elementFromPoint(x,y));
+        const clear=box.top-outlineExtent>=0&&box.bottom+outlineExtent<=usableBottom&&box.left-outlineExtent>=0&&box.right+outlineExtent<=innerWidth&&unobscured;
+        const result={active:element===active,focused:element.matches(':focus'),focusVisible:element.matches(':focus-visible'),documentFocused:document.hasFocus(),activeTag:active?.tagName,activeId:active?.id||'',disabled:element.disabled,tabIndex:element.tabIndex,outline:{width:style.outlineWidth,style:style.outlineStyle,color:style.outlineColor,offset:style.outlineOffset},bounds:{left:box.left,right:box.right,top:box.top,bottom:box.bottom},viewport:{width:innerWidth,height:innerHeight},usableBottom,outlineExtent,unobscured,clear};
+        return requireReady?result.active&&result.focusVisible&&result.documentFocused&&outlineWidth>=3&&style.outlineStyle==='solid'&&clear:result;
+      };
       let passwordFocus=false;
       try {
-        await targetPage.waitForFunction(()=>{
-          const element=document.querySelector('#password');
-          return element===document.activeElement&&element.matches(':focus-visible')&&parseFloat(getComputedStyle(element).outlineWidth)>=2;
-        },null,{timeout:5000,polling:'raf'});
+        await targetPage.waitForFunction(inspectPasswordFocus,true,{timeout:5000,polling:'raf'});
         passwordFocus=true;
       } catch(error) {
         if(error.name!=='TimeoutError')throw error;
       }
-      const focusDiagnostic=await targetPage.getByLabel('密码',{exact:true}).evaluate(element=>{
-        const style=getComputedStyle(element),box=element.getBoundingClientRect(),active=document.activeElement;
-        return {active:element===active,focused:element.matches(':focus'),focusVisible:element.matches(':focus-visible'),documentFocused:document.hasFocus(),activeTag:active?.tagName,activeId:active?.id||'',disabled:element.disabled,tabIndex:element.tabIndex,outline:{width:style.outlineWidth,style:style.outlineStyle,color:style.outlineColor,offset:style.outlineOffset},bounds:{left:box.left,right:box.right,top:box.top,bottom:box.bottom},viewport:{width:innerWidth,height:innerHeight}};
-      });
+      const focusDiagnostic=await targetPage.evaluate(inspectPasswordFocus,false);
       samples.push({check:'auth-password-keyboard-focus',...focusDiagnostic});
       if(!passwordFocus){
-        problems.push('Auth password input must remain keyboard-reachable with a visible focus outline');
+        problems.push('Auth password must be keyboard-reachable with its3pxfocus outline fully visible above fixed navigation and actual hit-tested input unobscured');
         await targetPage.screenshot({path:path.join(out,`${label}-${size}-focus-failure.png`),fullPage:false,animations:'disabled'});
         console.error('Auth focus diagnostic '+label+'-'+size+' '+JSON.stringify(focusDiagnostic));
+      }else{
+        await targetPage.screenshot({path:path.join(out,`${label}-${size}-focus.png`),fullPage:false,animations:'disabled'});
       }
       await targetPage.evaluate(()=>{if(document.activeElement instanceof HTMLElement)document.activeElement.blur();});
     }
@@ -120,6 +128,15 @@ const shareChecks = require('./share_browser.cjs');
       }));
       samples.push({check:'self-independent-labeled-trait-cards',cards});
       if(cards.length!==3||cards.some((card,index)=>card.titleBottom>card.valueTop+.5||card.descriptionTop!==null&&card.valueBottom>card.descriptionTop+.5||cards.slice(index+1).some(other=>Math.min(card.right,other.right)-Math.max(card.left,other.left)>1&&Math.min(card.bottom,other.bottom)-Math.max(card.top,other.top)>1)))problems.push('Independent result labels, values, descriptions and cards must not overlap');
+    }
+    if(label==='self-result'&&targetPage.viewportSize().width<=700) {
+      const banner=await targetPage.locator('.design-self-result .next-step-banner').evaluate(element=>{
+        const copy=element.querySelector(':scope > div').getBoundingClientRect(),button=element.querySelector(':scope > .button').getBoundingClientRect(),icon=element.querySelector(':scope > .round-icon').getBoundingClientRect();
+        const heading=element.querySelector('h2'),range=document.createRange();range.selectNodeContents(heading);const lines=[];for(const box of range.getClientRects())if(box.width>0&&box.height>0&&!lines.some(top=>Math.abs(top-box.top)<1))lines.push(box.top);
+        return {containerWidth:element.clientWidth,copyWidth:copy.width,copyBottom:copy.bottom,buttonTop:button.top,buttonWidth:button.width,iconBottom:icon.bottom,copyLeft:copy.left,iconRight:icon.right,titleLines:lines.length};
+      });
+      samples.push({check:'self-mobile-readable-invite-banner',...banner});
+      if(banner.titleLines<1||banner.titleLines>2||banner.copyWidth<Math.max(130,banner.containerWidth*.55)||banner.copyLeft<banner.iconRight-.5||banner.buttonTop<Math.max(banner.copyBottom,banner.iconBottom)-.5||banner.buttonWidth<banner.containerWidth*.75)problems.push('Self result invite copy must remain readable beside its icon, with a full-width CTA below rather than a one-character text column');
     }
     if(label==='space'&&size==='mobile') {
       const cards=await targetPage.locator('.space-source-title').evaluateAll(elements=>elements.map(element=>{
@@ -264,9 +281,9 @@ const shareChecks = require('./share_browser.cjs');
     await page.reload();
     await page.getByRole('radio').first().waitFor();
     assert.equal(await page.getByRole('radio').first().getAttribute('aria-checked'), 'false');
-    // Real answers produce two different stable traits (including a reverse
-    // polarity) plus contextual dimensions, not an injected result fixture.
-    const selfChoices=[0,0,1,1,0,1,0,1];
+    // Real answers reproduce the reported two stable dimensions (planning and
+    // direct expression) plus contextual choices, not an injected result.
+    const selfChoices=[0,0,0,0,0,1,0,1];
     for(let i=0;i<8;i++) {
       await page.getByRole('radio').first().waitFor();
       await page.getByRole('radio').nth(selfChoices[i]).click();
@@ -301,6 +318,16 @@ const shareChecks = require('./share_browser.cjs');
     }
     assert(selfEvidence.valueOccurrences.every(count=>count===1)&&selfEvidence.titleOccurrences.every(count=>count===1),'Trait values and labels must not repeat as an unlabeled concatenated summary elsewhere in the result card');
     await captureBoth(page,'self-result');
+    // The confirmed invitation-banner regression must also remain readable at
+    // the narrow and wide mobile edges, not only the standard390px capture.
+    for(const width of [320,430]){
+      await page.setViewportSize({width,height:844});
+      await settle(page,undefined,`self-result-mobile-${width}`);
+      await page.screenshot({path:path.join(out,`self-result-mobile-${width}.png`),fullPage:true,animations:'disabled'});
+      await checkObservedGeometry(page,'self-result',`mobile-${width}`);
+    }
+    await page.setViewportSize({width:1440,height:1000});
+    await settle(page,undefined,'self-result-after-mobile-edges');
     assert.equal(await page.getByRole('region',{name:'分享结果',exact:true}).count(),0);
     await page.getByRole('button',{name:'分享结果',exact:true}).click();
     const resultShare=page.getByRole('region',{name:'分享结果',exact:true});

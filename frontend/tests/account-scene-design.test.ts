@@ -42,3 +42,19 @@ test("Smaller home typography is restricted to mobile and leaves artwork and tou
   assert.ok(!support.includes(".home-v2-scene"));
   assert.ok(!support.includes("overflow-x: hidden"));
 });
+
+test("Mobile auth focus clears fixed navigation without moving desktop or visible fields", () => {
+  assert.match(
+    support,
+    /scroll-margin-bottom: calc\(96px \+ env\(safe-area-inset-bottom\)\)/,
+  );
+  assert.ok(account.includes("onFocusCapture="));
+  assert.ok(account.includes("window.innerWidth > 700"));
+  assert.ok(account.includes("document.activeElement !== field"));
+  assert.ok(
+    account.includes('window.getComputedStyle(nav).position !== "fixed"'),
+  );
+  assert.ok(account.includes("bounds.bottom > navigation.top - 12"));
+  assert.ok(account.includes('block: "center"'));
+  assert.ok(account.includes('behavior: "instant"'));
+});

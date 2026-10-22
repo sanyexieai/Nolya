@@ -1317,3 +1317,66 @@ for (const structured of [true, false]) {
     assert.match(evidence.textContent!, /不同维度/);
   });
 }
+
+for (const scenario of [
+  { name: "obscured mobile", width: 390, bottom: 843, nav: true, scrolls: 1 },
+  { name: "visible mobile", width: 390, bottom: 700, nav: true, scrolls: 0 },
+  { name: "desktop", width: 1200, bottom: 843, nav: true, scrolls: 0 },
+  {
+    name: "without navigation",
+    width: 390,
+    bottom: 843,
+    nav: false,
+    scrolls: 0,
+  },
+]) {
+  test(`Auth keyboard focus keeps field clear of fixed navigation: ${scenario.name}`, async () => {
+    await harness.act(async () => harness.go("/account?mode=login"));
+    const width = Object.getOwnPropertyDescriptor(dom.window, "innerWidth");
+    const frame = Object.getOwnPropertyDescriptor(
+      dom.window,
+      "requestAnimationFrame",
+    );
+    Object.defineProperty(dom.window, "innerWidth", {
+      configurable: true,
+      value: scenario.width,
+    });
+    Object.defineProperty(dom.window, "requestAnimationFrame", {
+      configurable: true,
+      value: (callback: FrameRequestCallback) => {
+        callback(0);
+        return 1;
+      },
+    });
+    const nav = dom.window.document.createElement("nav");
+    nav.className = "mobile-nav";
+    nav.style.position = "fixed";
+    nav.getBoundingClientRect = () =>
+      ({ top: 776, bottom: 844, height: 68 }) as DOMRect;
+    if (scenario.nav) dom.window.document.body.append(nav);
+    const field = input("password");
+    field.getBoundingClientRect = () =>
+      ({
+        top: scenario.bottom - 54,
+        bottom: scenario.bottom,
+        height: 54,
+      }) as DOMRect;
+    const scrolls: ScrollIntoViewOptions[] = [];
+    field.scrollIntoView = (options) =>
+      scrolls.push(options as ScrollIntoViewOptions);
+    try {
+      await harness.act(async () => field.focus());
+      assert.equal(dom.window.document.activeElement, field);
+      assert.equal(scrolls.length, scenario.scrolls);
+      if (scenario.scrolls)
+        assert.deepEqual(scrolls[0], { block: "center", behavior: "instant" });
+      assert.equal(requests("/auth/login").length, 0);
+    } finally {
+      nav.remove();
+      if (width) Object.defineProperty(dom.window, "innerWidth", width);
+      if (frame)
+        Object.defineProperty(dom.window, "requestAnimationFrame", frame);
+      else Reflect.deleteProperty(dom.window, "requestAnimationFrame");
+    }
+  });
+}

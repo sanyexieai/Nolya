@@ -100,3 +100,26 @@ test("Mobile mirror actions stack and friend CTA speaks from recipient perspecti
   assert.ok(friends.includes("说说我眼中的 TA"));
   assert.ok(!friends.includes("说说我眼中的 {owner}"));
 });
+
+test("Mobile self-result invitation gives copy its own column and moves CTA below", () => {
+  const start = css.indexOf("/* Keep result invitation copy separate");
+  const mobile = css.slice(start);
+  assert.ok(start >= 0);
+  assert.match(
+    mobile,
+    /\.design-self-result \.next-step-banner > \.round-icon \{[^}]*width: 44px;[^}]*height: 44px/,
+  );
+  assert.match(mobile, /@media \(max-width: 700px\)/);
+  assert.match(
+    mobile,
+    /\.design-self-result \.next-step-banner \{[^}]*display: grid;[^}]*grid-template-columns: 44px minmax\(0, 1fr\)/,
+  );
+  assert.match(
+    mobile,
+    /\.design-self-result \.next-step-banner > div \{[^}]*min-width: 0;[^}]*width: 100%/,
+  );
+  assert.match(
+    mobile,
+    /\.design-self-result \.next-step-banner > \.button \{[^}]*grid-column: 1 \/ -1;[^}]*width: 100%;[^}]*min-height: 44px/,
+  );
+});

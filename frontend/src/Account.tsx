@@ -676,7 +676,41 @@ export function AccountPage() {
                   {error && <Notice>{error}</Notice>}
                 </section>
               ) : (
-                <form onSubmit={auth}>
+                <form
+                  onSubmit={auth}
+                  onFocusCapture={(event) => {
+                    const field = event.target;
+                    if (
+                      !(field instanceof HTMLInputElement) ||
+                      window.innerWidth > 700
+                    )
+                      return;
+                    // Native Tab scrolling knows the viewport, not our fixed bottom navigation.
+                    // Inspect after its scroll, and move only a still-focused, obscured field.
+                    window.requestAnimationFrame(() => {
+                      if (document.activeElement !== field) return;
+                      const nav =
+                        document.querySelector<HTMLElement>(".mobile-nav");
+                      if (
+                        !nav ||
+                        window.getComputedStyle(nav).position !== "fixed"
+                      )
+                        return;
+                      const bounds = field.getBoundingClientRect();
+                      const navigation = nav.getBoundingClientRect();
+                      if (
+                        navigation.height > 0 &&
+                        bounds.bottom > navigation.top - 12 &&
+                        bounds.top < navigation.bottom
+                      ) {
+                        field.scrollIntoView({
+                          block: "center",
+                          behavior: "instant",
+                        });
+                      }
+                    });
+                  }}
+                >
                   {mergeRequired && (
                     <Notice kind="info">
                       访客记录尚未合并，你仍在当前访客空间。请验证已有账户并预览全部记录与冲突，再单独确认是否合并。

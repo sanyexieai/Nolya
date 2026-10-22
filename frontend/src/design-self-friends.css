@@ -700,3 +700,27 @@
     font-size: 21px;
   }
 }
+
+/* Keep result invitation copy separate from its CTA on narrow screens. */
+@media (max-width: 700px) {
+  .design-self-result .next-step-banner {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    align-items: start;
+    gap: 12px;
+    padding: 20px;
+  }
+  .design-self-result .next-step-banner > .round-icon {
+    width: 44px;
+    height: 44px;
+  }
+  .design-self-result .next-step-banner > div {
+    min-width: 0;
+    width: 100%;
+  }
+  .design-self-result .next-step-banner > .button {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-height: 44px;
+  }
+}
